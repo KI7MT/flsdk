@@ -1,10 +1,10 @@
 [Desktop Entry]
 Version=1.0
-Type=Application
 Name=@PROGRAM@ @VERSION@
 Comment=FLSDK - Software Development Kit
+Type=Application
 Exec=bash -c '@BINDIR@/flsdk'
 Terminal=true
-Categories=Development
-Keywords=Scientific;Hamradio;Radio;Signal;FLDIGI
+Categories=Application;Development
+Keywords=Scientific;Hamradio;Radio;Signal;FLDIGI,NBEMS
 Icon=flsdk

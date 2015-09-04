@@ -2,9 +2,9 @@
 #
 # Name			: autogen.sh
 # Execution		: As normal user ./autogen.sh
-# Copyright		: Copyright (C) 2015 Greg Beam, KI7MT
-# License		: GPL3+
-# Comment		: Part of the FLSDK Linux Project
+# Copyright		: Copyright (C) 2014-2015, Greg Beam
+# Contributors	: Greg Beam, KI7MT
+# Comment		: Part of the FLSDK
 #
 # FLSDK is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,63 +25,39 @@ set -e
 BASED=$(exec pwd)
 PROGRAM=FLSDK
 
-# foreground colours
+# Foreground colours
 C_R='\033[01;31m'	# red
 C_G='\033[01;32m'	# green
 C_Y='\033[01;33m'	# yellow
 C_C='\033[01;36m'	# cyan
 C_NC='\033[01;37m'	# no color
 
-# autogen help mssage function
 autogen_help() {
 clear
 echo \
 'FLSDK Autogen Help Options
+----------------------------
 
-Distribution  Suported Versions
- Debian         Jessie  (7.* | 8.*)
- Ubuntu         Trusty  (14.04*, 14.10*)
- Mint           Rebecca (17.*)
+Several options exist for pre-processing the configure script: 
+--disable-parallel - Disable Multi-Core Compiling      [ defailt is enabled ]
+--disable-manp     - Disable Compiling Manpages        [ defailt is enabled ]
+--disable-docs     - Disable Compiling User-Guide      [ defailt is enabled ]
+--disable-separate - Disable separation by svn version [ defailt is enabled ]
 
-Notes:
-	1. Ubuntu includes Xubuntu, Lubuntu, Kubuntu
-	2. Debian includes Raspbian
-	3. You do not need to specify the version
+STANDARD INVOCATION:
+./autogen.sh'
 
-Package Enabled Options:
---with-distro		# Sets The Linux Distribution
---disable-parallel	# Disables Multi-Core / Parallel Compiling
---disable-docs		# Diable HTML documentation build at install
-
-Standard Invocation:
-./autogen.sh --with-distro=ubuntu'
-
-echo
-exit 0
-}
-
-configure_error_msg() {
-echo
-echo \
-'Autogen.sh Configure Error
-
- There appears to have been a configuration error. Please see
- the --help menu for proper invocation by running:
- 
- ./autogen.sh --help'
- 
-echo
+echo ''
 
 exit 0
 }
 
-
-# start main script
+# Start main script
 cd $BASED
 
-# display autogen help message
-case $1 in
-	help|--help|H|h )
+# Display Autogen help message
+case "$1" in
+	-h|-H|--help|--HELP|help )
 	autogen_help ;;
 esac
 
@@ -94,14 +70,14 @@ lsb_release -v > /dev/null 2>&1 || {
 	echo "compile $PROGRAM. Please install the appropriate package"
 	echo 'for your distribution.'	
 	echo ''
-	echo 'For Debian, Ubuntu, Mint, try:'
+	echo 'For Debian, Ubuntu, Mint, try: sudo apt-get install lsb-release'
 	echo ''
-	echo 'sudo apt-get install lsb-release'
+	echo 'For Fedora, try: yum install redhat-lsb'
 	echo ''
 	exit 1
 }
 
-# test if autoconf is installed
+# Test if autoconf is installed
 autoconf --version > /dev/null 2>&1 || {
 	clear
 	echo 'PACKAGE DEPENDENCY ERROR'
@@ -113,20 +89,7 @@ autoconf --version > /dev/null 2>&1 || {
 	echo ''
 	echo 'sudo apt-get install autoconf'
 	echo ''
-	exit 1
-}
-
-# test if a basic C Compiler is availabe
-gcc --version > /dev/null 2>&1 || {
-	clear
-	echo 'PACKAGE DEPENDENCY ERROR'
-	echo ''
-	echo "You must have a C compiler installed to compile $PROGRAM."
-	echo 'Please install the appropriate package for your distribution.'
-	echo ''
-	echo 'For Debian, Ubuntu, Mint, try:'
-	echo ''
-	echo 'sudo apt-get install gcc'	
+	echo 'For Fedora, try: yum groupinstall "Development Tools"'
 	echo ''
 	exit 1
 }
@@ -137,8 +100,7 @@ if test -f ./Makefile -a ./configure ; then
 	echo '---------------------------------------------------'
 	echo ${C_Y}"Checking for Old Makefile & Configure Script"${C_NC}
 	echo '---------------------------------------------------'
-	echo ''
-	echo 'Found old files, running make clean first'
+	echo '* Found old files, running make clean first'
 	echo ''
 	make -s clean
 	echo '---------------------------------------------------'
@@ -155,28 +117,30 @@ fi
 
 # simple test for the configure script, after running autogen.sh
 if test -s ./configure; then
-	echo "Finished"
-	echo "Configuring the build"
+	echo "* Finished generating configure script"
 else
 # message if configure was not found
-	echo
+	echo ''
 	echo "There was a problem generating the configure script"
-	echo "Check config.status | config.log for details."	
-	echo
+	echo "Check config.status for details."	
+	echo ''
 	exit 1
 fi
 
 # message if no arguments were presented
 if test -z "$*"; then
-	echo "Using ./configure with default options"
+	echo "* Using ./configure [ with default options ]"
 else
 # List user input arguments
-	echo "Using ./configure $@"
-
+	echo "* Using ./configure $@"
 fi
 
-$BASED/configure "$@" || {
-	configure_error_msg
-}
+# finally, run configure.ac
+echo ''
+echo '---------------------------------------------------'
+echo ${C_Y}"Running configure"${C_NC}
+echo '---------------------------------------------------'
+
+$BASED/configure "$@"
 
 exit 0

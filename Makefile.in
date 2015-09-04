@@ -1,8 +1,20 @@
-# Makefile for Linux for FLSDK
-# Re-direct stdout and stderr:		bash
-#								make >& junk
+# Name............: Makefile for FLSDK @VERSION@
+# Execution.......: Process this file with autoconf
+# Copyright.......: @COPYRIGHT@
+# License.........: @LICENSE@
+# Contributors....: @AUTHORS@
+# Comment.........: Part of the @PROGRAM@ Linux Project
+# Dependencies....: Bash, Git, AsciiDoc, Core Utils, Autotools, lsb-release
 #
-# Prerequisites: Bash, Git, Autotools, Dialog, Zenity, CoreUtils
+# TARGETS:
+#
+# all             - default target, make sure everything gets built
+# config-scripts  - configure scripts based on users parameters
+# build-doc       - build all documentation 
+# build-manp      - build man pages
+# build-test      - build test scripts
+# install         - install @PROGRAM@
+# uninstall       - uninstall @PROGRAM@
 
 # program informaiton
 PROGRAM		=	@PROGRAM@
@@ -33,30 +45,32 @@ MKDIR		:=	@MKDIR@
 
 # directories
 INSTALL		:=	install
-PREFIX		:=	@PREFIX@
+HOMEDIR		:=	@HOMEDIR@
 BINDIR		:=	@BINDIR@
-SHARE		:=	@SHARE@
-MANDIR		:=	@MANDIR@
-DOCDIR		:=	@DOCDIR@
-WATCHD		:=	@WATCHD@
-DOCSRC		:=	@DOCSRC@
 DATADIR		:=	@DATADIR@
+DOCDIR		:=	@DOCDIR@
+DOCSRC		:=	@DOCSRC@
+ICOND		:=	@ICOND@
+MANSRC		:=	@MANSRC@
+MANDIR		:=	@MANDIR@
+PREFIX		:=	@PREFIX@
+SHARE		:=	@SHARE@
+WATCHD		:=	@WATCHD@
 
-# home folder related
+# user and groups
 LOGNAME		:=	@LOGNAME@
 LOGGRP		:=	$(shell groups @LOGNAME@ | cut -d ' ' -f 3)
-HOMEDIR		:=	/home/@LOGNAME@/flsdk
 
 # package information
 SCRIPTS		:=	$(wildcard src/*.sh)
 PKGINFO		:=	./pkg-info.txt
 
-# for manpages and docs
+# manpages and docs
 ASCIIDOC	:=	@ASCIIDOC@
 A2X			:=	@A2X@
 BDOC		:=	@BDOC@
-MANSRC		:= $(wildcard manpages/*.1.txt)
 MANP		:=	@MANP@
+MANLIST		:= $(wildcard man/*.1.txt)
 
 # enable folder separation
 SEPARATE	:=	@SEPARATE@
@@ -103,18 +117,16 @@ ifeq ($(MANP),Yes)
 	@echo '---------------------------------------------'
 	@echo ''
 	@echo " Building $(PROGRAM) Manpages..."
-	@for f in $(MANSRC) ; do \
+	@for f in $(MANLIST) ; do \
 	echo " $$f" ; \
 	$(A2X) --doctype manpage --format manpage --no-xmllint $$f ; \
 	done
-	@echo ' Finished'
-	@echo ''
 endif
 
 make-summary:
 	@echo ''
 	@echo '---------------------------------------------'
-	@echo -e $(C_G)"Make Summary"$(C_NC)
+	@echo -e $(C_G)"MAKE SUMMARY"$(C_NC)
 	@echo '---------------------------------------------'
 	@echo ''
 	@echo " Package ...................: $(PROGRAM) $(VERSION)"
@@ -124,6 +136,7 @@ make-summary:
 	@echo ' To Install, type ..........: sudo make install'
 	@echo ''
 
+# install @PROGRAM@ @VERSION@
 install: 
 	@echo ''
 	@echo '---------------------------------------------'
@@ -138,7 +151,7 @@ install:
 	@echo ' further notice.'
 	@echo '' 
 
-# Uninstall System Files
+# uninstall @PROGRAM@ @VERSION@
 uninstall:
 	@clear
 	@echo '---------------------------------------------'
@@ -146,13 +159,13 @@ uninstall:
 	@echo '---------------------------------------------'
 	@echo ''
 	@echo '..Removing installed scripts'
-	@$(RM) -f $(DESTDIR)$(BINDIR)/flsdk*
+	@$(RM) -f $(DESTDIR)$(BINDIR)/flsdk-*
 	@echo '..Removing installed docs and manpages'
-	@$(RM) -f ${DESTDIR}$(MANDIR)/flsdk.1
+	@$(RM) -f ${DESTDIR}$(MANDIR)/flsdk-*.1
 	@echo '..Removing installed share files'
 	@$(RM) -rf $(DESTDIR)$(SHARE)
-	@$(RM) -f $(ICOND)/flsdk.xpm
-	@$(RM) -f $(DTDIR)/flsdk.desktop
+	@$(RM) -f $(DESTDIR)$(ICOND)/flsdk.xpm
+	@$(RM) -f $(DESTDIR)$(DTDIR)/flsdk.desktop
 	@echo ''
 	@echo 'UNINSTALL NOTES'
 	@echo ''
@@ -176,8 +189,8 @@ clean:
 	src/flsdk-flrig src/flsdk-flwkey src/flsdk-fllog src/flsdk-flnet \
 	src/flsdk-flwrap src/flsdk-versions config.log config.status \
 	configure.scan configure Makefile src/language/language_en \
-	src/data/flsdk.desktop pkg-info.txt
+	data/flsdk.desktop pkg-info.txt
 	${RM} -rf ./autom4*
 	$(RM) -f $(DOCSRC)/*.html
-	$(RM) -f src/manpages/{*.1,*.1.txt}
+	$(RM) -f $(MANSRC)/{*.1,*.1.txt}
 
