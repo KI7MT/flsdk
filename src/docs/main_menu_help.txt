@@ -1,0 +1,24 @@
+FLSDK MAIN MENU HELP FILE
+
+NAVIGATION:  You can  move  through the file by using the cursor, page-up, 
+page-down, arrow UP/DWN and HOME/END keys available on most keyboards.
+If the lines are too long to be displayed in the box, the LEFT/RIGHT keys
+can be used to scroll the text region horizontally.
+
+
+INTRODUCTION
+
+ FLSDK allows you to build all of the FLDIGI / NBEMS applicaitons though
+ an easy to use menu system.
+ 
+BUILD DESCRIPTIONS
+
+
+** UNDER DEVELOPMENT  **
+
+
+ADDITIONAL RESOURCES
+ 
+ FLDIGI Home Page:
+ * http://www.w1hkj.com/
+

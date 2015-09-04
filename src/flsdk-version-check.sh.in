@@ -1,0 +1,365 @@
+#!/usr/bin/env bash
+#
+# Name			: flsdk-version-check.sh
+# Execution		: Run from withing FLSDK
+# Copyright		: @COPYRIGHT@
+# Contributors	: @AUTHORS@
+# Comment		: Part of the @PROJECT@ Linux Project
+#
+# flsdk-version-check.sh is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation either version 3 of the License, or
+# (at your option) any later version. 
+#
+# flsdk-version-check.sh is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#-------------------------------------------------------------------------#
+
+# error on exit
+set -e
+
+# base variables
+HOMEDIR=@HOMEDIR@
+FLDIGII=@FLDIGII@
+FLAMPI=@FLAMPI@
+FLMSGI=@FLMSGI@
+FLWKEYI=@FLWKEYI@
+FLRIGI=@FLRIGI@
+FLLOGI=@FLLOGI@
+FLNETI=@FLNETI@
+FLWRAPI=@FLWRAPI@
+WATCHD=@WATCHD@
+TMPD=@TMPD@
+
+# script variables
+VERLOG="$TMPD"/ver.tmp
+
+# Foreground colours
+C_R='\033[01;31m'	# red
+C_G='\033[01;32m'	# green
+C_Y='\033[01;33m'	# yellow
+C_C='\033[01;36m'	# cyan
+C_NC='\033[01;37m'	# no color
+
+# Spinner Credit: http://fitnr.com/showing-a-bash-spinner.html
+spinner()
+{
+    local pid=$1
+    local delay=0.1
+    local spinstr='-|-/-\'
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        local temp=${spinstr#?}
+        printf "[%c]" "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
+
+# Test if autoconf is installed
+uscan_check() {
+uscan --version > /dev/null 2>&1 && echo -e "* Uscan Available .. ${C_G}Yes${C_NC}" || {
+	clear
+	echo ''
+	echo 'You must have *uscan* from the Debian devscripts'
+	echo 'package installed in order to perform version checks.'
+	echo ''
+	echo 'Due to the number of packages involed with devscripts,'
+	echo 'it is not installed as part of the default FLSDK install.'
+	echo 'As such, the installation is up to the user to perform.'
+	echo ''
+	echo 'There are many useful tools included with the package.'
+	echo 'It is highly advisable to install it. From a frsh distro'
+	echo 'stanpoint, total disk usage is only 3MB after install.'
+	echo ''
+	echo 'For Debian, Ubuntu and Mint, install with:'
+	echo ''
+	echo 'sudo apt-get devscripts'
+	echo ''
+	echo ''
+	exit 1
+	}
+}
+
+# Check Internet connectivity
+check_inet() {
+((ping -w5 -c3 www.w1hkj.com || ping -w5 -c3 8.8.8.8 || ping -w5 -c3 208.67.222.222) > /dev/null 2>&1) && \
+echo -e "* Internet Access .. ${C_G}Yes${C_NC}" || {
+	echo ''
+	echo -e ${C_R}'** INTERNET CONNECTION FAILURE**'${C_NC}
+	echo ''
+	echo 'You must have internet access inorder to'
+	echo 'perform version checks. The following'
+	echo 'test failed:'
+	echo ''
+	echo 'ping -w5 -c3 www.w1hkj.com || ping -w5 -c3 8.8.8.8 || ping -w5 -c3 208.67.222.222'
+	echo ''
+	echo 'FLDIG Website ...: www.w1hkj.com'
+	echo 'Google DNS ......: 8.8.8.8'
+	echo 'OpenDNS .........: 208.67.222.222'
+	echo ''
+	echo 'Check you can access the internet, resolve any connection'
+	echo "problems, then re-run Check Version"
+	echo ''
+	read -p "Press [ Enter ] to continue ..."
+	exit 0
+	}
+}
+
+# remove old check file
+rm -f "$VERLOG"
+
+# start the check
+clear
+echo '-----------------------------'
+echo -e ${C_Y}'CHECKING VERSION INFORMATION'${C_NC}
+echo '-----------------------------'
+echo 'Testing Internet Access ...'
+check_inet
+uscan_check
+
+# add message header to file
+echo "APPLICATION RELEASE ALPHA LOCAL-BUILD" > "$VERLOG"
+echo '----------- ------- ----- -----------' >> "$VERLOG"
+
+# TO-DO: After the checks have stabalized, reduce the individual checks
+# to using an array, then loop through each application.
+
+
+# FLDIGI version info-----------------------------------------------------------
+(
+
+# Check relese builds
+fldigi=$(uscan --watchfile @WATCHD@/fldigi-watch --package flmsg --upstream-version 0 --report |grep 'tar.gz')
+fldigi_release=$(echo ${fldigi##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
+
+# Check Alpha builds
+if $(uscan --watchfile @WATCHD@/fldigi-alpha-watch --package fldigi --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
+	fldigia=$(uscan --watchfile @WATCHD@/fldigi-alpha-watch --package fldigi --upstream-version 0 --report |grep 'tar.gz')
+	fldigi_alpha=$(echo ${fldigia##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
+else
+	fldigi_alpha="none"
+fi
+
+# look for install mkr, set with the build script
+if [[ -s @FLDIGII@/version.mkr ]] ; then
+	buildv=$(awk -F\| '{print $1}' < @FLDIGII@/version.mkr)
+else
+	buildv="none"
+fi
+echo "FLDIGI $fldigi_release $fldigi_alpha $buildv" >> "$VERLOG"
+
+) & spinner $!
+echo -e "* Checking FLDIGI .. ${C_G}Done${C_NC}"
+
+# FLAMP version info------------------------------------------------------------
+(
+
+# Check release builds
+flamp=$(uscan --watchfile @WATCHD@/flamp-watch --package flmsg --upstream-version 0 --report |grep 'tar.gz')
+flamp_release=$(echo ${flamp##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
+
+# Check Alpha builds
+if $(uscan --watchfile @WATCHD@/flamp-alpha-watch --package flamp --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
+	flampa=$(uscan --watchfile @WATCHD@/flamp-alpha-watch --package flamp --upstream-version 0 --report |grep 'tar.gz')
+	flamp_alpha=$(echo ${flampa##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
+else
+	flamp_alpha="none"
+fi
+
+# look for install mkr, set with the build script
+if [[ -s @FLAMPI@/version.mkr ]] ; then
+	buildv=$(awk -F\| '{print $1}' < @FLAMPI@/version.mkr)
+else
+	buildv="none"
+fi
+
+echo "FLAMP $flamp_release $flamp_alpha $buildv" >> "$VERLOG"
+) & spinner $!
+echo -e "* Checking FLAMP ... ${C_G}Done${C_NC}"
+
+
+# FLMSG version info------------------------------------------------------------
+(
+
+# Check release builds
+flmsg=$(uscan --watchfile @WATCHD@/flmsg-watch --package flmsg --upstream-version 0 --report |grep 'tar.gz')
+flmsg_release=$(echo ${flmsg##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
+
+# Check Alpha builds
+if $(uscan --watchfile @WATCHD@/flmsg-alpha-watch --package flmsg --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
+	flmsga=$(uscan --watchfile @WATCHD@/flmsg-alpha-watch --package flmsg --upstream-version 0 --report |grep 'tar.gz')
+	flmsg_alpha=$(echo ${flmsga##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
+else
+	flmsg_alpha="none"
+fi
+
+# look for install mkr, set with the build script
+if [[ -s @FLMSGI@/version.mkr ]] ; then
+	buildv=$(awk -F\| '{print $1}' < @FLMSGI@/version.mkr)
+else
+	buildv="none"
+fi
+
+echo "FLMSG $flmsg_release $flmsg_alpha $buildv" >> "$VERLOG"
+
+) & spinner $!
+echo -e "* Checking FLMSG ... ${C_G}Done${C_NC}"
+
+
+# FLRIG version info------------------------------------------------------------
+(
+
+# Check release builds
+flrig=$(uscan --watchfile @WATCHD@/flrig-watch --package flrig --upstream-version 0 --report |grep 'tar.gz')
+flrig_release=$(echo ${flrig##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
+
+# Check Alpha builds
+if $(uscan --watchfile @WATCHD@/flrig-alpha-watch --package flrig --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
+	flriga=$(uscan --watchfile @WATCHD@/flrig-alpha-watch --package flrig --upstream-version 0 --report |grep 'tar.gz')
+	flrig_alpha=$(echo ${flriga##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
+else
+	flrig_alpha="none"
+fi
+
+# look for install mkr, set with the build script
+if [[ -s @FLRIGI@/version.mkr ]] ; then
+	buildv=$(awk -F\| '{print $1}' < @FLRIGI@/version.mkr)
+else
+	buildv="none"
+fi
+
+echo "FLRIG $flrig_release $flrig_alpha $buildv" >> "$VERLOG"
+
+) & spinner $!
+echo -e "* Checking FLRIG ... ${C_G}Done${C_NC}"
+
+# FLWKEY version info-----------------------------------------------------------
+(
+
+# Check release builds
+flwkey=$(uscan --watchfile @WATCHD@/flwkey-watch --package flwkey --upstream-version 0 --report |grep 'tar.gz')
+flwkey_release=$(echo ${flwkey##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
+
+# Check Alpha builds
+if $(uscan --watchfile @WATCHD@/flwkey-alpha-watch --package flwkey --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
+	flwkeya=$(uscan --watchfile @WATCHD@/flwkey-alpha-watch --package flwkey --upstream-version 0 --report |grep 'tar.gz')
+	flwkey_alpha=$(echo ${flwkeya##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
+else
+	flwkey_alpha="none"
+fi
+
+# look for install mkr, set with the build script
+if [[ -s @FLWKEYI@/version.mkr ]] ; then
+	buildv=$(awk -F\| '{print $1}' < @FLWKEYI@/version.mkr)
+else
+	buildv="none"
+fi
+
+echo "FLWKEY $flwkey_release $flwkey_alpha $buildv" >> "$VERLOG"
+) & spinner $!
+echo -e "* Checking FLWKEY .. ${C_G}Done${C_NC}"
+
+# FLWRAP version info-----------------------------------------------------------
+(
+
+# Check release builds
+flwrap=$(uscan --watchfile @WATCHD@/flwrap-watch --package flwrap --upstream-version 0 --report |grep 'tar.gz')
+flwrap_release=$(echo ${flwrap##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
+
+# Check Alpha builds
+if $(uscan --watchfile @WATCHD@/flwrap-alpha-watch --package flwrap --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
+	flwrapa=$(uscan --watchfile @WATCHD@/flwrap-alpha-watch --package flwrap --upstream-version 0 --report |grep 'tar.gz')
+	flwrap_alpha=$(echo ${flampa##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
+else
+	flwrap_alpha="none"
+fi
+
+if [[ -s @FLWRAPI@/version.mkr ]] ; then
+	buildv=$(awk -F\| '{print $1}' < @FLWRAPI@/version.mkr)
+else
+	buildv="none"
+fi
+echo "FLWRAP $flwrap_release $flwrap_alpha $buildv" >> "$VERLOG"
+
+) & spinner $!
+echo -e "* Checking FLWRAP .. ${C_G}Done${C_NC}"
+
+
+# FLLOG version info -----------------------------------------------------------
+(
+
+# Check release builds
+fllog=$(uscan --watchfile @WATCHD@/fllog-watch --package fllog --upstream-version 0 --report |grep 'tar.gz')
+fllog_release=$(echo ${fllog##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
+
+# Check Alpha builds
+if $(uscan --watchfile @WATCHD@/fllog-alpha-watch --package fllog --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
+	flloga=$(uscan --watchfile @WATCHD@/fllog-alpha-watch --package fllog --upstream-version 0 --report |grep 'tar.gz')
+	fllog_alpha=$(echo ${flloga##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
+else
+	fllog_alpha="none"
+fi
+
+# look for install mkr, set with the build script
+if [[ -s @FLLOGI@/version.mkr ]] ; then
+
+	buildv=$(awk -F\| '{print $1}' < @FLLOGI@/version.mkr)
+else
+	buildv="none"
+fi
+
+echo "FLLOG $fllog_release $fllog_alpha $buildv" >> "$VERLOG"
+
+) & spinner $!
+echo -e "* Checking FLLOG ... ${C_G}Done${C_NC}"
+
+
+# FLNET version info -----------------------------------------------------------
+(
+
+# Check release builds
+flnet=$(uscan --watchfile @WATCHD@/flnet-watch --package flnet --upstream-version 0 --report |grep 'tar.gz')
+flnet_release=$(echo ${flnet##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
+
+# Check Alpha builds
+if $(uscan --watchfile @WATCHD@/flnet-alpha-watch --package flnet --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
+	flneta=$(uscan --watchfile flnet-alpha-watch --package flnet --upstream-version 0 --report |grep 'tar.gz')
+	flnet_alpha=$(echo ${flneta##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
+else
+	flnet_alpha="none"
+fi
+
+# look for install mkr, set with the build script
+if [[ -s @FLNETI@/version.mkr ]] ; then
+
+	buildv=$(awk -F\| '{print $1}' < @FLNETI@/version.mkr)
+else
+	buildv="none"
+fi
+
+echo "FLNET $flnet_release none $buildv" >> "$VERLOG"
+
+) & spinner $!
+echo -e "* Checking FLNET ... ${C_G}Done${C_NC}"
+
+
+# simple display results
+echo ''
+cat "$VERLOG" |column -t
+echo ''
+echo '*none*, in the local-build column means you have not built'
+echo 'the application with @PROGRAM@. If *none* appears in the '
+echo 'Alpha column, a tar.gz file was not found on the'
+echo 'W1HKJ Software site.'
+echo ''
+read -p "Press [ Enter ] to continue ..."
+
+exit 0
+

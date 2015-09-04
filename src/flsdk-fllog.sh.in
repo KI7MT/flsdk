@@ -1,0 +1,181 @@
+#! /usr/bin/env bash
+#
+# Name			: flsdk-fllog.sh
+# Execution		: As normal user type: flsdk-fllog.sh
+# Copyright		: @COPYRIGHT@
+# License		: @LICENSE@
+# Contributors	: @AUTHORS@
+# Comment		: Part of the FLSDK Linux Project
+#                 This script builds: FLLOG
+#
+# @PROGRAM@ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation either version 3 of the License, or
+# (at your option) any later version. 
+#
+# @PROGRAM@ is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#------------------------------------------------------------------------------#
+
+# common vars
+APP_NAME=fllog
+HOMEDIR=@HOMEDIR@
+SRCD=@SRCD@
+INSTALLD=@FLLOGI@
+JJ=@JJJJ@
+
+# system information
+OS=@HOST_OS@
+ARCH=@HOST_CPU@
+
+# compiler informaiton
+CC=@CC@
+CXX-@CXX@
+
+# foreground colours
+C_R='\033[01;31m'		# red
+C_G='\033[01;32m'		# green
+C_Y='\033[01;33m'		# yellow
+C_C='\033[01;36m'		# cyan
+C_NC='\033[01;37m'		# no color
+
+################################################################################
+# FUNCTOINS
+################################################################################
+
+check_git() {
+
+cd "$HOMEDIR"
+
+if [[ -f $SRCD/$APP_NAME/configure.ac ]]; then
+		if [[ -f $SRCD/$APP_NAME/Makefile ]]; then
+			echo 'Cleaning Repository Tree'
+			make clean > /dev/null 2>&1
+			make distclean > /dev/null 2>&1
+			git clean -d -x -f > /dev/null 2>&1
+		fi
+	echo 'Performing Git Pull'
+	cd $SRCD/$APP_NAME
+	git pull
+else
+	echo 'Performing Git Clone --depth 1'
+	if [[ -d $SRCD/$APP_NAME ]]; then rm -rf $SRCD/$APP_NAME ; fi
+	cd $SRCD
+	git clone --depth 1 git://git.code.sf.net/p/fldigi/fllog fllog
+fi
+
+}
+
+################################################################################
+# START MAIN SCRIPT
+################################################################################
+
+# exit on errors
+set -e
+
+# Make sure directories are present, in case they were deleted
+mkdir -p "$INSTALLD" >/dev/null 2>&1
+
+# Ask to update from SVN first
+clear
+echo ''
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" STARTING BUILD for ( $APP_NAME )"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+check_git
+
+# start configuring the main build
+echo
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" CONFIGURING ( $APP_NAME )"${C_NC}
+echo '-----------------------------------------------------'
+echo
+cd "$SRCD/$APP_NAME"
+echo 'Running Autoreconf to generate configure and Makefile'
+# autoreconf -f -i > /dev/null 2>&1
+autoreconf -f -i
+echo 'Finished'
+
+# enable ARM optimization flags
+case $ARCH in
+	arm* )
+		./configure --prefix="$INSTALLD" --enable-static \
+		CC='gcc' \
+		CXX='g++' \
+		CFLAGS='-O2 -mfpu=vfp -mfloat-abi=hard -ffast-math -finline-functions' \
+		CXXFLAGS="$CFLAGS"
+	;;
+	* )
+		./configure --prefix="$INSTALLD" --enable-optimizations=native --enable-static
+	;;
+esac
+
+# build the target
+echo ''
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" BUILDING ( $APP_NAME )"${C_NC}
+echo '-----------------------------------------------------'
+echo -e "Build Type: "${C_G}'Static'${C_NC}
+echo
+make -j$JJ
+
+# install the target
+echo
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" INSTALLING ( $APP_NAME )"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+make install-strip
+
+# get version info freom config.log
+fllog_release=$(grep 'FLLOG_VERSION =' < Makefile |awk '{print $3}')
+echo "@PROGRAM@..: Creating version marker for: $APP_NAME-$fllog_release"
+cp -u @SRCD@/$APP_NAME/{config.log,Makefile} @FLLOGI@ > /dev/null 2>&1
+echo "@PROGRAM@..: Copying config.log, Makefile to $INSTALLD"
+
+# set install marker version
+if [[ -f @FLLOGI@/version.mkr ]] ; then rm -f @FLLOGI@/version.mkr ; fi
+echo $fllog_release > @FLLOGI@/version.mkr > @FLLOGI@/version.mkr
+
+# change ownership
+chown -R $USER:$USER "$HOMEDIR/$APP_NAME"
+
+# clean the build tree
+echo
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" CLEANING BUILD TREE"${C_NC}
+echo '-----------------------------------------------------'
+echo
+make clean >/dev/null 2>&1
+make distclean >/dev/null 2>&1
+git clean -qfd
+echo ' Finished Cleanup'
+
+
+# Finished
+cd @HOMEDIR@
+# Get version information
+echo ""
+echo
+echo '-----------------------------------------------------'
+echo -e ${C_G}" BUILD SUMMARY ( $APP_NAME )"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+echo -e " Link Config ..: "${C_G}'Static'${C_NC}
+echo " Version ......: $APP_NAME-$fllog_release"
+echo " Source .......: $SRCD/$APP_SRC/$APP_NAME"
+echo " Install ......: $INSTALLD"
+echo ''
+echo " TO RUN $APP_NAME"
+echo " Type, ........: cd $INSTALLD/bin"
+echo " Type, ........: ./$APP_NAME"
+echo ''
+read -p "Press [ Enter ] to continue.."
+
+exit 0

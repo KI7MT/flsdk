@@ -1,0 +1,397 @@
+#!/usr/bin/env bash
+#
+# Name			: @PROGRAM@ @VERSION@
+# Execution		: As normal user type: flsdk
+# Copyright		: @COPYRIGHT@
+# License		: @LICENSE@
+# Contributors	: @AUTHORS@
+# Comment		: Part of the @PROGRAM@ Linux Project
+#
+# @PROGRAM@ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation either version 3 of the License, or
+# (at your option) any later version. 
+#
+# @PROGRAM@ is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#-------------------------------------------------------------------------#
+
+set -e
+
+# set reasonable menu height & width.
+# This is an ANSI sequence, and should
+# work in most Xterm windows
+echo -e "\e[8;35;110t"
+
+# host informaiton
+HOST_OS=@HOST_OS@
+HOST_CPU=@HOST_CPU@
+
+# set home directory path
+HOMEDIR=@HOMEDIR@
+
+# home directory paths
+LOGS=@LOGD@
+SRCD=@SRCD@
+DOCS=@DOCDIR@
+TMP=@TMPD@
+MKRD=@MKRD@
+HAMLIBD=@HAMLIBD@
+ADOCD=@ADOCD@
+
+################################################################################
+# Language Section
+################################################################################
+
+# backtitle lang
+BACKTITLE="@PROGRAM@ @VERSION@"
+
+# root chk lang
+RCTITLE="ROOT / SUDO CHECK FAILED"
+RCMSG="    @PROGRAM@ must be run as normal user, not root or sudo.\n\
+          Please run "$0" without "sudo" prefix"
+
+# dialog lang
+DITITLE="DIALOG INSTALL"
+DIMSG="        @PROGRAM@ Will now install Dialog Msg CLient"
+DISUCTITLE="DIALOG INSTALL COMPLETE"
+DISUCMSG="\n      Dialog Install Complete."
+
+# sig catch lang
+SIGCAUGHT="   SIGNAL CAUGHT"
+SIGCAUGHTMSG="\n   Signal Caught, Performing Cleanup Routine"
+CLEANTMP=" CLEANING TMP"
+CLEANTMPMSG="\n         Cleaning Up Temporary Files"
+RESETOPT=" RESET OPTIONS"
+RESETOPTMSG="\n         Resetting Used Bash Options"
+CLEANVAR=" CLEANING VARS"
+CLEANVARMSG="\n             Unset Used Variables"
+
+# exit lang
+EXITWSDT=" EXIT @PROGRAM@"
+EXITWSDTMSG="\n      Performing Shutdown Cleanup Routine"
+
+# main menu lang
+MMTITLE=" @PROGRAM@ MAIN MENU"
+MENUMSG="            Key the letter then hit [ENTER]\n\
+     Arrow Up/Dwn or '+' or '-' Keys to Navigate\n\n"
+
+# help menu lang
+HTITLE="APPLICATION BUILD HELP DOCUMENT"
+
+# setup check lang
+SETUPTITLE="  SETUP REQUIRED"
+SETUPMSG="\n   In Order to use @PROGRAM@, you must first run setup.sh \n\
+     Select 'OK' then at command prompt run: ./setup.sh\n"
+
+# under development
+UD=" UNDER DEVELOPMENT"
+UDMSG="\n      Build Selection is Under Development"
+
+# main menu
+touch @TMPD@/MMenu.tmp
+cat << 'EOF' > @TMPD@/MMenu.tmp 
+"1" "FLDIGI .. (devel)" \
+"2" "FLAMP ... (devel)" \
+"3" "FLMSG ... (devel)" \
+"4" "FLRIG ... (devel)" \
+"5" "FLWKEY .. (devel)" \
+"6" "FLLOG ... (devel)" \
+"7" "FLNET ... (devel)" \
+"8" "FLWRAP .. (devel)" \
+"V" "Check App Versions" \
+"H" "Help" \
+"E" "Exit"
+EOF
+
+
+################################################################################
+# Functions Section
+################################################################################
+
+#--set options------------------------------------------------------------------
+set_options() {
+set -e                 # exit immediately on any error
+set -o pipefail        # pipeline fail return exit status
+set -u                 # undefined variables
+} # end set flags
+
+
+#--unset options----------------------------------------------------------------
+function unset_options() {
+set +e
+set +o pipefail
+set +u
+}
+
+
+#--under development------------------------------------------------------------
+function under_development() {
+
+dialog --backtitle "$BACKTITLE" --title "$UD" --msgbox "$UDMSG" 7 50
+
+}
+
+
+#--signal catch-----------------------------------------------------------------
+sig_catch_cleanup() {
+EXIT_STATUS="$?"
+
+if [[ "$EXIT_STATUS" == "0" ]]
+then
+   clean_exit
+
+else
+
+dialog --backtitle "$BACKTITLE" --title "$SIGCAUGHT" --infobox "$SIGCAUGHTMSG" 5 50
+	sleep 1
+
+dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
+	rm -r  $TMP/*
+	sleep 1
+
+dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
+	unset_options
+	wait
+	clear
+
+	echo "Exit Status ""[ "$EXIT_STATUS" ]"
+	echo "@PROGRAM@ Signal Catch Cleanup Complete"
+	echo ''
+	trap - SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
+	unset exit_status
+	exit
+fi
+}
+
+#--root check-------------------------------------------------------------------
+root_chk() {
+MSGCLIENT=""
+TESTD=$(dpkg --get-selections dialog | awk '{print $1}')
+
+if [[ $TESTD = "dialog" ]]
+then
+   MSGCLIENT="dialog"
+  else
+   MSGCLIENT="whiptail"
+fi
+clear
+
+if [[ $EUID = "0" ]]
+then
+"$MSGCLIENT" --title "$RCTITLE" --backtitle "$BACKTITLE" --msgbox "$RCMSG" 7 70
+clean_exit
+exit
+fi
+clear
+
+unset {TESTVAR,MSGCLIENT}
+}
+
+
+#--dialog check-----------------------------------------------------------------
+dialog_chk() {
+INSTALLED=$(dialog --version |awk '{print $1}')
+
+if [[ $INSTALLED == Version: ]]; then
+   MSGCLIENT="dialog"
+
+elif [[ $INSTALLED != dialog ]]; then
+   MSGCLIENT="whiptail"
+   clear
+
+"$MSGCLIENT" --clear --title "$DITITLE" --backtitle "$BACKTITLE" --msgbox "$DIMSG" 7 70
+   touch "$LOGS"/install_log
+   sudo apt-get -qy install dialog | tee 2>>"$LOGS"/install_log
+   wait
+   dialog --create-rc ~/.dialogrc
+   wait
+   cp "$CONFIG"/debian.rc ~/.dialogrc
+   wait
+   clear
+
+dialog --title "$DISUCTITLE" --backtitle "$BACKTITLE" --msgbox "$DISUCMSG" 7 40
+sudo -k
+
+fi
+}
+
+
+#--normal shutdown--------------------------------------------------------------
+clean_exit() {
+local EXIT_STATUS=$?
+
+dialog --backtitle "$BACKTITLE" --title "$EXITWSDT" --infobox "$EXITWSDTMSG" 5 50
+   sleep 1
+
+dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
+   rm -r $TMP/*
+   wait
+   sleep 1
+
+dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
+	unset_options
+	wait
+	sleep 1
+	clear
+
+   echo "Exit Status ""[ "$EXIT_STATUS" ]"
+   echo "@PROGRAM@ Clean Exit Complete."
+   echo ''
+   trap - SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
+   unset EXIT_STATUS
+exit
+}
+
+
+#--dialog rc file---------------------------------------------------------------
+make_dialogrc() {
+
+if [ -f "$TMP"/.dialogrc ]; then rm -f "$TMP"/.dialogrc ; fi
+touch "$TMP"/.dialogrc
+
+(
+cat <<'EOF_DIALOGRC'
+aspect = 0
+separate_widget = ""
+tab_len = 0
+visit_items = OFF
+use_shadow = ON
+use_colors = ON
+screen_color = (CYAN,BLUE,ON)
+shadow_color = (BLACK,BLACK,ON)
+dialog_color = (BLACK,WHITE,OFF)
+title_color = (BLUE,WHITE,ON)
+border_color = (WHITE,WHITE,ON)
+button_active_color = (WHITE,BLUE,ON)
+button_inactive_color = (BLACK,WHITE,OFF)
+button_key_active_color = (WHITE,BLUE,ON)
+button_key_inactive_color = (RED,WHITE,OFF)
+button_label_active_color = (YELLOW,BLUE,ON)
+button_label_inactive_color = (BLACK,WHITE,ON)
+inputbox_color = (BLACK,WHITE,OFF)
+inputbox_border_color = (BLACK,WHITE,OFF)
+searchbox_color = (BLACK,WHITE,OFF)
+searchbox_title_color = (BLUE,WHITE,ON)
+searchbox_border_color = (WHITE,WHITE,ON)
+position_indicator_color = (BLUE,WHITE,ON)
+menubox_color = (BLACK,WHITE,OFF)
+menubox_border_color = (WHITE,WHITE,ON)
+item_color = (BLACK,WHITE,OFF)
+item_selected_color = (WHITE,BLUE,ON)
+tag_color = (BLUE,WHITE,ON)
+tag_selected_color = (YELLOW,BLUE,ON)
+tag_key_color = (BLACK,WHITE,OFF)
+tag_key_selected_color = (WHITE,BLUE,ON)
+check_color = (BLACK,WHITE,OFF)
+check_selected_color = (WHITE,BLUE,ON)
+uarrow_color = (GREEN,WHITE,ON)
+darrow_color = (GREEN,WHITE,ON)
+itemhelp_color = (WHITE,BLACK,OFF)
+form_active_text_color = (WHITE,BLUE,ON)
+form_text_color = (WHITE,CYAN,ON)
+form_item_readonly_color = (CYAN,WHITE,ON)
+gauge_color = (BLUE,WHITE,ON)
+EOF_DIALOGRC
+) > "$TMP"/.dialogrc
+
+# use preset dialog config file
+if [ -f "$TMP"/.dialogrc ]; then
+	export DIALOGRC="$TMP"/.dialogrc
+fi
+
+}
+
+
+################################################################################
+# Start Main Script
+################################################################################
+
+# set traps
+trap sig_catch_cleanup SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
+
+# set shell options
+set_options
+
+# root check
+root_chk
+
+# dialog check
+dialog_chk
+
+# generate dialog rc
+make_dialogrc
+
+# menu help files
+HELP="$DOCS"/main_menu_help.txt
+
+# MAIN MANU --------------------------------------------------------------------
+while [ 0 ]; do
+
+dialog --ok-label SELECT --nocancel --clear --backtitle "$BACKTITLE" --title \
+"$MMTITLE" --menu "$MENUMSG" 19 62 20 --file "$TMP/MMenu.tmp" 2> "$TMP/selection"
+
+MMSELECT=$(head -c 1 < $TMP/selection)
+
+# FLDIGI
+if [[ $MMSELECT = "1" ]]; then
+	flsdk-fldigi.sh
+	continue
+
+# FLAMP Menu -------------------------------------------------------------------
+elif [[ $MMSELECT = "2" ]]; then
+	flsdk-flamp.sh
+	continue
+
+# FLMSG Menu--------------------------------------------------------------------
+elif [[ $MMSELECT = "3" ]]; then
+	flsdk-flmsg.sh
+	continue
+
+# FLRIG Menu--------------------------------------------------------------------
+elif [[ $MMSELECT = "4" ]]; then
+	flsdk-flrig.sh
+	continue
+
+# FLWKEY Menu--------------------------------------------------------------------
+elif [[ $MMSELECT = "5" ]]; then
+	flsdk-flwkey.sh
+	continue
+
+# FLLOG Menu--------------------------------------------------------------------
+elif [[ $MMSELECT = "6" ]]; then
+	flsdk-fllog.sh
+	continue
+
+# FLNET Menu--------------------------------------------------------------------
+elif [[ $MMSELECT = "7" ]]; then
+	flsdk-flnet.sh
+	continue
+	
+# FLWRAP Menu-------------------------------------------------------------------
+elif [[ $MMSELECT = "8" ]]; then
+	flsdk-flwrap.sh
+	continue
+
+# Version Check-----------------------------------------------------------------
+elif [[ $MMSELECT = "V" ]]; then
+	flsdk-version-check.sh
+	continue
+
+# Help File---------------------------------------------------------------------
+   elif [[ $MMSELECT = "H" ]]; then
+dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" \
+--textbox "$HELP" 20 80
+	continue
+
+# Exit FLSDK----------------------------------------------------------------
+  elif [[ $MMSELECT = "E" ]]; then
+   clean_exit
+   fi
+done
+

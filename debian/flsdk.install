@@ -1,0 +1,6 @@
+src/flsdk usr/bin/
+data/flsdk.xpm usr/share/pixmaps/
+data/flsdk.desktop usr/share/applications/
+docs/flsdk.html usr/share/docs/flsdk/
+README usr/share/doc/flsdk/
+

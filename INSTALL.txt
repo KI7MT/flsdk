@@ -1,0 +1,51 @@
+FLSDK v0.0.2 is a collection of Bash scripts designed to assist
+users in compiling the various FLDIGI applications used by
+Amateur Radio Operators.
+
+
+SUPPORTED DISTRIBUTIONS
+
+* Ubuntu .. 14.04*
+* Mint .... 17.1*
+* Debian .. 8.*
+
+-Ubuntu includes Xubuntu, Lubuntu, Kubuntu
+-Debian includes Raspbian, upgraded from Wheezy to Jessie 
+
+INSTALL INSTRUCTIONS
+
+* Download flsdk-0.0.2.tar.gz
+* Extract: tar -xf flsdk-0.0.2.tar.gz
+* Type: cd ./flsdk-v2.0.0
+
+For Ubuntu, Type:
+./autogen.sh --with-distro=ubuntu --enable-parallel=yes
+
+For Mint, Type:
+./autogen.sh --with-distro=mint --enable-parallel=yes
+
+For Debian, Type:
+./autogen.sh --with-distro=debian --enable-parallel=yes
+
+* Then Type: make
+
+* If there were no errors after make, re-run the autogen.sh command
+  used above. In this example, we're using Ubuntu:
+
+  ./autogen.sh --with-distro=ubuntu --enable-parallel=yes
+  
+* Type: sudo make install
+
+If there were no errors, the installation is finished.
+
+
+TO RUN FLSDK:
+
+In a terminal ( Ctrl+Alt+T )
+* Type: flsdk
+
+
+SUPPORT
+
+If you have problems with the FLSDK, please email <ki7mt01@gmail.com>
+

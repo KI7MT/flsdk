@@ -1,0 +1,201 @@
+# Makefile for Linux for FLSDK
+# Re-direct stdout and stderr:		bash
+#								make >& junk
+#
+# Prerequisites: Bash, Git, Subversion, Autoconf
+
+# Program Infomation
+PROGRAM		=	@PROGRAM@
+VERSION		=	@VERSION@
+BUGS		=	@BUGS@
+WEB		=	@WEB@
+
+# System Information
+DESC		=	@DESC@
+OS		=	@HOST_OS@
+ARCH		=	@HOST_CPU@
+JJJJ		=	@JJJJ@
+
+# Compiler Information
+CC		=	@CC@
+CXX		=	@CXX@
+
+# General Use Tools
+AWK			:=	@AWK@
+CP			:=	@CP@
+CHOWN		:=	@CHOWN@
+CHMOD		:=	@CHMOD@
+LN			:=	@LN@
+MV			:=	@MV@
+RM			:=	@RM@
+SED			:=	@SED@
+SHELL		:=	@SHELL@
+GIT			:=	@GIT@
+SVN			:=	@SVN@
+MKDIR		:=	@MKDIR@
+ASCIIDOC	:=	@ASCIIDOC@
+DOCSRC		:=	@DOCSRC@
+
+# Install locations
+INSTALL		:=	install
+BINDIR		:=	@BINDIR@
+SHARE		:=	@SHARE@
+MANDIR		:=	@MANDIR@
+DOCDIR		:=	@DOCDIR@
+DTDIR		:=	@DTDIR@
+ICOND		:=	@ICOND@
+WATCHD		:=	@WATCHD@
+
+# Home directory locations
+LOGNAME		:=	@LOGNAME@
+HOMEDIR		:=	@HOMEDIR@
+SRCD		:=	@SRCD@
+TMPD		:=	@TMPD@
+LOGD		:=	@LOGD@
+MKRD		:=	@MKRD@
+
+# Application Directories
+FLAMPI		:=	@FLAMPI@
+FLDIGII		:=	@FLDIGII@
+FLLOGI		:=	@FLLOGI@
+FLMSGI		:=	@FLMSGI@
+FLNETI		:=	@FLNETI@
+FLRIGI		:=	@FLRIGI@
+FLWKEYI		:=	@FLWKEYI@
+FLWRAPI		:=	@FLWRAPI@
+
+# Config Definitions
+BDOC		:=	@BDOC@
+DEFS		:=	@DEFS@
+
+# Package List and Program
+PKGMGR		:=	@PKGMGR@
+PKGCOIUNT	:=	@PKGCOUNT@
+PKGLIST		:=	@PKGLIST@
+NEEDED		:=	./needed.txt
+
+# Files to install
+SCRIPTS		:=	$(wildcard src/*.sh)
+PKGS		:=	$(wildcard ./orig*.txt)
+PKGINFO		:=	./pkg-info.txt
+
+# Foreground colours
+C_R			:=	'\033[01;31m'	# red
+C_G			:=	'\033[01;32m'	# green
+C_Y			:=	'\033[01;33m'	# yellow
+C_C			:=	'\033[01;36m'	# cyan
+C_NC		:=	'\033[01;37m'	# no color
+
+# Targets
+all: install-dep
+
+# Install package dependencies
+install-dep:
+	@clear
+	@echo '---------------------------------------------'
+	@echo -e $(C_Y)"$(PROGRAM) Install Package Dependencies"$(C_NC)
+	@echo '---------------------------------------------'
+	@echo ''
+	@sudo -k
+	@echo " This will install all $(PROGRAM) required packages"
+	@echo ' and their dependencies.'
+	@echo ''
+	@while [ -z "$$GO" ]; do \
+	read -r -p "* OK To Continue: [y/n]: " GO ; \
+	done ; \
+	[ $$GO = "y" ] || [ $$GO = "Y" ] || (echo '' ; echo " Exiting, disregaurd the error 1 msg." ; echo '' ; exit 1;)
+	@echo "* Updating $(DESC) Package List, password required:"
+	@echo ''
+	@sudo $(PKGMGR) -y update && sudo $(PKGMGR) -y install --no-install-recommends $(PKGLIST)
+	@echo ''
+	@echo ' To ensure all dependencies are picked up correctly, please re-run'
+	@echo ' the autogen comand you ran initially'
+	@echo ''
+	@echo ' For Example:'
+	@echo ' ./autogen.sh --with-distro=ubuntu'
+	@echo ''
+	@sudo -k
+
+mainsymlink:
+	@(cd $(DESTDIR)/$(BINDIR); ln -sf flsdk.sh flsdk ; \
+	ln -sf flsdk-fldigi.sh flsdk-fldigi ; \
+	ln -sf flsdk-check-version.sh flsdk-check-version)
+
+# Install System Files
+install: mainsymlink
+	@echo '---------------------------------------------'
+	@echo -e $(C_Y)"Installing $(PROGRAM) $(VERSION)"$(C_NC)
+	@echo '---------------------------------------------'
+	@echo ''
+	@echo '..Installing Directories'
+	@$(MKDIR) -p $(SRCD)
+	@$(MKDIR) -p $(TMPD)
+	@$(MKDIR) -p $(LOGD)
+	@$(MKDIR) -p $(MKRD)
+	@$(MKDIR) -p $(HOMEDIR)/package-info
+	@$(MKDIR) -p $(FLDIGII) $(FLAMPI) $(FLLOGI) $(FLMSGI) $(FLNETI) $(FLRIGI) $(FLWKEYI) $(FLWRAPI)
+	@if [ -f orig-install.txt ] ; then \
+	$(CP) -u orig-install.txt $(HOMEDIR)/package-info ; fi 
+	@if [ -f orig-needed.txt ] ; then \
+	$(CP) -u orig-needed.txt $(HOMEDIR)/package-info ; fi 
+	@echo '..Changing Directory Ownership'
+	@$(CHOWN) -R $(LOGNAME):$(LOGNAME) $(HOMEDIR)
+	@echo '..Installing Scripts'
+	@install -m 755 $(SCRIPTS) $(DESTDIR)$(BINDIR)
+	@$(MKDIR) -p $(DESTDIR)$(DOCDIR)
+	@echo '..Installing Misc Files'
+	@install -m 644 src/docs/* $(DESTDIR)$(DOCDIR)
+	@install -m 644 src/config/* $(DESTDIR)$(DOCDIR)
+	@install -m 644 AUTHORS ChangeLog COPYING COPYRIGHT $(DESTDIR)$(DOCDIR)
+	@install -m 644 data/flsdk.desktop $(DESTDIR)$(DTDIR)
+	@install -m 644 data/flsdk.xpm $(DESTDIR)$(ICOND)
+	@install -m 644 $(PKGINFO) $(DESTDIR)$(DOCDIR)
+ifeq ($(BDOC),Yes) # if --enable-docs=yes build the HTML file
+	@echo "..Generating HTML Document [ flsdk.html ]"
+	@$(ASCIIDOC) -b xhtml11 -a data-uri -a toc2 -o flsdk.html $(DOCSRC)/flsdk-main.adoc
+	@echo '..Installing Documentation'
+	@install -m 644 flsdk.html $(DESTDIR)$(DOCDIR)
+endif
+	@echo '..Finished Installation'
+	@echo ''
+	@echo -e "To Run $(PROGRAM), type ..: "$(C_G)"flsdk"$(C_NC)
+	@echo ''
+	
+# Uninstall System Files
+uninstall:
+	@clear
+	@echo '---------------------------------------------'
+	@echo -e $(C_Y)"Uninstall $(PROGRAM) $(VERSION)"$(C_NC)
+	@echo '---------------------------------------------'
+	@echo ''
+	@echo '..Removing installed scripts'
+	@$(RM) -f $(DESTDIR)$(BINDIR)/flsdk*
+	@echo '..Removing installed docs and manpages'
+	@$(RM) -f ${DESTDIR}$(MANDIR)/flsdk.1
+	@echo '..Removing installed share files'
+	@$(RM) -rf $(DESTDIR)$(SHARE)
+	@$(RM) -f $(ICOND)/flsdk.xpm
+	@$(RM) -f $(DTDIR)/flsdk.desktop
+	@echo ''
+	@echo 'UNINSTALL NOTES'
+	@echo ''
+	@echo ' 1. All user generated files remain in:'
+	@echo "    PATH: $(HOMEDIR)"
+	@echo ''
+	@echo ' 2. All packages that were installed ( if any )'
+	@echo '    during the configure and installation phase'
+	@echo '    *have not* been removed automatically. This'
+	@echo '    is by design, as it can potentially break'
+	@echo '    system or application package dependencies.'
+	@echo '    A list of installed packages can be found in:'
+	@echo ''
+	@echo "    PATH: $(HOMEDIR)/package-info/orig-needed.txt"
+	@echo ''
+
+# Cleanup Source Tree
+.PHONY: clean simulate list-needed
+clean:
+	${RM} -f src/*.sh config.log config.status autoscan.log configure.scan \
+	configure Makefile src/language/language_en data/flsdk.desktop installed.txt \
+	temp.list needed.txt installed.txt pkg-info.txt docs/Makefile *.html
+	${RM} -rf ./autom4*

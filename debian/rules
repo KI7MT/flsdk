@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+
+DH_VERBOSE = 1
+export DH_OPTIONS=-v
+
+%:
+	dh $@ --with autoreconf --with autotools_dev
+
+# debian folder install files take care of this
+override_dh_auto_install:
+	@echo ''
+	@echo '---------------------------------------'
+	@echo ' Override_dh_auto_install'
+	@echo '---------------------------------------'
+	@echo ''
+	@echo ' Nothing to be done for $(MAKE) install'
+	@echo ''

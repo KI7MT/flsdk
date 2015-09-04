@@ -1,0 +1,113 @@
+= FLSDK - Software Development Kit
+:revision: 0.0.3
+:icons:
+:badges:
+:numbered:
+:keywords: amateur radio fldigi flarq flamp flwrap flmsg flrig flwkey fllog flnet
+:description: Software Development Kit
+:page: FLSDK Installation Guide
+:prog: FLSDK
+
+//
+// LINKS SECTION----------------------------------------------------------------
+//
+
+:arrl-nbems: http://www.arrl.org/nbems[NBEMS]
+:cygwin-home: https://www.cygwin.com/[CygWin]
+:flamp-info: http://www.w1hkj.com/flamp-help/index.html[FLAMP]
+:flarq-info: http://www.w1hkj.com/FlarqHelpFiles/flarq.html[FLARQ]
+:fldigi-dev-team: http://www.w1hkj.com/FldigiHelp-3.22/recognitions_page.html[FLDIGI Development Team]
+:fldigi-info: http://www.w1hkj.com/FldigiHelp-3.22/index.html[FLDIGI]
+:fldigi-project: http://www.w1hkj.com[FLDIGI Project]
+:fldigi-wiki: https://fedorahosted.org/fldigi/[Wiki]
+:fllog-info: http://www.w1hkj.com/fllog-help/index.html[FLLOG]
+:flmsg-info: http://www.w1hkj.com/flmsg-help/index.html[FLMSG]
+:flnet-info: http://www.w1hkj.com/Net-help/index.html[FLNET]
+:flrig-info: http://www.w1hkj.com/flrig-help/index.html[FLRIG]
+:flwkey-info: http://www.w1hkj.com/flwkey-help/index.html[FLWKEY]
+:flwrap-info: http://www.w1hkj.com/Flwrap/index.html[FLWRAP]
+:gnu_gpl: http://www.gnu.org/licenses/gpl-3.0.txt[GNU General Public License]
+:greg_beam: mailto:ki7mt@yahoo.com[KI7MT]
+:linuxham-group: https://groups.yahoo.com/neo/groups/linuxham/info[Linuxham Group]
+:msys-home: http://www.mingw.org/wiki/msys[MSYS]
+:sf-ki7mt: http://sourceforge.net/projects/ki7mt-builds/[Souceforge]
+:official-packages: http://www.w1hkj.com/download.html[Official Builds]
+:openssh: http://www.openssh.com/[OpenSSH]
+:putty: http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html[PuTTY]
+:raspbian-download: http://downloads.raspberrypi.org/raspbian_latest[Download]
+:raspbian: https://www.raspberrypi.org/[Raspbian]
+:raspbian-install: https://www.raspberrypi.org/documentation/installation/installing-images/linux.md[here]
+:release-notes: http://downloads.raspberrypi.org/raspbian/release_notes.txt[here]
+:ubuntu-desktop: http://www.ubuntu.com/download/desktop[Ubuntu Desktop]
+:winkey: http://k1el.tripod.com/[WinKey]
+
+//
+//  START MAIN PAGE ------------------------------------------------------------
+//
+
+*****
+*INTENDED AUDIENCE*: This document is intended for beginners through advances
+Linux users. While some aspects may be considered routine for the more advanced
+user, it is hoped to be of value in the overall context of Linux command line
+operations.
+
+*DISCLAIMER*: {prog} is in _No Way_ associated with official {fldigi-project}.
+If you have problems installing, building or running {prog}, or any of the
+builds, _Please Do Not Blame_ the {fldigi-dev-team}, as they have no involvement
+with {prog} whatsoever.
+
+*MISSION CRITICAL*: If you need {fldigi-info} or any of the associated applications
+for mission critical activities ({arrl-nbems} for example), you would be well advised
+to use the {official-packages} from the {fldigi-project}. Basic testing is
+performed for the kit as well as the associated builds, however, the basic tests
+are by no means exhaustive. 
+*****
+
+[[OVERVIEW]]
+== Overview
+include::overview.adoc[]
+
+[[INSTALLMAIN]]
+== {prog} Installation
+include::install-main.adoc[]
+
+[[INSTALLUBUNTU]]
+=== Ubuntu
+include::install-ubuntu.adoc[]
+
+[[INSTALLMINT]]
+=== Mint
+include::install-mint.adoc[]
+
+[[INSTALLRASPBIAN]]
+=== Raspbian
+include::install-raspbian.adoc[]
+
+////
+[[VERSIONCHECK]]
+== Version Checks
+Under Construction
+
+[[APPBUILDS]]
+== Automated Builds
+Under Construction
+
+[[MANUALBUILDS]]
+== Manual Compiling
+Under Construction
+
+[[BENCHMARK]]
+== Benchmark Builds
+Under Construction
+
+[[ADVTOPIS]]
+== Advanced Topics
+Under Construction
+
+[[PKGOVERVIEW]]
+== Package Overview
+Under Construction
+////
+
+== License
+include::license.adoc[]
