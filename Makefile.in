@@ -40,6 +40,7 @@ MANDIR		:=	@MANDIR@
 DOCDIR		:=	@DOCDIR@
 WATCHD		:=	@WATCHD@
 DOCSRC		:=	@DOCSRC@
+DATADIR		:=	@DATADIR@
 
 # home folder related
 LOGNAME		:=	@LOGNAME@
@@ -89,7 +90,8 @@ ifeq ($(BDOC),Yes)
 	@echo '---------------------------------------------'
 	@echo ''
 	@echo " Building $(PROGRAM) User Guide..."
-	@$(ASCIIDOC) -b xhtml11 -a data-uri -a toc2 -o flsdk.html $(DOCSRC)/flsdk-main.adoc
+	@cd $(DOCSRC); \
+	$(ASCIIDOC) -b xhtml11 -a data-uri -a toc2 -o flsdk.html $(DOCSRC)/flsdk-main.adoc
 	@echo " Finished"  
 	@echo ''
 endif
@@ -174,9 +176,8 @@ clean:
 	src/flsdk-flrig src/flsdk-flwkey src/flsdk-fllog src/flsdk-flnet \
 	src/flsdk-flwrap src/flsdk-versions config.log config.status \
 	configure.scan configure Makefile src/language/language_en \
-	data/flsdk.desktop pkg-info.txt
+	src/data/flsdk.desktop pkg-info.txt
 	${RM} -rf ./autom4*
-	$(RM) -f docs/*.html docs/Makefile
-	$(RM) -f manpages/*.1 manpages/*.1.txt
-	
+	$(RM) -f $(DOCSRC)/*.html
+	$(RM) -f src/manpages/{*.1,*.1.txt}
 

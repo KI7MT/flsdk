@@ -1,0 +1,30 @@
+DESCRIPTION
+
+FLSDK v0.0.3 is a collection of Bash scripts designed to assist
+users in compiling the various FLDIGI applications used by
+Amateur Radio Operators.
+
+
+INSTALL INSTRUCTIONS
+
+Download:
+* Download flsdk-<version>.tar.gz
+
+Extract:
+* tar -xf flsdk-<version>.tar.gz
+* cd ./flsdk-<version>
+
+Configure, make, make install:
+* ./autogen.sh
+* make
+* sudo make isntall
+
+
+RUN FLSDK
+* Open A Terminal, then type: flsdk
+
+
+SUPPORT
+
+If you have problems with the FLSDK, please email <ki7mt01@gmail.com>
+

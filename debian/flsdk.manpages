@@ -1,2 +1,10 @@
-manpages/flsdk.1
-
+src/manpages/flsdk.1
+src/manpages/flsdk-flamp.1
+src/manpages/flsdk-fldigi.1
+src/manpages/flsdk-fllog.1
+src/manpages/flsdk-flmsg.1
+src/manpages/flsdk-flnet.1
+src/manpages/flsdk-flrig.1
+src/manpages/flsdk-flwkey.1
+src/manpages/flsdk-flwrap.1
+src/manpages/flsdk-versions.1

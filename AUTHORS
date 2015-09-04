@@ -1,13 +1,13 @@
-AUTHOR: Greg Beam
-CALLSIGN: KI7MT
+FLSDK AUTHOR: Greg Beam, KI7MT < ki7mt01@gmail.com >
 
 Developers can be contacted on the linuxham mailing list or
 through the linuxham Yahoo Group.
 
-PROJECT INFORMATION:
--------------------
-- Project Manager: ...... Dave Resse, W1HKJ
-- Project Web Site: ..... http://www.w1hkj.com
-- Mailing List: ......... linuxham@yahoogroups.com
-- Project Source Code: .. http://sourceforge.net/projects/fldigi
-- Yahoo Group: .......... https://groups.yahoo.com/neo/groups/linuxham/info
+
+FLDIGI PROJECT INFORMATION:
+--------------------------------------------------------------------------------
+ Project Owner..........: Dave Resse, W1HKJ
+ Project Web Site: .....: http://www.w1hkj.com
+ Project Source Code: ..: https://sourceforge.net/p/fldigi/_list/git
+ Mailing List: .........: linuxham@yahoogroups.com
+ Yahoo Group: ..........: https://groups.yahoo.com/neo/groups/linuxham/info

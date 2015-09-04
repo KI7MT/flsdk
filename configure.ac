@@ -50,7 +50,7 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-#  system install paths ( used by GNU tools )
+# system install paths ( used by GNU tools )
 # ------------------------------------------------------------------------------
 LOGNAME="$LOGNAME"
 BINDIR="$prefix"/bin
@@ -58,12 +58,15 @@ SHARE="$prefix"/share/flsdk
 MANDIR="$prefix"/share/man/man1
 DOCDIR="$prefix"/share/flsdk/doc
 WATCHD="$prefix"/share/flsdk/watch
-MANSRC=$(exec pwd)/manpages
-DOCSRC=$(exec pwd)/docs/source
+
+# source directories
+DATADIR=$(exec pwd)/src/data
+MANSRC=$(exec pwd)/src/manpages
+DOCSRC=$(exec pwd)/src/docs/source
 DATASRC=$(exec pwd)/data
 
 # ------------------------------------------------------------------------------
-#  general use tools
+# general use tools
 # ------------------------------------------------------------------------------
 AC_PATH_PROG([A2X], [a2x])
 AC_PATH_PROG([ASCIIDOC], [asciidoc])
@@ -84,27 +87,27 @@ AC_PATH_PROG([TOUCH], [touch])
 AC_PATH_PROG([ZENITY], [zenity])
 
 # ------------------------------------------------------------------------------
-#  check parallel option
+# check parallel option
 # ------------------------------------------------------------------------------
 AC_BUILD_SEPARATE
 
 # ------------------------------------------------------------------------------
-#  check parallel option
+# check parallel option
 # ------------------------------------------------------------------------------
 AC_BUILD_PARALLEL
 
 # ------------------------------------------------------------------------------
-#  check enable docs
+# check enable docs
 # ------------------------------------------------------------------------------
 AC_BUILD_DOCS
 
 # ------------------------------------------------------------------------------
-#  check enable manpages
+# check enable manpages
 # ------------------------------------------------------------------------------
 AC_BUILD_MANPAGES
 
 # ------------------------------------------------------------------------------
-#  substitutions
+# substitutions
 # ------------------------------------------------------------------------------
 
 # package subs
@@ -147,6 +150,7 @@ AC_SUBST([MANDIR], ["$MANDIR"])
 AC_SUBST([DOCDIR], ["$DOCDIR"])
 AC_SUBST([WATCHD], ["$WATCHD"])
 AC_SUBST([DOCSRC], ["$DOCSRC"])
+AC_SUBST([DATADIR], ["$DATADIR"])
 
 # ------------------------------------------------------------------------------
 #  generate pkg-info.txt 
@@ -170,17 +174,17 @@ src/flsdk-flrig
 src/flsdk-flwkey
 src/flsdk-flwrap
 src/flsdk-version-check
-manpages/flsdk.1.txt
-manpages/flsdk-flamp.1.txt
-manpages/flsdk-fldigi.1.txt
-manpages/flsdk-fllog.1.txt
-manpages/flsdk-flmsg.1.txt
-manpages/flsdk-flnet.1.txt
-manpages/flsdk-flrig.1.txt
-manpages/flsdk-flwkey.1.txt
-manpages/flsdk-flwrap.1.txt
-manpages/flsdk-versions.1.txt
-data/flsdk.desktop
+src/manpages/flsdk.1.txt
+src/manpages/flsdk-flamp.1.txt
+src/manpages/flsdk-fldigi.1.txt
+src/manpages/flsdk-fllog.1.txt
+src/manpages/flsdk-flmsg.1.txt
+src/manpages/flsdk-flnet.1.txt
+src/manpages/flsdk-flrig.1.txt
+src/manpages/flsdk-flwkey.1.txt
+src/manpages/flsdk-flwrap.1.txt
+src/manpages/flsdk-versions.1.txt
+src/data/flsdk.desktop
 ])
 
 AC_OUTPUT

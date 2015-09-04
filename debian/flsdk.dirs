@@ -2,6 +2,8 @@ usr/bin
 usr/share/applications
 usr/share/doc/flsdk
 usr/share/flsdk
+usr/share/flsdk/watch
+usr/share/flsdk/menu
 usr/share/man/man1
 usr/share/pixmaps
 
