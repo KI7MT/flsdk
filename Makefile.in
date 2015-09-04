@@ -63,7 +63,7 @@ LOGGRP		:=	$(shell groups @LOGNAME@ | cut -d ' ' -f 3)
 
 # package information
 SCRIPTS		:=	$(wildcard src/*.sh)
-PKGINFO		:=	./pkg-info.txt
+PKGINFO		:=	@PKGINFO@
 
 # manpages and docs
 ASCIIDOC	:=	@ASCIIDOC@
@@ -149,6 +149,11 @@ install:
 	@echo ''
 	@echo " Users should continue to use $(PROGRAM) v0.0.2 until"
 	@echo ' further notice.'
+	@echo ''
+	@echo " License ...................: $(LICENSE)"
+	@echo " Copyright .................: $(COPYRIGHT)"
+	@echo " Project Website ...........: $(WEB)}"
+	@echo " Report Bugs To ............: $(BUGS)"
 	@echo '' 
 
 # uninstall @PROGRAM@ @VERSION@
@@ -189,7 +194,7 @@ clean:
 	src/flsdk-flrig src/flsdk-flwkey src/flsdk-fllog src/flsdk-flnet \
 	src/flsdk-flwrap src/flsdk-versions config.log config.status \
 	configure.scan configure Makefile src/language/language_en \
-	data/flsdk.desktop pkg-info.txt
+	data/flsdk.desktop $(PKGINFO)
 	${RM} -rf ./autom4*
 	$(RM) -f $(DOCSRC)/*.html
 	$(RM) -f $(MANSRC)/{*.1,*.1.txt}

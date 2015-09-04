@@ -158,11 +158,9 @@ AC_BUILD_DOCS
 AC_BUILD_MANPAGES
 
 # ------------------------------------------------------------------------------
-#  generate pkg-info.txt ( TO-DO: make m4 macro )
+#  generate pkg-info.txt
 # ------------------------------------------------------------------------------
-if test -f ./pkg-info.txt ; then rm -f ./pkg-info.txt ; fi
-touch ./pkg-info.txt 
-PKGINFO='./pkg-info.txt'
+AC_BUILD_PKGINFO
 
 # ------------------------------------------------------------------------------
 #  configure makefiles and scripts
@@ -201,19 +199,14 @@ echo "-------------------------------------------------------------------------"
 echo " Configuration Summary"
 echo "-------------------------------------------------------------------------"
 echo ''
-echo " Package ...................: ${PROGRAM} ${VERSION}" |tee -a "$PKGINFO"
+echo " Package ...................: ${PROGRAM} ${VERSION}"
 echo " Install prefix ............: ${PREFIX}"
 echo " OS ........................: ${HOST_OS}"
-echo " Distribution ..............: ${DESC} ${HOST_CPU}" |tee -a "$PKGINFO"
+echo " Distribution ..............: ${DESC} ${HOST_CPU}"
 echo " Enable Folder Separation ..: ${SEPARATE}"
 echo " With Manpages .............: ${MANP}"
 echo " With HTML Docs ............: ${BDOC}"
 echo " CPU Cores .................: ${CPUS}"
-echo ''
-echo " License ...................: $LICENSE" |tee -a "$PKGINFO"
-echo " Copyright .................: $COPYRIGHT" |tee -a "$PKGINFO"
-echo " Project Website ...........: ${WEB}" |tee -a "$PKGINFO"
-echo " Report Bugs To ............: ${BUGS}" |tee -a "$PKGINFO"
 echo ''
 echo ' To build, type ............: make'
 echo ''
