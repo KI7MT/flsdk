@@ -1,16 +1,18 @@
 # ------------------------------------------------------------------------------
-# Process this file with autoconf -*- autoconf -*-
+# Process this file with -*- autoconf -*-
 # ------------------------------------------------------------------------------
 AC_PREREQ([2.65])
-AC_INIT([FLSDK],[0.0.2],[ki7mt01@yahoo.com],[],[http://sourceforge.net/projects/ki7mt-builds/])
-FLSDK_COPYRIGHT="Copyright (C) 2015 Greg Beam, KI7MT"
-FLSDK_LICENSE="GPL3+"
+AC_INIT([FLSDK],[0.0.3],[ki7mt01@gmail.com],[],[https://sourceforge.net/projects/flsdk])
+AC_MSG_NOTICE([FLSDK - Build System For FLDIGI Applications.])
+FLSDK_AUTHOR="Greg Beam, KI7MT"
+FLSDK_COPYRIGHT="Copyright (C) 2014-2015 Greg Beam, KI7MT"
+FLSDK_LICENSE="GPL-3"
 
 # ------------------------------------------------------------------------------
 #  canonical host information
 # ------------------------------------------------------------------------------
 AC_CONFIG_AUX_DIR([build-aux])
-AC_CONFIG_SRCDIR([src/flsdk.sh.in])
+AC_CONFIG_SRCDIR([src/flsdk.in])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_HOST
 AC_DEFINE_UNQUOTED(_NAME, "${host}",[Canonical name (cpu-vendor-os) of your system.])
@@ -21,6 +23,11 @@ AC_SUBST(HOST_NAME, [${host}])
 AC_SUBST(HOST_OS, [${host_os}])
 AC_SUBST(HOST_CPU, [${host_cpu}])
 
+# Get Distro Information
+distrosd=$(lsb_release -sd | tr -d [\(\)])
+distrov=$(lsb_release -sr)
+distroc=$(lsb_release -sc)
+
 # ------------------------------------------------------------------------------
 #  set default install path
 # ------------------------------------------------------------------------------
@@ -28,6 +35,7 @@ AC_PREFIX_DEFAULT("/usr/local")
 if test "$prefix" = "NONE"; then 
 	prefix=${ac_default_prefix}
 fi
+
 
 # ------------------------------------------------------------------------------
 #  enable user defined paths and options
@@ -42,59 +50,28 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-#  system install paths ( also used in build scripts )
+#  system install paths ( used by GNU tools )
 # ------------------------------------------------------------------------------
 LOGNAME="$LOGNAME"
 BINDIR="$prefix"/bin
 SHARE="$prefix"/share/flsdk
 MANDIR="$prefix"/share/man/man1
 DOCDIR="$prefix"/share/flsdk/doc
-WATCHD="$prefix"/share/flsdk/doc
-
-# ------------------------------------------------------------------------------
-#  $USER paths ( also used in build scripts )
-# ------------------------------------------------------------------------------
-SRCD="$HOMEDIR/src"
-TMPD="$HOMEDIR/tmp"
-LOGD="$HOMEDIR/logs"
-MKRD="$HOMEDIR/mkrd"
-
-# ------------------------------------------------------------------------------
-#  Application Install Paths ( used in build scripts )
-# ------------------------------------------------------------------------------
-
-# install directories
-FLDIGII="$HOMEDIR/fldigi/install"
-FLAMPI="$HOMEDIR/flamp/install"
-FLWRAPI="$HOMEDIR/flwrap/install"
-FLMSGI="$HOMEDIR/flmsg/install"
-FLWKEYI="$HOMEDIR/flwkey/install"
-FLRIGI="$HOMEDIR/flrig/install"
-FLLOGI="$HOMEDIR/fllog/install"
-FLNETI="$HOMEDIR/flnet/install"
-
-# ------------------------------------------------------------------------------
-#  Doc Source Paths
-# ------------------------------------------------------------------------------
+WATCHD="$prefix"/share/flsdk/watch
+MANSRC=$(exec pwd)/manpages
 DOCSRC=$(exec pwd)/docs/source
+DATASRC=$(exec pwd)/data
 
 # ------------------------------------------------------------------------------
-#  check compilers
+#  general use tools
 # ------------------------------------------------------------------------------
-OCFLAGS="$CFLAGS"
-AC_PROG_CC
-AC_PROG_CXX
-AC_PROG_GCC_TRADITIONAL
-AC_USE_SYSTEM_EXTENSIONS
-CFLAGS="$OCFLAGS"
-
-# ------------------------------------------------------------------------------
-#  check general use tools
-# ------------------------------------------------------------------------------
+AC_PATH_PROG([A2X], [a2x])
+AC_PATH_PROG([ASCIIDOC], [asciidoc])
 AC_PATH_PROG([AWK], [awk])
 AC_PATH_PROG([CHOWN], [chown])
 AC_PATH_PROG([CHMOD], [chmod])
 AC_PATH_PROG([CP], [cp])
+AC_PATH_PROG([DIALOG], [dialog])
 AC_PATH_PROG([GIT], [git])
 AC_PATH_PROG([INSTALL], [install])
 AC_PATH_PROG([LN], [ln])
@@ -103,73 +80,13 @@ AC_PATH_PROG([MV], [mv])
 AC_PATH_PROG([RM], [rm])
 AC_PATH_PROG([SED], [sed])
 AC_PATH_PROG([SHELL], [bash])
-AC_PATH_PROG([SVN], [svn])
 AC_PATH_PROG([TOUCH], [touch])
-AC_PATH_PROG([ASCIIDOC], [asciidoc])
-
+AC_PATH_PROG([ZENITY], [zenity])
 
 # ------------------------------------------------------------------------------
-#  distro setup
+#  check parallel option
 # ------------------------------------------------------------------------------
-AC_ARG_WITH([distro],
-AC_HELP_STRING([--with-distro=DISTRO], [Distro Name: (debian, ubuntu, mint)]), [distro=$with_distro])
-
-if test -n "$with_distro" ; then
-	AC_SUBST([DISTRO], ["$with_distro"])
-
-	case "${DISTRO}" in
-		ubuntu|kubuntu|xubuntu|lubuntu )
-			AC_UBUNTU_CONFIG ;;
-		debian )
-			AC_DEBIAN_CONFIG ;;
-		raspbian|rpi2 )
-			AC_DEBIAN_CONFIG ;;
-		mint )
-			AC_MINT_CONFIG ;;
-		* )
-			AC_MSG_ERROR([Unsupported Distribution: ${DISTRO}
-
-The Following distribuitons are currently supported:
-
- * Debian, Mint, Ubuntu
- * Ubuntu includes, Xubuntu, Lubuntu and Kubuntu
- * Debian included raspbian
-
- Usage:
- ./autogen.sh --with-distro=<distribution>
-
- For Ubuntu, type ....: ./autogen.sh --with-distro=ubuntu
- For Mint, type ......: ./autogen.sh --with-distro=mint
- For Debian, type ....: ./autogen.sh --with-distro=debian
- For Raspbian, type ..: ./autogen.sh --with-distro=debian
- 
-]) 	;;
-	esac
-else
-	AC_MSG_WARN([Distribution Not Specified])
-	echo ''
-	echo ' You must specify a supported distribution in order to'
-	echo ' configure the Makefiles. Supported Distributions:'
-	echo ''
-	echo '  Distribution   Version'
-	echo '   debian         Jessie  (7.* | 8.*)'
-	echo '   ubuntu         Trusty  (14.04* | 14.10*)'
-	echo '   mint           Rebecca (17.*)'
-	echo ''
-	echo '   Note(s):'
-	echo '    1. Ubuntu includes Xubuntu, Lubuntu, Kubuntu'
-	echo '    2. Debian includes Raspbian'
-	echo '    3. You do not need to specify the version'
-	echo ''
-	echo '   Usage: ./autogen.sh --with-distro=<distribution>'
-	echo ''
-	echo '   For Ubuntu, type ....: ./autogen.sh --with-distro=ubuntu'
-	echo '   For Mint, type ......: ./autogen.sh --with-distro=mint'
-	echo '   For Debian, type ....: ./autogen.sh --with-distro=debian'
-	echo '   For Raspbian, type ..: ./autogen.sh --with-distro=debian'
-	echo ''
-	exit 1
-fi
+AC_BUILD_SEPARATE
 
 # ------------------------------------------------------------------------------
 #  check parallel option
@@ -180,6 +97,11 @@ AC_BUILD_PARALLEL
 #  check enable docs
 # ------------------------------------------------------------------------------
 AC_BUILD_DOCS
+
+# ------------------------------------------------------------------------------
+#  check enable manpages
+# ------------------------------------------------------------------------------
+AC_BUILD_MANPAGES
 
 # ------------------------------------------------------------------------------
 #  substitutions
@@ -195,33 +117,36 @@ AC_SUBST([WEB], ["$PACKAGE_URL"])
 AC_SUBST([AUTHORS], ["$FLSDK_AUTHORS"])
 AC_SUBST([COPYRIGHT], ["$FLSDK_COPYRIGHT"])
 AC_SUBST([LICENSE], ["$FLSDK_LICENSE"])
-AC_SUBST([ASCIIDOC], ["$ASCIIDOC"])
-AC_SUBST([DOCSRC], ["$DOCSRC"])
-AC_SUBST([ICONS], ["$ICONS"])
+
+# tools and general programs
+AC_SUBST([AWK], ["$ac_cv_path_AWK"])
+AC_SUBST([ASCIIDOC], ["$ac_cv_path_ASCIIDOC"])
+AC_SUBST([A2X], ["$ac_cv_path_A2X"])
+AC_SUBST([CHOWN], ["$ac_cv_path_CHOWN"])
+AC_SUBST([CHMOD], ["$ac_cv_path_CHMOD"])
+AC_SUBST([DESC], [${distrosd}])
+AC_SUBST([CP], ["$ac_cv_path_CP"])
+AC_SUBST([DIALOG], ["$ac_cv_path_DIALOG"])
+AC_SUBST([GIT], ["$ac_cv_path_GIT"])
+AC_SUBST([INSTALL], ["$ac_cv_path_INSTALL"])
+AC_SUBST([LN], ["$ac_cv_path_LN"])
+AC_SUBST([MKDIR], ["$ac_cv_path_MKDIR"])
+AC_SUBST([MV], ["$ac_cv_path_MV"])
+AC_SUBST([RM], ["$ac_cv_path_RM"])
+AC_SUBST([SED], ["$ac_cv_path_SED"])
+AC_SUBST([SHELL], ["$ac_cv_path_SHELL"])
+AC_SUBST([TOUCH], ["$ac_cv_path_TOUCH"])
+AC_SUBST([ZENITY], ["$ac_cv_path_ZENITY"])
 
 # system subs
+AC_SUBST([PREFIX], ["$prefix"])
+AC_SUBST([HOMEDIR], ["$HOMEDIR"])
 AC_SUBST([BINDIR], ["$BINDIR"])
 AC_SUBST([SHARE], ["$SHARE"])
 AC_SUBST([MANDIR], ["$MANDIR"])
 AC_SUBST([DOCDIR], ["$DOCDIR"])
 AC_SUBST([WATCHD], ["$WATCHD"])
-
-# home directory subs
-AC_SUBST([HOMEDIR], ["$HOMEDIR"])
-AC_SUBST([SRCD], ["$SRCD"])
-AC_SUBST([TMPD], ["$TMPD"])
-AC_SUBST([LOGD], ["$LOGD"])
-AC_SUBST([MKRD], ["$MKRD"])
-
-# application install subs
-AC_SUBST([FLDIGII], ["$FLDIGII"])
-AC_SUBST([FLAMPI], ["$FLAMPI"])
-AC_SUBST([FLWRAPI], ["$FLWRAPI"])
-AC_SUBST([FLMSGI], ["$FLMSGI"])
-AC_SUBST([FLWKEYI], ["$FLWKEYI"])
-AC_SUBST([FLRIGI], ["$FLRIGI"])
-AC_SUBST([FLLOGI], ["$FLLOGI"])
-AC_SUBST([FLNETI], ["$FLNETI"])
+AC_SUBST([DOCSRC], ["$DOCSRC"])
 
 # ------------------------------------------------------------------------------
 #  generate pkg-info.txt 
@@ -235,65 +160,52 @@ PKGINFO='./pkg-info.txt'
 # ------------------------------------------------------------------------------
 AC_CONFIG_FILES([
 Makefile
-src/flsdk.sh
-src/flsdk-fldigi.sh
-src/flsdk-flamp.sh
-src/flsdk-flmsg.sh
-src/flsdk-flrig.sh
-src/flsdk-flwkey.sh
-src/flsdk-fllog.sh
-src/flsdk-flnet.sh
-src/flsdk-flwrap.sh
-src/flsdk-version-check.sh
+src/flsdk
+src/flsdk-flamp
+src/flsdk-fldigi
+src/flsdk-fllog
+src/flsdk-flmsg
+src/flsdk-flnet
+src/flsdk-flrig
+src/flsdk-flwkey
+src/flsdk-flwrap
+src/flsdk-version-check
+manpages/flsdk.1.txt
+manpages/flsdk-flamp.1.txt
+manpages/flsdk-fldigi.1.txt
+manpages/flsdk-fllog.1.txt
+manpages/flsdk-flmsg.1.txt
+manpages/flsdk-flnet.1.txt
+manpages/flsdk-flrig.1.txt
+manpages/flsdk-flwkey.1.txt
+manpages/flsdk-flwrap.1.txt
+manpages/flsdk-versions.1.txt
 data/flsdk.desktop
-
 ])
 
 AC_OUTPUT
 # ------------------------------------------------------------------------------
 #  configure summary
 # ------------------------------------------------------------------------------
-
-if test "$PKGCOUNT" -gt "0" ; then
-echo "
------------------------------------------------------
-
- ADDITIONAL PACKAGES REQUIRED
- 
- Configuration finished, however, you have
- ( ${PKG_COUNT} ) package(s) that should be installed
- before you run make install.
- 
- * List Needed Packages, type ....: make list-needed
- * Install Packages, type ........: make install-dep
- * Simulate Installation, type ...: make simulate
- 
-------------------------------------------------------
-"
-
-else
-
 echo ''
-echo "-------------------------------------------"
+echo "-------------------------------------------------------------------------"
 echo " Configuration Summary"
-echo "-------------------------------------------"
+echo "-------------------------------------------------------------------------"
 echo ''
-echo " Package ............: ${PROGRAM} ${VERSION}" |tee -a "$PKGINFO"
-echo " Distribution .......: ${DESC} ${HOST_CPU}" |tee -a "$PKGINFO"
-echo " Install prefix .....: ${PREFIX}"
-echo " Working Directory ..: ${HOMEDIR}"
-echo " With HTML Docs .....: ${BDOC}"
-echo " CPU Cores ..........: ${JJJJ}"
-echo " Needed Packages ....: ${PKG_COUNT}"
+echo " Package ...................: ${PROGRAM} ${VERSION}" |tee -a "$PKGINFO"
+echo " Install prefix ............: ${PREFIX}"
+echo " OS ........................: ${HOST_OS}"
+echo " Distribution ..............: ${DESC} ${HOST_CPU}" |tee -a "$PKGINFO"
+echo " Enable Folder Separation ..: ${SEPARATE}"
+echo " With Manpages .............: ${MANP}"
+echo " With HTML Docs ............: ${BDOC}"
+echo " CPU Cores .................: ${CPUS}"
 echo ''
-echo " OS .................: ${HOST_OS}"
-echo " Arch ...............: ${HOST_CPU}"
-echo " Copyright ..........: $COPYRIGHT" |tee -a "$PKGINFO"
-echo " License ............: $LICENSE" |tee -a "$PKGINFO"
-echo " Website ............: ${WEB}" |tee -a "$PKGINFO"
-echo " Report Bugs To .....: ${BUGS}" |tee -a "$PKGINFO"
+echo " License ...................: $LICENSE" |tee -a "$PKGINFO"
+echo " Copyright .................: $COPYRIGHT" |tee -a "$PKGINFO"
+echo " Project Website ...........: ${WEB}" |tee -a "$PKGINFO"
+echo " Report Bugs To ............: ${BUGS}" |tee -a "$PKGINFO"
 echo ''
-echo ' To Install, type ...: sudo make install'
+echo ' To build, type ............: make'
 echo ''
 
-fi

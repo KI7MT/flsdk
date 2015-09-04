@@ -8,13 +8,13 @@ AC_DEFUN([AC_BUILD_PARALLEL], [
                  [ac_cv_parallel=yes])
 
 if test "x$ac_cv_parallel" = "xyes"; then
-	JJJJ=$(grep -c proc /proc/cpuinfo)
-	AC_MSG_NOTICE([Enabled Multi-Core. Using ( $JJJJ ) Cores For Compiling])
+	CPUS=$(grep -c proc /proc/cpuinfo)
+	AC_MSG_NOTICE([Enabled Multi-Thread Compiling, ( $CPUS ) Cores])
 else
-	JJJJ=1
-	AC_MSG_NOTICE([Enable Single Core. Using ($JJJJ) Core For Building])
+	CPUS=1
+	AC_MSG_NOTICE([Enable Single Thread Compiling, ( $CPUS ) Core])
 fi
-	AC_SUBST([JJJJ], ["$JJJJ"])
+	AC_SUBST([CPUS], ["$CPUS"])
 
 ])
 

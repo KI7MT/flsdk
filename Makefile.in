@@ -2,26 +2,24 @@
 # Re-direct stdout and stderr:		bash
 #								make >& junk
 #
-# Prerequisites: Bash, Git, Subversion, Autoconf
+# Prerequisites: Bash, Git, Autotools, Dialog, Zenity, CoreUtils
 
-# Program Infomation
+# program informaiton
 PROGRAM		=	@PROGRAM@
 VERSION		=	@VERSION@
+AUTHOR		=	@AUTHOR@
 BUGS		=	@BUGS@
-WEB		=	@WEB@
+WEB			=	@WEB@
 
-# System Information
+# system informaiton
 DESC		=	@DESC@
-OS		=	@HOST_OS@
+OS			=	@HOST_OS@
 ARCH		=	@HOST_CPU@
-JJJJ		=	@JJJJ@
+CPUS		=	@CPUS@
 
-# Compiler Information
-CC		=	@CC@
-CXX		=	@CXX@
-
-# General Use Tools
+# general tools
 AWK			:=	@AWK@
+A2X			:=	@A2X@
 CP			:=	@CP@
 CHOWN		:=	@CHOWN@
 CHMOD		:=	@CHMOD@
@@ -31,55 +29,41 @@ RM			:=	@RM@
 SED			:=	@SED@
 SHELL		:=	@SHELL@
 GIT			:=	@GIT@
-SVN			:=	@SVN@
 MKDIR		:=	@MKDIR@
-ASCIIDOC	:=	@ASCIIDOC@
-DOCSRC		:=	@DOCSRC@
 
-# Install locations
+# directories
 INSTALL		:=	install
+PREFIX		:=	@PREFIX@
 BINDIR		:=	@BINDIR@
 SHARE		:=	@SHARE@
 MANDIR		:=	@MANDIR@
 DOCDIR		:=	@DOCDIR@
-DTDIR		:=	@DTDIR@
-ICOND		:=	@ICOND@
 WATCHD		:=	@WATCHD@
+DOCSRC		:=	@DOCSRC@
 
-# Home directory locations
+# home folder related
 LOGNAME		:=	@LOGNAME@
-HOMEDIR		:=	@HOMEDIR@
-SRCD		:=	@SRCD@
-TMPD		:=	@TMPD@
-LOGD		:=	@LOGD@
-MKRD		:=	@MKRD@
+LOGGRP		:=	$(shell groups @LOGNAME@ | cut -d ' ' -f 3)
+HOMEDIR		:=	/home/@LOGNAME@/flsdk
 
-# Application Directories
-FLAMPI		:=	@FLAMPI@
-FLDIGII		:=	@FLDIGII@
-FLLOGI		:=	@FLLOGI@
-FLMSGI		:=	@FLMSGI@
-FLNETI		:=	@FLNETI@
-FLRIGI		:=	@FLRIGI@
-FLWKEYI		:=	@FLWKEYI@
-FLWRAPI		:=	@FLWRAPI@
-
-# Config Definitions
-BDOC		:=	@BDOC@
-DEFS		:=	@DEFS@
-
-# Package List and Program
-PKGMGR		:=	@PKGMGR@
-PKGCOIUNT	:=	@PKGCOUNT@
-PKGLIST		:=	@PKGLIST@
-NEEDED		:=	./needed.txt
-
-# Files to install
+# package information
 SCRIPTS		:=	$(wildcard src/*.sh)
-PKGS		:=	$(wildcard ./orig*.txt)
 PKGINFO		:=	./pkg-info.txt
 
-# Foreground colours
+# for manpages and docs
+ASCIIDOC	:=	@ASCIIDOC@
+A2X			:=	@A2X@
+BDOC		:=	@BDOC@
+MANSRC		:= $(wildcard manpages/*.1.txt)
+MANP		:=	@MANP@
+
+# enable folder separation
+SEPARATE	:=	@SEPARATE@
+
+# config definitions
+DEFS		:=	@DEFS@
+
+# foreground colours
 C_R			:=	'\033[01;31m'	# red
 C_G			:=	'\033[01;32m'	# green
 C_Y			:=	'\033[01;33m'	# yellow
@@ -87,80 +71,71 @@ C_C			:=	'\033[01;36m'	# cyan
 C_NC		:=	'\033[01;37m'	# no color
 
 # Targets
-all: install-dep
+all: conf-scripts build-doc build-manp make-summary
 
-# Install package dependencies
-install-dep:
-	@clear
+conf-scripts:
+	@echo ''
 	@echo '---------------------------------------------'
-	@echo -e $(C_Y)"$(PROGRAM) Install Package Dependencies"$(C_NC)
+	@echo -e $(C_Y)"Update Build Scripts"$(C_NC)
 	@echo '---------------------------------------------'
+	@echo '' # Nothing to do at this time.
+	@echo " Finished"  
 	@echo ''
-	@sudo -k
-	@echo " This will install all $(PROGRAM) required packages"
-	@echo ' and their dependencies.'
-	@echo ''
-	@while [ -z "$$GO" ]; do \
-	read -r -p "* OK To Continue: [y/n]: " GO ; \
-	done ; \
-	[ $$GO = "y" ] || [ $$GO = "Y" ] || (echo '' ; echo " Exiting, disregaurd the error 1 msg." ; echo '' ; exit 1;)
-	@echo "* Updating $(DESC) Package List, password required:"
-	@echo ''
-	@sudo $(PKGMGR) -y update && sudo $(PKGMGR) -y install --no-install-recommends $(PKGLIST)
-	@echo ''
-	@echo ' To ensure all dependencies are picked up correctly, please re-run'
-	@echo ' the autogen comand you ran initially'
-	@echo ''
-	@echo ' For Example:'
-	@echo ' ./autogen.sh --with-distro=ubuntu'
-	@echo ''
-	@sudo -k
 
-mainsymlink:
-	@(cd $(DESTDIR)/$(BINDIR); ln -sf flsdk.sh flsdk ; \
-	ln -sf flsdk-fldigi.sh flsdk-fldigi ; \
-	ln -sf flsdk-check-version.sh flsdk-check-version)
-
-# Install System Files
-install: mainsymlink
+build-doc:
+ifeq ($(BDOC),Yes)
 	@echo '---------------------------------------------'
-	@echo -e $(C_Y)"Installing $(PROGRAM) $(VERSION)"$(C_NC)
+	@echo -e $(C_Y)"Building Documentation"$(C_NC)
 	@echo '---------------------------------------------'
 	@echo ''
-	@echo '..Installing Directories'
-	@$(MKDIR) -p $(SRCD)
-	@$(MKDIR) -p $(TMPD)
-	@$(MKDIR) -p $(LOGD)
-	@$(MKDIR) -p $(MKRD)
-	@$(MKDIR) -p $(HOMEDIR)/package-info
-	@$(MKDIR) -p $(FLDIGII) $(FLAMPI) $(FLLOGI) $(FLMSGI) $(FLNETI) $(FLRIGI) $(FLWKEYI) $(FLWRAPI)
-	@if [ -f orig-install.txt ] ; then \
-	$(CP) -u orig-install.txt $(HOMEDIR)/package-info ; fi 
-	@if [ -f orig-needed.txt ] ; then \
-	$(CP) -u orig-needed.txt $(HOMEDIR)/package-info ; fi 
-	@echo '..Changing Directory Ownership'
-	@$(CHOWN) -R $(LOGNAME):$(LOGNAME) $(HOMEDIR)
-	@echo '..Installing Scripts'
-	@install -m 755 $(SCRIPTS) $(DESTDIR)$(BINDIR)
-	@$(MKDIR) -p $(DESTDIR)$(DOCDIR)
-	@echo '..Installing Misc Files'
-	@install -m 644 src/docs/* $(DESTDIR)$(DOCDIR)
-	@install -m 644 src/config/* $(DESTDIR)$(DOCDIR)
-	@install -m 644 AUTHORS ChangeLog COPYING COPYRIGHT $(DESTDIR)$(DOCDIR)
-	@install -m 644 data/flsdk.desktop $(DESTDIR)$(DTDIR)
-	@install -m 644 data/flsdk.xpm $(DESTDIR)$(ICOND)
-	@install -m 644 $(PKGINFO) $(DESTDIR)$(DOCDIR)
-ifeq ($(BDOC),Yes) # if --enable-docs=yes build the HTML file
-	@echo "..Generating HTML Document [ flsdk.html ]"
+	@echo " Building $(PROGRAM) User Guide..."
 	@$(ASCIIDOC) -b xhtml11 -a data-uri -a toc2 -o flsdk.html $(DOCSRC)/flsdk-main.adoc
-	@echo '..Installing Documentation'
-	@install -m 644 flsdk.html $(DESTDIR)$(DOCDIR)
+	@echo " Finished"  
+	@echo ''
 endif
-	@echo '..Finished Installation'
+
+build-manp:
+ifeq ($(MANP),Yes)
+	@echo '---------------------------------------------'
+	@echo -e $(C_Y)"Building Manpages"$(C_NC)
+	@echo '---------------------------------------------'
 	@echo ''
-	@echo -e "To Run $(PROGRAM), type ..: "$(C_G)"flsdk"$(C_NC)
+	@echo " Building $(PROGRAM) Manpages..."
+	@for f in $(MANSRC) ; do \
+	echo " $$f" ; \
+	$(A2X) --doctype manpage --format manpage --no-xmllint $$f ; \
+	done
+	@echo ' Finished'
 	@echo ''
-	
+endif
+
+make-summary:
+	@echo ''
+	@echo '---------------------------------------------'
+	@echo -e $(C_G)"Make Summary"$(C_NC)
+	@echo '---------------------------------------------'
+	@echo ''
+	@echo " Package ...................: $(PROGRAM) $(VERSION)"
+	@echo " Install prefix ............: $(PREFIX)"
+	@echo " Working Directory .........: $(HOMEDIR)"
+	@echo ''
+	@echo ' To Install, type ..........: sudo make install'
+	@echo ''
+
+install: 
+	@echo ''
+	@echo '---------------------------------------------'
+	@echo -e $(C_R)"UNDER DEVELOPMENT"$(C_NC)
+	@echo '---------------------------------------------'
+	@echo '' 
+	@echo " $(PROGRAM) is undergoing extensive re-writing."
+	@echo ' It is not possible to perform a working installation'
+	@echo ' at this time.'
+	@echo ''
+	@echo " Users should continue to use $(PROGRAM) v0.0.2 until"
+	@echo ' further notice.'
+	@echo '' 
+
 # Uninstall System Files
 uninstall:
 	@clear
@@ -195,7 +170,13 @@ uninstall:
 # Cleanup Source Tree
 .PHONY: clean simulate list-needed
 clean:
-	${RM} -f src/*.sh config.log config.status autoscan.log configure.scan \
-	configure Makefile src/language/language_en data/flsdk.desktop installed.txt \
-	temp.list needed.txt installed.txt pkg-info.txt docs/Makefile *.html
+	${RM} -f src/flsdk src/flsdk-fldigi src/flsdk-flamp src/flsdk-flmsg \
+	src/flsdk-flrig src/flsdk-flwkey src/flsdk-fllog src/flsdk-flnet \
+	src/flsdk-flwrap src/flsdk-versions config.log config.status \
+	configure.scan configure Makefile src/language/language_en \
+	data/flsdk.desktop pkg-info.txt
 	${RM} -rf ./autom4*
+	$(RM) -f docs/*.html docs/Makefile
+	$(RM) -f manpages/*.1 manpages/*.1.txt
+	
+

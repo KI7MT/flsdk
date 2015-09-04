@@ -12,8 +12,7 @@
 # PARTICULAR PURPOSE.
 
 m4_ifndef([AC_CONFIG_MACRO_DIRS], [m4_defun([_AM_CONFIG_MACRO_DIRS], [])m4_defun([AC_CONFIG_MACRO_DIRS], [_AM_CONFIG_MACRO_DIRS($@)])])
-m4_include([m4/debian.m4])
-m4_include([m4/mint.m4])
 m4_include([m4/parallel.m4])
-m4_include([m4/ubuntu.m4])
 m4_include([m4/docs.m4])
+m4_include([m4/separate.m4])
+m4_include([m4/manpages.m4])

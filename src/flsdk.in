@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# Name			: @PROGRAM@ @VERSION@
-# Execution		: As normal user type: flsdk
-# Copyright		: @COPYRIGHT@
-# License		: @LICENSE@
-# Contributors	: @AUTHORS@
-# Comment		: Part of the @PROGRAM@ Linux Project
+# Name..........: @PROGRAM@ @VERSION@
+# Execution.....: As normal user type: flsdk
+# Copyright.....: @COPYRIGHT@
+# License.......: @LICENSE@
+# Contributors..: @AUTHORS@
+# Comment.......: Part of the @PROGRAM@ Linux Project
 #
 # @PROGRAM@ is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,26 +23,33 @@
 
 set -e
 
-# set reasonable menu height & width.
-# This is an ANSI sequence, and should
-# work in most Xterm windows
-echo -e "\e[8;35;110t"
-
 # host informaiton
 HOST_OS=@HOST_OS@
 HOST_CPU=@HOST_CPU@
 
-# set home directory path
+# set directories
 HOMEDIR=@HOMEDIR@
-
-# home directory paths
-LOGS=@LOGD@
-SRCD=@SRCD@
 DOCS=@DOCDIR@
-TMP=@TMPD@
-MKRD=@MKRD@
-HAMLIBD=@HAMLIBD@
-ADOCD=@ADOCD@
+WATCHD=@WATCHD@
+SRCD="$HOMEDIR/src"
+TMPD="$HOMEDIR/tmp"
+LOGD="$HOMEDIR/LOGD"
+MKRD="$HOMEDIR/mkrd"
+
+# install directories
+FLDIGII="$HOMEDIR/fldigi/install"
+FLAMPI="$HOMEDIR/flamp/install"
+FLWRAPI="$HOMEDIR/flwrap/install"
+FLMSGI="$HOMEDIR/flmsg/install"
+FLWKEYI="$HOMEDIR/flwkey/install"
+FLRIGI="$HOMEDIR/flrig/install"
+FLLOGI="$HOMEDIR/fllog/install"
+FLNETI="$HOMEDIR/flnet/install"
+
+# set reasonable menu height & width.
+# This is an ANSI sequence, and should
+# work in most Xterm windows
+echo -e "\e[8;35;110t"
 
 ################################################################################
 # Language Section
@@ -94,8 +101,8 @@ UD=" UNDER DEVELOPMENT"
 UDMSG="\n      Build Selection is Under Development"
 
 # main menu
-touch @TMPD@/MMenu.tmp
-cat << 'EOF' > @TMPD@/MMenu.tmp 
+touch $TMPD/MMenu.tmp
+cat << 'EOF' > $TMPD/MMenu.tmp 
 "1" "FLDIGI .. (devel)" \
 "2" "FLAMP ... (devel)" \
 "3" "FLMSG ... (devel)" \
@@ -152,7 +159,7 @@ dialog --backtitle "$BACKTITLE" --title "$SIGCAUGHT" --infobox "$SIGCAUGHTMSG" 5
 	sleep 1
 
 dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
-	rm -r  $TMP/*
+	rm -r  $TMPD/*
 	sleep 1
 
 dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
@@ -206,8 +213,8 @@ elif [[ $INSTALLED != dialog ]]; then
    clear
 
 "$MSGCLIENT" --clear --title "$DITITLE" --backtitle "$BACKTITLE" --msgbox "$DIMSG" 7 70
-   touch "$LOGS"/install_log
-   sudo apt-get -qy install dialog | tee 2>>"$LOGS"/install_log
+   touch "$LOGD"/install_log
+   sudo apt-get -qy install dialog | tee 2>>"$LOGD"/install_log
    wait
    dialog --create-rc ~/.dialogrc
    wait
@@ -230,7 +237,7 @@ dialog --backtitle "$BACKTITLE" --title "$EXITWSDT" --infobox "$EXITWSDTMSG" 5 5
    sleep 1
 
 dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
-   rm -r $TMP/*
+   rm -r $TMPD/*
    wait
    sleep 1
 
@@ -252,8 +259,8 @@ exit
 #--dialog rc file---------------------------------------------------------------
 make_dialogrc() {
 
-if [ -f "$TMP"/.dialogrc ]; then rm -f "$TMP"/.dialogrc ; fi
-touch "$TMP"/.dialogrc
+if [ -f "$TMPD"/.dialogrc ]; then rm -f "$TMPD"/.dialogrc ; fi
+touch "$TMPD"/.dialogrc
 
 (
 cat <<'EOF_DIALOGRC'
@@ -298,11 +305,11 @@ form_text_color = (WHITE,CYAN,ON)
 form_item_readonly_color = (CYAN,WHITE,ON)
 gauge_color = (BLUE,WHITE,ON)
 EOF_DIALOGRC
-) > "$TMP"/.dialogrc
+) > "$TMPD"/.dialogrc
 
 # use preset dialog config file
 if [ -f "$TMP"/.dialogrc ]; then
-	export DIALOGRC="$TMP"/.dialogrc
+	export DIALOGRC="$TMPD"/.dialogrc
 fi
 
 }
@@ -334,9 +341,9 @@ HELP="$DOCS"/main_menu_help.txt
 while [ 0 ]; do
 
 dialog --ok-label SELECT --nocancel --clear --backtitle "$BACKTITLE" --title \
-"$MMTITLE" --menu "$MENUMSG" 19 62 20 --file "$TMP/MMenu.tmp" 2> "$TMP/selection"
+"$MMTITLE" --menu "$MENUMSG" 19 62 20 --file "$TMPD/MMenu.tmp" 2> "$TMPD/selection"
 
-MMSELECT=$(head -c 1 < $TMP/selection)
+MMSELECT=$(head -c 1 < $TMPD/selection)
 
 # FLDIGI
 if [[ $MMSELECT = "1" ]]; then
