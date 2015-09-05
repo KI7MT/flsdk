@@ -6,7 +6,7 @@
 = flsdk-versions(1)
 
 == NAME
-flsdk-flversions - Build Script for Flamp
+flsdk-versions - Build Script for Flamp
 
 
 == SYNOPSIS
@@ -14,7 +14,7 @@ flsdk-version ['OPTION']
 
 
 == DESCRIPTION
-*FLSDK-Version* - Temporary manpage.
+*FLSDK-Versiona* - Temporary manpage.
 
 
 == BUGS

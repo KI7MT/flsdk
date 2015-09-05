@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 #
-# Name			: flsdk-version-check.sh
+# Name			: flsdk-versions.sh
 # Execution		: Run from withing FLSDK
 # Copyright		: @COPYRIGHT@
 # Contributors	: @AUTHORS@
 # Comment		: Part of the @PROJECT@ Linux Project
 #
-# flsdk-version-check.sh is free software: you can redistribute it and/or modify
+# flsdk-versions.sh is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation either version 3 of the License, or
 # (at your option) any later version. 
 #
-# flsdk-version-check.sh is distributed in the hope that it will be useful,
+# flsdk-versions.sh is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -25,19 +25,23 @@ set -e
 
 # base variables
 HOMEDIR=@HOMEDIR@
-FLDIGII=@FLDIGII@
-FLAMPI=@FLAMPI@
-FLMSGI=@FLMSGI@
-FLWKEYI=@FLWKEYI@
-FLRIGI=@FLRIGI@
-FLLOGI=@FLLOGI@
-FLNETI=@FLNETI@
-FLWRAPI=@FLWRAPI@
 WATCHD=@WATCHD@
-TMPD=@TMPD@
+FLDIGII="$HOMEDIR/fldigi"
+FLAMPI="$HOMEDIR/flamp"
+FLMSGI="$HOMEDIR/flmsg"
+FLWKEYI="$HOMEDIR/flwkey"
+FLRIGI="$HOMEDIR/flrig"
+FLLOGI="$HOMEDIRfllog"
+FLNETI="$HOMEDIR/flnet"
+FLWRAPI="$HOMEDIR/wrap"
+TMPD="$HOMEDIR/tmp"
+VERLOG="$TMPD/ver.tmp"
 
-# script variables
-VERLOG="$TMPD"/ver.tmp
+# array for watch files
+watch_array=( 'flamp-alpha-watch' 'flamp-watch' 'fldigi-alpha-watch' \
+'fllog-alpha-watch' 'fllog-watch' 'flmsg-alpha-watch' 'flmsg-wath' \
+'flnet-alpha-watch' 'flnet-watch' 'flrig-alpha-watch' 'flrig-watch' \
+'flwkey-alpha-watch' 'flwkey-watch' 'flwrap-alpha-watch' 'flwrap-watch')
 
 # Foreground colours
 C_R='\033[01;31m'	# red
@@ -64,7 +68,7 @@ spinner()
 
 # Test if autoconf is installed
 uscan_check() {
-uscan --version > /dev/null 2>&1 && echo -e "* Uscan Available .. ${C_G}Yes${C_NC}" || {
+uscan --version > /dev/null 2>&1 && echo -e "* Uscan ........ ${C_G}OK${C_NC}" || {
 	clear
 	echo ''
 	echo 'You must have *uscan* from the Debian devscripts'
@@ -90,7 +94,7 @@ uscan --version > /dev/null 2>&1 && echo -e "* Uscan Available .. ${C_G}Yes${C_N
 # Check Internet connectivity
 check_inet() {
 ((ping -w5 -c3 www.w1hkj.com || ping -w5 -c3 8.8.8.8 || ping -w5 -c3 208.67.222.222) > /dev/null 2>&1) && \
-echo -e "* Internet Access .. ${C_G}Yes${C_NC}" || {
+	echo -e "* Internet ..... ${C_G}OK${C_NC}" || {
 	echo ''
 	echo -e ${C_R}'** INTERNET CONNECTION FAILURE**'${C_NC}
 	echo ''
@@ -108,11 +112,32 @@ echo -e "* Internet Access .. ${C_G}Yes${C_NC}" || {
 	echo "problems, then re-run Check Version"
 	echo ''
 	read -p "Press [ Enter ] to continue ..."
-	exit 0
+	exit 1
 	}
 }
 
-# remove old check file
+# check access too git repository on sourceforge
+sf_check() {
+((git ls-remote git://git.code.sf.net/p/fldigi/fldigi HEAD) > /dev/null 2>&1) && \
+	echo -e "* Sourceforge .. ${C_G}OK${C_NC}" || {
+	echo ''
+	echo -e ${C_R}'** SOURCEFORGE CONNECTION FAILURE**'${C_NC}
+	echo ''
+	echo '@PROGRAM@ was unable to check the Git repository'
+	echo 'on Sourceforge. This may be a temporary fault or'
+	echo 'you may have internet connections issues.'
+	echo ''
+	echo 'If the problems presists, check that you can browse to the'
+	echo 'Git Repo on SF, and chek their Net Operations messages on'
+	echo 'on Twitter'
+	echo ''
+	read -p "Press [ Enter ] to continue ..."
+	exit 1
+	}
+}
+
+# remove old file and ensure directories are presnet
+mkdir -p "$TMPD"
 rm -f "$VERLOG"
 
 # start the check
@@ -120,9 +145,10 @@ clear
 echo '-----------------------------'
 echo -e ${C_Y}'CHECKING VERSION INFORMATION'${C_NC}
 echo '-----------------------------'
-echo 'Testing Internet Access ...'
-check_inet
+echo ''
 uscan_check
+check_inet
+sf_check
 
 # add message header to file
 echo "APPLICATION RELEASE ALPHA LOCAL-BUILD" > "$VERLOG"
@@ -156,7 +182,7 @@ fi
 echo "FLDIGI $fldigi_release $fldigi_alpha $buildv" >> "$VERLOG"
 
 ) & spinner $!
-echo -e "* Checking FLDIGI .. ${C_G}Done${C_NC}"
+echo -e "* FLDIGI ....... ${C_G}Done${C_NC}"
 
 # FLAMP version info------------------------------------------------------------
 (
@@ -182,7 +208,7 @@ fi
 
 echo "FLAMP $flamp_release $flamp_alpha $buildv" >> "$VERLOG"
 ) & spinner $!
-echo -e "* Checking FLAMP ... ${C_G}Done${C_NC}"
+echo -e "* FLAMP ........ ${C_G}Done${C_NC}"
 
 
 # FLMSG version info------------------------------------------------------------
@@ -210,7 +236,7 @@ fi
 echo "FLMSG $flmsg_release $flmsg_alpha $buildv" >> "$VERLOG"
 
 ) & spinner $!
-echo -e "* Checking FLMSG ... ${C_G}Done${C_NC}"
+echo -e "* FLMSG ........ ${C_G}Done${C_NC}"
 
 
 # FLRIG version info------------------------------------------------------------
@@ -238,7 +264,7 @@ fi
 echo "FLRIG $flrig_release $flrig_alpha $buildv" >> "$VERLOG"
 
 ) & spinner $!
-echo -e "* Checking FLRIG ... ${C_G}Done${C_NC}"
+echo -e "* FLRIG ........ ${C_G}Done${C_NC}"
 
 # FLWKEY version info-----------------------------------------------------------
 (
@@ -264,7 +290,7 @@ fi
 
 echo "FLWKEY $flwkey_release $flwkey_alpha $buildv" >> "$VERLOG"
 ) & spinner $!
-echo -e "* Checking FLWKEY .. ${C_G}Done${C_NC}"
+echo -e "* FLWKEY ....... ${C_G}Done${C_NC}"
 
 # FLWRAP version info-----------------------------------------------------------
 (
@@ -289,7 +315,7 @@ fi
 echo "FLWRAP $flwrap_release $flwrap_alpha $buildv" >> "$VERLOG"
 
 ) & spinner $!
-echo -e "* Checking FLWRAP .. ${C_G}Done${C_NC}"
+echo -e "* FLWRAP ....... ${C_G}Done${C_NC}"
 
 
 # FLLOG version info -----------------------------------------------------------
@@ -318,7 +344,7 @@ fi
 echo "FLLOG $fllog_release $fllog_alpha $buildv" >> "$VERLOG"
 
 ) & spinner $!
-echo -e "* Checking FLLOG ... ${C_G}Done${C_NC}"
+echo -e "* FLLOG ........ ${C_G}Done${C_NC}"
 
 
 # FLNET version info -----------------------------------------------------------
@@ -347,7 +373,7 @@ fi
 echo "FLNET $flnet_release none $buildv" >> "$VERLOG"
 
 ) & spinner $!
-echo -e "* Checking FLNET ... ${C_G}Done${C_NC}"
+echo -e "* FLNET ........ ${C_G}Done${C_NC}"
 
 
 # simple display results

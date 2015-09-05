@@ -4,29 +4,31 @@
 # License.........: @LICENSE@
 # Contributors....: @AUTHORS@
 # Comment.........: Part of the @PROGRAM@ Linux Project
-# Dependencies....: Bash, Git, AsciiDoc, Core Utils, Autotools, lsb-release
+# Dependencies....: AsciiDoc, Autotools, Bash, Core Utils, Git, lsb-release
+#                   Python2
 #
 # TARGETS:
 #
 # all             - default target, make sure everything gets built
 # config-scripts  - configure scripts based on users parameters
 # build-doc       - build all documentation 
-# build-manp      - build man pages
+# build-manp      - build manpages
 # build-test      - build test scripts
 # install         - install @PROGRAM@
 # uninstall       - uninstall @PROGRAM@
 
 # program informaiton
 PROGRAM		=	@PROGRAM@
+LICENSE		=	@LICENSE@
+COPYRIGHT	=	@COPYRIGHT@
 VERSION		=	@VERSION@
-AUTHOR		=	@AUTHOR@
 BUGS		=	@BUGS@
 WEB			=	@WEB@
 
 # system informaiton
 DESC		=	@DESC@
-OS			=	@HOST_OS@
-ARCH		=	@HOST_CPU@
+HOST_OS		=	@HOST_OS@
+HOST_CPU	=	@HOST_CPU@
 CPUS		=	@CPUS@
 
 # general tools
@@ -43,34 +45,39 @@ SHELL		:=	@SHELL@
 GIT			:=	@GIT@
 MKDIR		:=	@MKDIR@
 
-# directories
-INSTALL		:=	install
+# user, groups and home
 HOMEDIR		:=	@HOMEDIR@
-BINDIR		:=	@BINDIR@
-DATADIR		:=	@DATADIR@
-DOCDIR		:=	@DOCDIR@
-DOCSRC		:=	@DOCSRC@
-ICOND		:=	@ICOND@
-MANSRC		:=	@MANSRC@
-MANDIR		:=	@MANDIR@
-PREFIX		:=	@PREFIX@
-SHARE		:=	@SHARE@
-WATCHD		:=	@WATCHD@
-
-# user and groups
 LOGNAME		:=	@LOGNAME@
 LOGGRP		:=	$(shell groups @LOGNAME@ | cut -d ' ' -f 3)
 
-# package information
-SCRIPTS		:=	$(wildcard src/*.sh)
-PKGINFO		:=	@PKGINFO@
+# system directories
+INSTALL		:=	install
+PREFIX		:=	@PREFIX@
+BINDIR		:=	@BINDIR@
+DTDIR		:=	@DTDIR@
+DOCDIR		:=	@DOCDIR@
+ICOND		:=	@ICOND@
+MANDIR		:=	@MANDIR@
+SHARE		:=	@SHARE@
+WATCHD		:=	@WATCHD@
 
 # manpages and docs
-ASCIIDOC	:=	@ASCIIDOC@
-A2X			:=	@A2X@
 BDOC		:=	@BDOC@
 MANP		:=	@MANP@
-MANLIST		:= $(wildcard man/*.1.txt)
+A2X			:=	@A2X@
+ASCIIDOC	:=	@ASCIIDOC@
+MANLIST		:=	$(wildcard man/*.1.txt)
+INSMAN		:=	$(wildcard man/*.1)
+
+# source directories
+DOCSRC		:=	@DOCSRC@
+MANSRC		:=	@MANSRC@
+
+# package information
+PKGINFO		:=	@PKGINFO@
+SCRIPTS		:=	$(src/flsdk src/flsdk-fldigi src/flsdk-flamp src/flsdk-flmsg \
+				src/flsdk-flrig src/flsdk-flwkey src/flsdk-fllog src/flsdk-flnet \
+				src/flsdk-flwrap src/flsdk-versions)
 
 # enable folder separation
 SEPARATE	:=	@SEPARATE@
@@ -137,7 +144,9 @@ make-summary:
 	@echo ''
 
 # install @PROGRAM@ @VERSION@
-install: 
+install: install-binaries install-message
+
+under-development:
 	@echo ''
 	@echo '---------------------------------------------'
 	@echo -e $(C_R)"UNDER DEVELOPMENT"$(C_NC)
@@ -150,11 +159,64 @@ install:
 	@echo " Users should continue to use $(PROGRAM) v0.0.2 until"
 	@echo ' further notice.'
 	@echo ''
+
+install-binaries:
+	@clear
+	@echo '---------------------------------------------'
+	@echo -e $(C_Y)"Installing $(PROGRAM) $(VERSION)"$(C_NC)
+	@echo '---------------------------------------------'
+	@echo ''
+	@echo '* Setting Up Directories'
+	@$(MKDIR) -p $(HOMEDIR)/{src,logs,tmp,mkrd}
+	@$(MKDIR) -p $(HOMEDIR)/{flamp,fldigi,fllog,flmsg,flnet,flrig,flwkey,flwrap}
+	@$(MKDIR) -p $(DESTDIR)$(BINDIR) $(DESTDIR)$(DOCDIR) $(DESTDIR)$(DTDIR)
+	@$(MKDIR) -p $(DESTDIR)$(DOCDIR) $(DESTDIR)$(ICOND) $(DESTDIR)$(MANDIR)
+	@$(MKDIR) -p $(DESTDIR)$(SHARE) $(DESTDIR)$(WATCHD)
+	@echo "* Changing $(HOMEDIR) Ownership to: [ $(LOGNAME) ]"
+	@$(CHOWN) -R $(LOGNAME):$(LOGGRP) $(HOMEDIR)
+	@echo '* Installing Scripts'
+	@install -m 755 src/flsdk src/flsdk-fldigi src/flsdk-flamp src/flsdk-flmsg \
+	src/flsdk-flrig src/flsdk-flwkey src/flsdk-fllog src/flsdk-flnet \
+	src/flsdk-flwrap src/flsdk-versions $(DESTDIR)$(BINDIR)
+	@install -m 644 src/watch/* $(DESTDIR)$(WATCHD)
+	@install -m 644 src/menu/* $(DESTDIR)$(DOCDIR)
+	@install -m 644 AUTHORS ChangeLog COPYING COPYRIGHT $(DESTDIR)$(DOCDIR)
+	@install -m 644 data/flsdk.desktop $(DESTDIR)$(DTDIR)
+	@install -m 644 data/flsdk.xpm $(DESTDIR)$(ICOND)
+	@install -m 644 $(PKGINFO) $(DESTDIR)$(DOCDIR)
+ifeq ($(BDOC),Yes)
+	@echo '* Installing Documentation'
+	@install -m -644 $(DOCSRC)/*.html $(DESTDIR)$(DOCDIR)
+endif
+ifeq ($(MANP),Yes)
+	@echo '* Installing Manpages'
+	@install -m 644 man/flsdk.1 man/flsdk-fldigi.1 man/flsdk-flamp.1 man/flsdk-flmsg.1 \
+	man/flsdk-flrig.1 man/flsdk-flwkey.1 man/flsdk-fllog.1 man/flsdk-flnet.1 \
+	man/flsdk-flwrap.1 man/flsdk-versions.1 $(DESTDIR)$(MANDIR)
+endif	
+
+install-message:
+	@echo ''
+	@echo '---------------------------------------------'
+	@echo -e $(C_G)"FINISHED INSTALLATION "$(C_NC)
+	@echo '---------------------------------------------'
+	@echo ''
+	@echo " Package ...................: $(PROGRAM) $(VERSION)"
+	@echo " Install prefix ............: $(PREFIX)"
+	@echo " Home Directory ............: $(HOMEDIR)"
+	@echo " Arch.......... ............: $(HOST_CPU)"
+	@echo " Distribution ..............: $(DESC)"
+	@echo " Enable Folder Separation ..: $(SEPARATE)"
+	@echo " With Manpages .............: $(MANP)"
+	@echo " With HTML Docs ............: $(BDOC)"
+	@echo " CPU Cores .................: $(CPUS)"
 	@echo " License ...................: $(LICENSE)"
 	@echo " Copyright .................: $(COPYRIGHT)"
 	@echo " Project Website ...........: $(WEB)}"
 	@echo " Report Bugs To ............: $(BUGS)"
 	@echo '' 
+	@echo "To Run $(PROGRAM), type ..: flsdk"
+	@echo ''
 
 # uninstall @PROGRAM@ @VERSION@
 uninstall:
@@ -163,11 +225,11 @@ uninstall:
 	@echo -e $(C_Y)"Uninstall $(PROGRAM) $(VERSION)"$(C_NC)
 	@echo '---------------------------------------------'
 	@echo ''
-	@echo '..Removing installed scripts'
+	@echo '* Removing installed scripts'
 	@$(RM) -f $(DESTDIR)$(BINDIR)/flsdk-*
-	@echo '..Removing installed docs and manpages'
+	@echo '* Removing installed docs and manpages'
 	@$(RM) -f ${DESTDIR}$(MANDIR)/flsdk-*.1
-	@echo '..Removing installed share files'
+	@echo '* Removing installed share files'
 	@$(RM) -rf $(DESTDIR)$(SHARE)
 	@$(RM) -f $(DESTDIR)$(ICOND)/flsdk.xpm
 	@$(RM) -f $(DESTDIR)$(DTDIR)/flsdk.desktop
@@ -177,18 +239,9 @@ uninstall:
 	@echo ' 1. All user generated files remain in:'
 	@echo "    PATH: $(HOMEDIR)"
 	@echo ''
-	@echo ' 2. All packages that were installed ( if any )'
-	@echo '    during the configure and installation phase'
-	@echo '    *have not* been removed automatically. This'
-	@echo '    is by design, as it can potentially break'
-	@echo '    system or application package dependencies.'
-	@echo '    A list of installed packages can be found in:'
-	@echo ''
-	@echo "    PATH: $(HOMEDIR)/package-info/orig-needed.txt"
-	@echo ''
 
 # Cleanup Source Tree
-.PHONY: clean simulate list-needed
+.PHONY: clean
 clean:
 	${RM} -f src/flsdk src/flsdk-fldigi src/flsdk-flamp src/flsdk-flmsg \
 	src/flsdk-flrig src/flsdk-flwkey src/flsdk-fllog src/flsdk-flnet \

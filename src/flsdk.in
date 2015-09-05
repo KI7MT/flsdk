@@ -33,18 +33,18 @@ DOCS=@DOCDIR@
 WATCHD=@WATCHD@
 SRCD="$HOMEDIR/src"
 TMPD="$HOMEDIR/tmp"
-LOGD="$HOMEDIR/LOGD"
+LOGD="$HOMEDIR/logs"
 MKRD="$HOMEDIR/mkrd"
 
 # install directories
-FLDIGII="$HOMEDIR/fldigi/install"
 FLAMPI="$HOMEDIR/flamp/install"
-FLWRAPI="$HOMEDIR/flwrap/install"
-FLMSGI="$HOMEDIR/flmsg/install"
-FLWKEYI="$HOMEDIR/flwkey/install"
-FLRIGI="$HOMEDIR/flrig/install"
+FLDIGII="$HOMEDIR/fldigi/install"
 FLLOGI="$HOMEDIR/fllog/install"
+FLMSGI="$HOMEDIR/flmsg/install"
 FLNETI="$HOMEDIR/flnet/install"
+FLRIGI="$HOMEDIR/flrig/install"
+FLWKEYI="$HOMEDIR/flwkey/install"
+FLWRAPI="$HOMEDIR/flwrap/install"
 
 # set reasonable menu height & width.
 # This is an ANSI sequence, and should
@@ -308,7 +308,7 @@ EOF_DIALOGRC
 ) > "$TMPD"/.dialogrc
 
 # use preset dialog config file
-if [ -f "$TMP"/.dialogrc ]; then
+if [ -f "$TMPD"/.dialogrc ]; then
 	export DIALOGRC="$TMPD"/.dialogrc
 fi
 
@@ -347,47 +347,47 @@ MMSELECT=$(head -c 1 < $TMPD/selection)
 
 # FLDIGI
 if [[ $MMSELECT = "1" ]]; then
-	flsdk-fldigi.sh
+	flsdk-fldigi
 	continue
 
 # FLAMP Menu -------------------------------------------------------------------
 elif [[ $MMSELECT = "2" ]]; then
-	flsdk-flamp.sh
+	flsdk-flamp
 	continue
 
 # FLMSG Menu--------------------------------------------------------------------
 elif [[ $MMSELECT = "3" ]]; then
-	flsdk-flmsg.sh
+	flsdk-flmsg
 	continue
 
 # FLRIG Menu--------------------------------------------------------------------
 elif [[ $MMSELECT = "4" ]]; then
-	flsdk-flrig.sh
+	flsdk-flrig
 	continue
 
 # FLWKEY Menu--------------------------------------------------------------------
 elif [[ $MMSELECT = "5" ]]; then
-	flsdk-flwkey.sh
+	flsdk-flwkey
 	continue
 
 # FLLOG Menu--------------------------------------------------------------------
 elif [[ $MMSELECT = "6" ]]; then
-	flsdk-fllog.sh
+	flsdk-fllog
 	continue
 
 # FLNET Menu--------------------------------------------------------------------
 elif [[ $MMSELECT = "7" ]]; then
-	flsdk-flnet.sh
+	flsdk-flnet
 	continue
 	
 # FLWRAP Menu-------------------------------------------------------------------
 elif [[ $MMSELECT = "8" ]]; then
-	flsdk-flwrap.sh
+	flsdk-flwrap
 	continue
 
 # Version Check-----------------------------------------------------------------
 elif [[ $MMSELECT = "V" ]]; then
-	flsdk-version-check.sh
+	flsdk-versions
 	continue
 
 # Help File---------------------------------------------------------------------

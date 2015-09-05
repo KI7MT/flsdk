@@ -11,7 +11,7 @@ AC_SUBST([PROGRAM], ["$PACKAGE_NAME"])
 AC_SUBST([VERSION], ["$PACKAGE_VERSION"])
 AC_SUBST([BUGS], ["$PACKAGE_BUGREPORT"])
 AC_SUBST([WEB], ["$PACKAGE_URL"])
-AC_SUBST([AUTHORS], ["$FLSDK_AUTHORS"])
+AC_SUBST([AUTHORS], ["$FLSDK_AUTHOR"])
 AC_SUBST([COPYRIGHT], ["$FLSDK_COPYRIGHT"])
 AC_SUBST([LICENSE], ["$FLSDK_LICENSE"])
 
@@ -81,7 +81,7 @@ WATCHD="$prefix"/share/flsdk/watch
 AC_SUBST([LOGNAME], ["$LOGNAME"])
 AC_SUBST([BINDIR], ["$BINDIR"])
 AC_SUBST([DOCDIR], ["$DOCDIR"])
-AC_SUBST([DTDIRR], ["$DTDIR"])
+AC_SUBST([DTDIR], ["$DTDIR"])
 AC_SUBST([ICOND], ["$ICOND"])
 AC_SUBST([MANDIR], ["$MANDIR"])
 AC_SUBST([SHARE], ["$SHARE"])
@@ -176,7 +176,7 @@ src/flsdk-flnet
 src/flsdk-flrig
 src/flsdk-flwkey
 src/flsdk-flwrap
-src/flsdk-version-check
+src/flsdk-versions
 man/flsdk.1.txt
 man/flsdk-flamp.1.txt
 man/flsdk-fldigi.1.txt
