@@ -15,6 +15,7 @@ else
 	AC_MSG_NOTICE([Enable Single Thread Compiling, ( $CPUS ) Core])
 fi
 	AC_SUBST([CPUS], ["$CPUS"])
+	AC_SUBST([JJJJ], ["$CPUS"])
 
 ])
 

@@ -21,12 +21,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-------------------------------------------------------------------------#
 
-set -e
-
-# host informaiton
-HOST_OS=@HOST_OS@
-HOST_CPU=@HOST_CPU@
-
 # set directories
 HOMEDIR=@HOMEDIR@
 DOCS=@DOCDIR@
@@ -35,16 +29,6 @@ SRCD="$HOMEDIR/src"
 TMPD="$HOMEDIR/tmp"
 LOGD="$HOMEDIR/logs"
 MKRD="$HOMEDIR/mkrd"
-
-# install directories
-FLAMPI="$HOMEDIR/flamp/install"
-FLDIGII="$HOMEDIR/fldigi/install"
-FLLOGI="$HOMEDIR/fllog/install"
-FLMSGI="$HOMEDIR/flmsg/install"
-FLNETI="$HOMEDIR/flnet/install"
-FLRIGI="$HOMEDIR/flrig/install"
-FLWKEYI="$HOMEDIR/flwkey/install"
-FLWRAPI="$HOMEDIR/flwrap/install"
 
 # set reasonable menu height & width.
 # This is an ANSI sequence, and should

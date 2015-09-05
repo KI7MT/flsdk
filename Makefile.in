@@ -30,6 +30,7 @@ DESC		=	@DESC@
 HOST_OS		=	@HOST_OS@
 HOST_CPU	=	@HOST_CPU@
 CPUS		=	@CPUS@
+JJJJ		=	@JJJJ@
 
 # general tools
 AWK			:=	@AWK@
@@ -226,9 +227,9 @@ uninstall:
 	@echo '---------------------------------------------'
 	@echo ''
 	@echo '* Removing installed scripts'
-	@$(RM) -f $(DESTDIR)$(BINDIR)/flsdk-*
+	@$(RM) -f $(DESTDIR)$(BINDIR)/flsdk*
 	@echo '* Removing installed docs and manpages'
-	@$(RM) -f ${DESTDIR}$(MANDIR)/flsdk-*.1
+	@$(RM) -f ${DESTDIR}$(MANDIR)/flsdk*.1
 	@echo '* Removing installed share files'
 	@$(RM) -rf $(DESTDIR)$(SHARE)
 	@$(RM) -f $(DESTDIR)$(ICOND)/flsdk.xpm

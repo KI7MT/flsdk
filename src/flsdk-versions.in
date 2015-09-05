@@ -20,28 +20,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-------------------------------------------------------------------------#
 
-# error on exit
-set -e
-
-# base variables
+# set directories
 HOMEDIR=@HOMEDIR@
+DOCS=@DOCDIR@
 WATCHD=@WATCHD@
-FLDIGII="$HOMEDIR/fldigi"
-FLAMPI="$HOMEDIR/flamp"
-FLMSGI="$HOMEDIR/flmsg"
-FLWKEYI="$HOMEDIR/flwkey"
-FLRIGI="$HOMEDIR/flrig"
-FLLOGI="$HOMEDIRfllog"
-FLNETI="$HOMEDIR/flnet"
-FLWRAPI="$HOMEDIR/wrap"
+SRCD="$HOMEDIR/src"
 TMPD="$HOMEDIR/tmp"
+LOGD="$HOMEDIR/logs"
+MKRD="$HOMEDIR/mkrd"
 VERLOG="$TMPD/ver.tmp"
-
-# array for watch files
-watch_array=( 'flamp-alpha-watch' 'flamp-watch' 'fldigi-alpha-watch' \
-'fllog-alpha-watch' 'fllog-watch' 'flmsg-alpha-watch' 'flmsg-wath' \
-'flnet-alpha-watch' 'flnet-watch' 'flrig-alpha-watch' 'flrig-watch' \
-'flwkey-alpha-watch' 'flwkey-watch' 'flwrap-alpha-watch' 'flwrap-watch')
 
 # Foreground colours
 C_R='\033[01;31m'	# red
@@ -50,7 +37,14 @@ C_Y='\033[01;33m'	# yellow
 C_C='\033[01;36m'	# cyan
 C_NC='\033[01;37m'	# no color
 
-# Spinner Credit: http://fitnr.com/showing-a-bash-spinner.html
+# array for watch files
+watch_array=( 'flamp-alpha-watch' 'flamp-watch' 'fldigi-alpha-watch' \
+'fllog-alpha-watch' 'fllog-watch' 'flmsg-alpha-watch' 'flmsg-wath' \
+'flnet-alpha-watch' 'flnet-watch' 'flrig-alpha-watch' 'flrig-watch' \
+'flwkey-alpha-watch' 'flwkey-watch' 'flwrap-alpha-watch' 'flwrap-watch')
+
+# Spinner Original Credit: http://fitnr.com/showing-a-bash-spinner.html
+# Modified by: KI7MT
 spinner()
 {
     local pid=$1

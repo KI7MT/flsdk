@@ -22,20 +22,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #------------------------------------------------------------------------------#
 
-# common vars
-APP_NAME=flrig
+# vars from configure
 HOMEDIR=@HOMEDIR@
-SRCD=@SRCD@
-INSTALLD=@FLRIGI@
 JJ=@JJJJ@
 
-# system information
-OS=@HOST_OS@
-ARCH=@HOST_CPU@
-
-# compiler informaiton
-CC=@CC@
-CXX-@CXX@
+# common vars
+APP_NAME=flamp
+INSTALLD="$HOMEDIR/$APP_NAME/install"
+SRCD="$HOMEDIR/src"
 
 # foreground colours
 C_R='\033[01;31m'		# red
@@ -43,6 +37,7 @@ C_G='\033[01;32m'		# green
 C_Y='\033[01;33m'		# yellow
 C_C='\033[01;36m'		# cyan
 C_NC='\033[01;37m'		# no color
+
 
 ################################################################################
 # FUNCTOINS
