@@ -49,6 +49,10 @@ C_Y='\033[01;33m'	# yellow
 C_C='\033[01;36m'	# cyan
 C_NC='\033[01;37m'	# no color
 
+# unicode variables
+CHK=${C_G}✔${C_NC}
+NONE="✘"
+
 # array for watch files
 watch_array=( 'flamp-alpha-watch' 'flamp-watch' 'fldigi-alpha-watch' \
 'fllog-alpha-watch' 'fllog-watch' 'flmsg-alpha-watch' 'flmsg-wath' \
@@ -74,7 +78,7 @@ spinner()
 
 # Test if autoconf is installed
 uscan_check() {
-uscan --version > /dev/null 2>&1 && echo -e "* Uscan ........ ${C_G}OK${C_NC}" || {
+uscan --version > /dev/null 2>&1 && echo -e "* Uscan ........ ${C_G}✔${C_NC}" || {
 	clear
 	echo ''
 	echo 'You must have *uscan* from the Debian devscripts'
@@ -100,7 +104,7 @@ uscan --version > /dev/null 2>&1 && echo -e "* Uscan ........ ${C_G}OK${C_NC}" |
 # Check Internet connectivity
 check_inet() {
 ((ping -w5 -c3 www.w1hkj.com || ping -w5 -c3 8.8.8.8 || ping -w5 -c3 208.67.222.222) > /dev/null 2>&1) && \
-	echo -e "* Internet ..... ${C_G}OK${C_NC}" || {
+	echo -e "* Internet ..... ${C_G}✔${C_NC}" || {
 	echo ''
 	echo -e ${C_R}'** INTERNET CONNECTION FAILURE**'${C_NC}
 	echo ''
@@ -125,7 +129,7 @@ check_inet() {
 # check access too git repository on sourceforge
 sf_check() {
 ((git ls-remote git://git.code.sf.net/p/fldigi/fldigi HEAD) > /dev/null 2>&1) && \
-	echo -e "* Sourceforge .. ${C_G}OK${C_NC}" || {
+	echo -e "* Sourceforge .. ${C_G}✔${C_NC}" || {
 	echo ''
 	echo -e ${C_R}'** SOURCEFORGE CONNECTION FAILURE**'${C_NC}
 	echo ''
@@ -176,19 +180,19 @@ if $(uscan --watchfile @WATCHD@/fldigi-alpha-watch --package fldigi --upstream-v
 	fldigia=$(uscan --watchfile @WATCHD@/fldigi-alpha-watch --package fldigi --upstream-version 0 --report |grep 'tar.gz')
 	fldigi_alpha=$(echo ${fldigia##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
 else
-	fldigi_alpha="none"
+	fldigi_alpha="$NONE"
 fi
 
 # look for install mkr, set with the build script
 if [[ -s @FLDIGII@/version.mkr ]] ; then
 	buildv=$(awk -F\| '{print $1}' < @FLDIGII@/version.mkr)
 else
-	buildv="none"
+	buildv="$NONE"
 fi
 echo "FLDIGI $fldigi_release $fldigi_alpha $buildv" >> "$VERLOG"
 
 ) & spinner $!
-echo -e "* FLDIGI ....... ${C_G}Done${C_NC}"
+echo -e "* FLDIGI ....... ${C_G}$CHK${C_NC}"
 
 # FLAMP version info------------------------------------------------------------
 (
@@ -202,19 +206,19 @@ if $(uscan --watchfile @WATCHD@/flamp-alpha-watch --package flamp --upstream-ver
 	flampa=$(uscan --watchfile @WATCHD@/flamp-alpha-watch --package flamp --upstream-version 0 --report |grep 'tar.gz')
 	flamp_alpha=$(echo ${flampa##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
 else
-	flamp_alpha="none"
+	flamp_alpha="$NONE"
 fi
 
 # look for install mkr, set with the build script
 if [[ -s @FLAMPI@/version.mkr ]] ; then
 	buildv=$(awk -F\| '{print $1}' < @FLAMPI@/version.mkr)
 else
-	buildv="none"
+	buildv="$NONE"
 fi
 
 echo "FLAMP $flamp_release $flamp_alpha $buildv" >> "$VERLOG"
 ) & spinner $!
-echo -e "* FLAMP ........ ${C_G}Done${C_NC}"
+echo -e "* FLAMP ........ ${C_G}$CHK${C_NC}"
 
 
 # FLMSG version info------------------------------------------------------------
@@ -229,20 +233,20 @@ if $(uscan --watchfile @WATCHD@/flmsg-alpha-watch --package flmsg --upstream-ver
 	flmsga=$(uscan --watchfile @WATCHD@/flmsg-alpha-watch --package flmsg --upstream-version 0 --report |grep 'tar.gz')
 	flmsg_alpha=$(echo ${flmsga##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
 else
-	flmsg_alpha="none"
+	flmsg_alpha="$NONE"
 fi
 
 # look for install mkr, set with the build script
 if [[ -s @FLMSGI@/version.mkr ]] ; then
 	buildv=$(awk -F\| '{print $1}' < @FLMSGI@/version.mkr)
 else
-	buildv="none"
+	buildv="$NONE"
 fi
 
 echo "FLMSG $flmsg_release $flmsg_alpha $buildv" >> "$VERLOG"
 
 ) & spinner $!
-echo -e "* FLMSG ........ ${C_G}Done${C_NC}"
+echo -e "* FLMSG ........ ${C_G}$CHK${C_NC}"
 
 
 # FLRIG version info------------------------------------------------------------
@@ -257,20 +261,20 @@ if $(uscan --watchfile @WATCHD@/flrig-alpha-watch --package flrig --upstream-ver
 	flriga=$(uscan --watchfile @WATCHD@/flrig-alpha-watch --package flrig --upstream-version 0 --report |grep 'tar.gz')
 	flrig_alpha=$(echo ${flriga##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
 else
-	flrig_alpha="none"
+	flrig_alpha="$NONE"
 fi
 
 # look for install mkr, set with the build script
 if [[ -s @FLRIGI@/version.mkr ]] ; then
 	buildv=$(awk -F\| '{print $1}' < @FLRIGI@/version.mkr)
 else
-	buildv="none"
+	buildv="$NONE"
 fi
 
 echo "FLRIG $flrig_release $flrig_alpha $buildv" >> "$VERLOG"
 
 ) & spinner $!
-echo -e "* FLRIG ........ ${C_G}Done${C_NC}"
+echo -e "* FLRIG ........ ${C_G}$CHK${C_NC}"
 
 # FLWKEY version info-----------------------------------------------------------
 (
@@ -284,19 +288,19 @@ if $(uscan --watchfile @WATCHD@/flwkey-alpha-watch --package flwkey --upstream-v
 	flwkeya=$(uscan --watchfile @WATCHD@/flwkey-alpha-watch --package flwkey --upstream-version 0 --report |grep 'tar.gz')
 	flwkey_alpha=$(echo ${flwkeya##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
 else
-	flwkey_alpha="none"
+	flwkey_alpha="$NONE"
 fi
 
 # look for install mkr, set with the build script
 if [[ -s @FLWKEYI@/version.mkr ]] ; then
 	buildv=$(awk -F\| '{print $1}' < @FLWKEYI@/version.mkr)
 else
-	buildv="none"
+	buildv="$NONE"
 fi
 
 echo "FLWKEY $flwkey_release $flwkey_alpha $buildv" >> "$VERLOG"
 ) & spinner $!
-echo -e "* FLWKEY ....... ${C_G}Done${C_NC}"
+echo -e "* FLWKEY ....... ${C_G}$CHK${C_NC}"
 
 # FLWRAP version info-----------------------------------------------------------
 (
@@ -310,18 +314,18 @@ if $(uscan --watchfile @WATCHD@/flwrap-alpha-watch --package flwrap --upstream-v
 	flwrapa=$(uscan --watchfile @WATCHD@/flwrap-alpha-watch --package flwrap --upstream-version 0 --report |grep 'tar.gz')
 	flwrap_alpha=$(echo ${flampa##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
 else
-	flwrap_alpha="none"
+	flwrap_alpha="$NONE"
 fi
 
 if [[ -s @FLWRAPI@/version.mkr ]] ; then
 	buildv=$(awk -F\| '{print $1}' < @FLWRAPI@/version.mkr)
 else
-	buildv="none"
+	buildv="$NONE"
 fi
 echo "FLWRAP $flwrap_release $flwrap_alpha $buildv" >> "$VERLOG"
 
 ) & spinner $!
-echo -e "* FLWRAP ....... ${C_G}Done${C_NC}"
+echo -e "* FLWRAP ....... ${C_G}$CHK${C_NC}"
 
 
 # FLLOG version info -----------------------------------------------------------
@@ -336,7 +340,7 @@ if $(uscan --watchfile @WATCHD@/fllog-alpha-watch --package fllog --upstream-ver
 	flloga=$(uscan --watchfile @WATCHD@/fllog-alpha-watch --package fllog --upstream-version 0 --report |grep 'tar.gz')
 	fllog_alpha=$(echo ${flloga##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
 else
-	fllog_alpha="none"
+	fllog_alpha="$NONE"
 fi
 
 # look for install mkr, set with the build script
@@ -344,13 +348,13 @@ if [[ -s @FLLOGI@/version.mkr ]] ; then
 
 	buildv=$(awk -F\| '{print $1}' < @FLLOGI@/version.mkr)
 else
-	buildv="none"
+	buildv="$NONE"
 fi
 
 echo "FLLOG $fllog_release $fllog_alpha $buildv" >> "$VERLOG"
 
 ) & spinner $!
-echo -e "* FLLOG ........ ${C_G}Done${C_NC}"
+echo -e "* FLLOG ........ ${C_G}$CHK${C_NC}"
 
 
 # FLNET version info -----------------------------------------------------------
@@ -365,7 +369,7 @@ if $(uscan --watchfile @WATCHD@/flnet-alpha-watch --package flnet --upstream-ver
 	flneta=$(uscan --watchfile flnet-alpha-watch --package flnet --upstream-version 0 --report |grep 'tar.gz')
 	flnet_alpha=$(echo ${flneta##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
 else
-	flnet_alpha="none"
+	flnet_alpha="$NONE"
 fi
 
 # look for install mkr, set with the build script
@@ -373,23 +377,21 @@ if [[ -s @FLNETI@/version.mkr ]] ; then
 
 	buildv=$(awk -F\| '{print $1}' < @FLNETI@/version.mkr)
 else
-	buildv="none"
+	buildv="$NONE"
 fi
 
-echo "FLNET $flnet_release none $buildv" >> "$VERLOG"
+echo "FLNET $flnet_release $flnet_alpha $buildv" >> "$VERLOG"
 
 ) & spinner $!
-echo -e "* FLNET ........ ${C_G}Done${C_NC}"
+echo -e "* FLNET ........ ${C_G}$CHK${C_NC}"
 
 
 # simple display results
 echo ''
 cat "$VERLOG" |column -t
 echo ''
-echo '*none*, in the local-build column means you have not built'
-echo 'the application with @PROGRAM@. If *none* appears in the '
-echo 'Alpha column, a tar.gz file was not found on the'
-echo 'W1HKJ Software site.'
+echo -e "✘ - In ALPHA = A tar.gz file was not found at www.w1hkj.com"
+echo -e "✘ - In LOCAL-BUILD = You have not built the application"
 echo ''
 read -p "Press [ Enter ] to continue ..."
 
