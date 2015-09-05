@@ -62,6 +62,16 @@ MANDIR		:=	@MANDIR@
 SHARE		:=	@SHARE@
 WATCHD		:=	@WATCHD@
 
+# install directories
+FLAMPI		:=	@FLAMPI@
+FLDIGII		:=	@FLDIGII@
+FLLOGI		:=	@FLLOGI@
+FLMSGI		:=	@FLMSGI@
+FLNETI		:=	@FLNETI@
+FLRIGI		:=	@FLRIGI@
+FLWKEYI		:=	@FLWKEYI@
+FLWRAPI		:=	@FLWRAPI@
+
 # manpages and docs
 BDOC		:=	@BDOC@
 MANP		:=	@MANP@
@@ -176,9 +186,8 @@ install-binaries:
 	@echo "* Changing $(HOMEDIR) Ownership to: [ $(LOGNAME) ]"
 	@$(CHOWN) -R $(LOGNAME):$(LOGGRP) $(HOMEDIR)
 	@echo '* Installing Scripts'
-	@install -m 755 src/flsdk src/flsdk-fldigi src/flsdk-flamp src/flsdk-flmsg \
-	src/flsdk-flrig src/flsdk-flwkey src/flsdk-fllog src/flsdk-flnet \
-	src/flsdk-flwrap src/flsdk-versions $(DESTDIR)$(BINDIR)
+	@install -m 755 src/{flsdk,flsdk-fldigi,flsdk-flamp,flsdk-flmsg,flsdk-flrig,\
+	flsdk-flwkey,flsdk-fllog,flsdk-flnet,flsdk-flwrap,flsdk-versions} $(DESTDIR)$(BINDIR)
 	@install -m 644 src/watch/* $(DESTDIR)$(WATCHD)
 	@install -m 644 src/menu/* $(DESTDIR)$(DOCDIR)
 	@install -m 644 AUTHORS ChangeLog COPYING COPYRIGHT $(DESTDIR)$(DOCDIR)
@@ -191,9 +200,9 @@ ifeq ($(BDOC),Yes)
 endif
 ifeq ($(MANP),Yes)
 	@echo '* Installing Manpages'
-	@install -m 644 man/flsdk.1 man/flsdk-fldigi.1 man/flsdk-flamp.1 man/flsdk-flmsg.1 \
-	man/flsdk-flrig.1 man/flsdk-flwkey.1 man/flsdk-fllog.1 man/flsdk-flnet.1 \
-	man/flsdk-flwrap.1 man/flsdk-versions.1 $(DESTDIR)$(MANDIR)
+	@install -m 644 man/{flsdk.1,flsdk-fldigi.1,flsdk-flamp.1,flsdk-flmsg.1,\
+	flsdk-flrig.1,flsdk-flwkey.1,flsdk-fllog.1,flsdk-flnet.1,flsdk-flwrap.1,\
+	flsdk-versions.1} $(DESTDIR)$(MANDIR)
 endif	
 
 install-message:

@@ -27,7 +27,7 @@ HOMEDIR=@HOMEDIR@
 JJ=@JJJJ@
 
 # common vars
-APP_NAME=flamp
+APP_NAME=flwrap
 INSTALLD="$HOMEDIR/$APP_NAME/install"
 SRCD="$HOMEDIR/src"
 
@@ -48,6 +48,7 @@ cd "$HOMEDIR"
 
 if [[ -f $SRCD/$APP_NAME/configure.ac ]]; then
 		if [[ -f $SRCD/$APP_NAME/Makefile ]]; then
+			cd $SRCD/$APP_NAME
 			echo 'Cleaning Repository Tree'
 			make clean > /dev/null 2>&1
 			make distclean > /dev/null 2>&1
@@ -126,13 +127,13 @@ make install-strip
 
 # get version info freom config.log
 flwrap_release=$(grep 'FLWRAP_VERSION =' < Makefile |awk '{print $3}')
-echo "@PROGRAM@..: Creating version marker for: $APP_NAME-$flwrap_release"
-cp -u @SRCD@/$APP_NAME/{config.log,Makefile} @FLWRAPI@ > /dev/null 2>&1
-echo "@PROGRAM@..: Copying config.log, Makefile to $INSTALLD"
+echo "* Creating version marker for: $APP_NAME-$flwrap_release"
+cp -u $SRCD/$APP_NAME/{config.log,Makefile} $INSTALLD > /dev/null 2>&1
+echo "* Copying config.log, Makefile to $INSTALLD"
 
 # set install marker version
-if [[ -f @FLWRAPI@/version.mkr ]] ; then rm -f @FLWRAPI@/version.mkr ; fi
-echo $flwrap_release > @FLWRAPI@/version.mkr > @FLWRAPI@/version.mkr
+if [[ -f $INSTALLD/version.mkr ]] ; then rm -f $INSTALLD/version.mkr ; fi
+echo $flwrap_release > $INSTALLD/version.mkr > $INSTALLD/version.mkr
 
 # change ownership
 chown -R $USER:$USER "$HOMEDIR/$APP_NAME"

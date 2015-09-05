@@ -23,7 +23,6 @@
 #------------------------------------------------------------------------------#
 
 # vars from configure
-PROGRAM=@PROGRAM@
 HOMEDIR=@HOMEDIR@
 JJ=@JJJJ@
 
@@ -31,7 +30,6 @@ JJ=@JJJJ@
 APP_NAME=fldigi
 INSTALLD="$HOMEDIR/$APP_NAME/install"
 SRCD="$HOMEDIR/src"
-
 
 # foreground colours
 C_R='\033[01;31m'		# red
@@ -131,11 +129,11 @@ make install-strip
 
 # get version info from config.log
 fldigi_release=$(grep 'FLDIGI_VERSION =' < Makefile |awk '{print $3}')
-echo "$PROGRAM - Creating version marker for: $APP_NAME-$fldigi_release"
+echo "* Creating version marker for: $APP_NAME-$fldigi_release"
 
 # copy logs to install directory
 cp -u "$SRCD/$APP_NAME"/{config.log,Makefile} $INSTALLD
-echo "$PROGRAM - Copying config.log, Makefile to: $INSTALLD"
+echo "* Copying config.log, Makefile to: $INSTALLD"
 
 # set install marker version
 if [[ -f "$INSTALLD"/version.mkr ]] ; then rm -f "$INSTALLD"/version.mkr ; fi

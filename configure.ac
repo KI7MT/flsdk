@@ -78,6 +78,16 @@ ICOND="$prefix"/share/pixmaps
 MANDIR="$prefix"/share/man/man1
 SHARE="$prefix"/share/flsdk
 WATCHD="$prefix"/share/flsdk/watch
+
+FLAMPI="$HOMEDIR"/flamp/install
+FLDIGII="$HOMEDIR"/fldigi/install
+FLLOGI="$HOMEDIR"/fllog/install
+FLMSGI="$HOMEDIR"/flmsg/install
+FLNETI="$HOMEDIR"/flnet/install
+FLRIGI="$HOMEDIR"/flrig/install
+FLWKEYI="$HOMEDIR"/flwkey/install
+FLWRAPI="$HOMEDIR"/flwrap/install
+
 AC_SUBST([LOGNAME], ["$LOGNAME"])
 AC_SUBST([BINDIR], ["$BINDIR"])
 AC_SUBST([DOCDIR], ["$DOCDIR"])
@@ -86,6 +96,25 @@ AC_SUBST([ICOND], ["$ICOND"])
 AC_SUBST([MANDIR], ["$MANDIR"])
 AC_SUBST([SHARE], ["$SHARE"])
 AC_SUBST([WATCHD], ["$WATCHD"])
+AC_SUBST([FLAMPI], ["$FLAMPI"])
+AC_SUBST([FLDIGII], ["$FLDIGII"])
+AC_SUBST([FLLOGI], ["$FLLOGI"])
+AC_SUBST([FLMSGI], ["$FLMSGI"])
+AC_SUBST([FLNETI], ["$FLNETI"])
+AC_SUBST([FLRIGI], ["$FLRIGI"])
+AC_SUBST([FLWKEYI], ["$FLWKEYI"])
+AC_SUBST([FLWRAPI], ["$FLWRAPI"])
+
+# Application Directories
+FLAMPI		:=	@FLAMPI@
+FLDIGII		:=	@FLDIGII@
+FLLOGI		:=	@FLLOGI@
+FLMSGI		:=	@FLMSGI@
+FLNETI		:=	@FLNETI@
+FLRIGI		:=	@FLRIGI@
+FLWKEYI		:=	@FLWKEYI@
+FLWRAPI		:=	@FLWRAPI@
+
 
 # ------------------------------------------------------------------------------
 # source locations paths
