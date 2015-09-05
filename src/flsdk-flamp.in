@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 #
-# Name			: flsdk-flamp.sh
-# Execution		: As normal user type: flsdk-flamp.sh
-# Copyright		: @COPYRIGHT@
-# License		: @LICENSE@
-# Contributors	: @AUTHORS@
-# Comment		: Part of the FLSDK Linux Project
-#                 This script builds: FLAMP
+# Name                  : flsdk-flamp.sh
+# Execution             : As normal user type: flsdk-flamp.sh
+# Copyright             : @COPYRIGHT@
+# License               : @LICENSE@
+# Contributors          : @AUTHORS@
+# Comment               : Part of the FLSDK Linux Project
+#                         This script builds: FLAMP
 #
 # @PROGRAM@ is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ HOMEDIR=@HOMEDIR@
 JJ=@JJJJ@
 
 # common vars
-APP_NAME=flamp
+APP_NAME='flamp'
 INSTALLD="$HOMEDIR/$APP_NAME/install"
 SRCD="$HOMEDIR/src"
 
@@ -46,21 +46,21 @@ check_git() {
 
 cd "$HOMEDIR"
 
-if [[ -f $SRCD/$APP_NAME/configure.ac ]]; then
-		if [[ -f $SRCD/$APP_NAME/Makefile ]]; then
-			cd $SRCD/$APP_NAME
+if [ -f "$SRCD/$APP_NAME/configure.ac" ]; then
+		if [ -f "$SRCD/$APP_NAME/Makefile" ]; then
+			cd "$SRCD/$APP_NAME"
 			echo 'Cleaning Repository Tree'
 			make clean > /dev/null 2>&1
 			make distclean > /dev/null 2>&1
 			git clean -d -x -f > /dev/null 2>&1
 		fi
 	echo 'Performing Git Pull'
-	cd $SRCD/$APP_NAME
+	cd "$SRCD/$APP_NAME"
 	git pull
 else
 	echo 'Performing Git Pull --depth 1'
-	if [[ -d $SRCD/$APP_NAME ]]; then rm -rf $SRCD/$APP_NAME ; fi
-	cd $SRCD
+	if [ -d "$SRCD/$APP_NAME" ]; then rm -rf "$SRCD/$APP_NAME" ; fi
+	cd "$SRCD"
 	git clone --depth 1 git://git.code.sf.net/p/fldigi/flamp flamp
 fi
 
@@ -97,7 +97,7 @@ autoreconf -f -i > /dev/null 2>&1
 echo 'Finished'
 
 # enable ARM optimization flags
-case $ARCH in
+case "$ARCH" in
 	arm* )
 		./configure --prefix="$INSTALLD" --enable-static \
 		CC='gcc' \
@@ -117,7 +117,7 @@ echo -e ${C_Y}" BUILDING ( $APP_NAME )"${C_NC}
 echo '-----------------------------------------------------'
 echo -e "Build Type: "${C_G}'Static'${C_NC}
 echo
-make -j$JJ
+make -j"$JJ"
 
 # install the target
 echo
@@ -130,15 +130,15 @@ make install-strip
 # get version info frrom config.log
 flamp_release=$(grep 'FLAMP_VERSION =' < Makefile |awk '{print $3}')
 echo "* Creating version marker for: $APP_NAME-$flamp_release"
-cp -u $SRCD/$APP_NAME/{config.log,Makefile} $INSTALLD > /dev/null 2>&1
+cp -u "$SRCD/$APP_NAME"/{config.log,Makefile} "$INSTALLD" > /dev/null 2>&1
 echo "* Copying config.log, Makefile to $INSTALLD"
 
 # set install marker version
-if [[ -f $INSTALLD/version.mkr ]] ; then rm -f $INSTALLD/version.mkr ; fi
-echo $flamp_release > $INSTALLD/version.mkr > $INSTALLD/version.mkr
+if [ -f "$INSTALLD/version.mkr" ] ; then rm -f "$INSTALLD/version.mkr" ; fi
+echo "$flamp_release" > "$INSTALLD/version.mkr" >" $INSTALLD/version.mkr"
 
 # change ownership
-chown -R $USER:$USER "$HOMEDIR/$APP_NAME"
+chown -R "$USER":"$USER" "$HOMEDIR/$APP_NAME"
 
 # clean the build tree
 echo
