@@ -171,9 +171,7 @@ AC_BUILD_PKGINFO
 AC_CONFIG_FILES([
 Makefile
 src/flsdk
-src/flsdk-versions
 man/flsdk.1.txt
-man/flsdk-versions.1.txt
 data/flsdk.desktop
 ])
 

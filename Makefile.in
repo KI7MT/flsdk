@@ -173,7 +173,7 @@ install-binaries:
 	@$(MKDIR) -p $(DESTDIR)$(DOCDIR) $(DESTDIR)$(ICOND) $(DESTDIR)$(MANDIR)
 	@$(MKDIR) -p $(DESTDIR)$(SHARE) $(DESTDIR)$(WATCHD) $(DESTDIR)$(PATCH)
 	@echo '* Installing Scripts'
-	@install -m 755 src/flsdk src/flsdk-versions $(DESTDIR)$(BINDIR)
+	@install -m 755 src/flsdk $(DESTDIR)$(BINDIR)
 	@install -m 644 src/watch/* $(DESTDIR)$(WATCHD)
 	@install -m 644 src/menu/* $(DESTDIR)$(DOCDIR)
 	@install -m 644 AUTHORS ChangeLog COPYING COPYRIGHT $(DESTDIR)$(DOCDIR)
@@ -238,7 +238,7 @@ uninstall:
 # Cleanup Source Tree
 .PHONY: clean
 clean:
-	${RM} -f src/flsdk src/flsdk-versions config.log config.status \
+	${RM} -f src/flsdk config.log config.status \
 	configure.scan configure Makefile data/flsdk.desktop $(PKGINFO) \
 	$(DOCSRC)/*.html $(MANSRC)/{*.1,*.1.txt}
 	${RM} -rf ./autom4*
