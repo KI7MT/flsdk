@@ -37,6 +37,7 @@ HOST_CPU='@HOST_CPU@'
 
 # system directories
 DOCS='@DOCDIR@'
+PATCH='@PATCH@'
 WATCHD='@WATCHD@'
 
 # application install directories
@@ -520,6 +521,11 @@ fi
 
 case "$APP_NAME" in
 	comptext|comptty|fldigi|flamp|fllog|flmsg|flnet|flrig|flwkey|flwrap|linsim)
+		if [ "$APP_NAME" = "fllog" ] ; then
+			if [ ! -f "$APP_SRC/m4/pkg-config.m4" ] ; then
+				cp -u "$PATCH/$APP_NAME/m4/pkg-config.m4" "$APP_SRC/m4/"
+			fi
+		fi
 		case "$HOST_CPU" in
 			*arm* )
 				./configure --prefix="$INSTALLD" --enable-static \
@@ -529,6 +535,12 @@ case "$APP_NAME" in
 				CXXFLAGS="$CFLAGS"
 			;;
 			* )
+				if [ "$APP_NAME" = "fllog" ] ; then
+					if [ ! -f "$APP_SRC/m4/pkg-config.m4" ] ; then
+						cp -u "$PATCH/$APP_NAME/m4/pkg-config.m4" "$APP_SRC/m4/"
+					fi
+				fi
+				cp -u 
 				./configure --prefix="$INSTALLD" --enable-optimizations=native --enable-static
 			;;
 		esac

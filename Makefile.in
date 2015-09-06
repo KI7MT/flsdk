@@ -59,6 +59,7 @@ DTDIR		:=	@DTDIR@
 DOCDIR		:=	@DOCDIR@
 ICOND		:=	@ICOND@
 MANDIR		:=	@MANDIR@
+PATCH		:=	@PATCH@
 SHARE		:=	@SHARE@
 WATCHD		:=	@WATCHD@
 
@@ -83,6 +84,7 @@ INSMAN		:=	$(wildcard man/*.1)
 # source directories
 DOCSRC		:=	@DOCSRC@
 MANSRC		:=	@MANSRC@
+PATCHSRC	:=	@PATCHSRC@
 
 # package information
 PKGINFO		:=	@PKGINFO@
@@ -168,7 +170,7 @@ install-binaries:
 	@echo '* Setting Up Directories'
 	@$(MKDIR) -p $(DESTDIR)$(BINDIR) $(DESTDIR)$(DOCDIR) $(DESTDIR)$(DTDIR)
 	@$(MKDIR) -p $(DESTDIR)$(DOCDIR) $(DESTDIR)$(ICOND) $(DESTDIR)$(MANDIR)
-	@$(MKDIR) -p $(DESTDIR)$(SHARE) $(DESTDIR)$(WATCHD)
+	@$(MKDIR) -p $(DESTDIR)$(SHARE) $(DESTDIR)$(WATCHD) $(DESTDIR)$(PATCH)
 	@echo '* Installing Scripts'
 	@install -m 755 src/flsdk src/flsdk-versions $(DESTDIR)$(BINDIR)
 	@install -m 644 src/watch/* $(DESTDIR)$(WATCHD)
@@ -177,6 +179,7 @@ install-binaries:
 	@install -m 644 data/flsdk.desktop $(DESTDIR)$(DTDIR)
 	@install -m 644 data/flsdk.xpm $(DESTDIR)$(ICOND)
 	@install -m 644 $(PKGINFO) $(DESTDIR)$(DOCDIR)
+	@cp -r $(PATCHSRC) $(DESTDIR)$(SHARE) ; chmod -R 644 $(PATCH)
 ifeq ($(BDOC),Yes)
 	@echo '* Installing Documentation'
 	@install -m -644 $(DOCSRC)/*.html $(DESTDIR)$(DOCDIR)
