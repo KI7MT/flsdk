@@ -63,23 +63,21 @@ VERLOG="$TMPD/ver.tmp"
 
 # unicode variables
 CHK=${C_G}✔${C_NC}
-NONE="✘"
+NONE=' ✘ '
 
 # make sure all directories exist
 mkdir -p "$HOMEDIR"/{win32,src,tmp,logs,mkrd}
 mkdir -p "$WIN32"/{flamp,fldigi,fllog,flmsg,flnet,flrig,flwkey,flwrap,comptest,comptty,linsim}
 mkdir -p "$COMPTEXTI" "$COMPTTYI" "$FLAMPI" "$FLDIGII" "$FLLOGI" "$FLMSGI" "$FLNETI" "$FLRIGI" "$FLWKEYI" "$FLWRAPI"
 
-# setup build arrays
+# general use package array
+declare -a app_array=('flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap')
+
+# build array
 declare -a default_build_array=( 'build_header' 'git_check' 'get_version' \
 'configure_header' 'set_installd' 'default_configure' 'default_make' 'default_install' \
 'default_version' 'copy_build_logs' 'install_marker' 'change_ownership' \
 'clean_after_build' 'build_summary')
-
-# version check function array
-declare -a vc_array=('vc_header' 'vc_uscan' 'vc_inet' \
-'vc_sf' 'vc_message_header' 'vc_flamp' 'vc_fldigi' \
-'vc_flmsg' 'vc_flnet' 'vc_flrig' 'vc_flwkey' 'vc_flwrap' 'vc_results')
 
 # watch file array
 declare -a watch_array=( 'flamp-alpha-watch' 'flamp-watch' 'fldigi-alpha-watch' \
@@ -720,13 +718,13 @@ read -p "Press [ Enter ] to continue.."
 
 # version check header----------------------------------------------------------
 version_check() {
+mkdir -p "$TMPD"
+rm -f "$VERLOG"
 clear
 echo '-----------------------------'
 echo -e ${C_Y}'CHECKING VERSION INFORMATION'${C_NC}
 echo '-----------------------------'
 echo ''
-mkdir -p "$TMPD"
-rm -f "$VERLOG"
 
 # check for uscan
 uscan --version > /dev/null 2>&1 && echo -e "* Uscan ........ ${C_G}✔${C_NC}" || {
@@ -796,11 +794,10 @@ uscan --version > /dev/null 2>&1 && echo -e "* Uscan ........ ${C_G}✔${C_NC}" 
 echo "APPLICATION RELEASE ALPHA LOCAL-BUILD" > "$VERLOG"
 echo '----------- ------- ----- -----------' >> "$VERLOG"
 
-
 # FLDIGI version check----------------------------------------------------------
 APP_NAME='fldigi'
 
-fldigi=$(uscan --watchfile @WATCHD@/fldigi-watch --package flmsg --upstream-version 0 --report |grep 'tar.gz')
+fldigi=$(uscan --watchfile @WATCHD@/fldigi-watch --package fldigi --upstream-version 0 --report |grep 'tar.gz')
 fldigi_release=$(echo ${fldigi##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
 
 # Check Alpha builds
@@ -825,7 +822,7 @@ echo -e "* FLDIGI ....... ${C_G}$CHK${C_NC}"
 # FLAMP version info------------------------------------------------------------
 APP_NAME='flamp'
 
-flamp=$(uscan --watchfile @WATCHD@/flamp-watch --package flmsg --upstream-version 0 --report |grep 'tar.gz')
+flamp=$(uscan --watchfile @WATCHD@/flamp-watch --package flamp --upstream-version 0 --report |grep 'tar.gz')
 flamp_release=$(echo ${flamp##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
 
 # Check Alpha builds
@@ -1000,12 +997,13 @@ echo -e "* FLNET ........ ${C_G}$CHK${C_NC}"
 echo ''
 cat "$VERLOG" |column -t
 echo ''
-echo -e "✘ - In ALPHA = A tar.gz file was not found at www.w1hkj.com"
-echo -e "✘ - In LOCAL-BUILD = You have not built the application"
+echo -e "An ( ✘ ) in ALPHA means a tar.gz file was not found at www.w1hkj.com"
+echo -e "An ( ✘ ) in LOCAL-BUILD means you have not built the application"
 echo ''
 read -p "Press [ Enter ] to continue ..."
 
 }
+
 
 ################################################################################
 #
