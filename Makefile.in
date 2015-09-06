@@ -59,7 +59,7 @@ DTDIR		:=	@DTDIR@
 DOCDIR		:=	@DOCDIR@
 ICOND		:=	@ICOND@
 MANDIR		:=	@MANDIR@
-PATCH		:=	@PATCH@
+PATCHD		:=	@PATCHD@
 SHARE		:=	@SHARE@
 WATCHD		:=	@WATCHD@
 
@@ -85,6 +85,7 @@ INSMAN		:=	$(wildcard man/*.1)
 DOCSRC		:=	@DOCSRC@
 MANSRC		:=	@MANSRC@
 PATCHSRC	:=	@PATCHSRC@
+
 
 # package information
 PKGINFO		:=	@PKGINFO@
@@ -179,7 +180,7 @@ install-binaries:
 	@install -m 644 data/flsdk.desktop $(DESTDIR)$(DTDIR)
 	@install -m 644 data/flsdk.xpm $(DESTDIR)$(ICOND)
 	@install -m 644 $(PKGINFO) $(DESTDIR)$(DOCDIR)
-	@cp -r $(PATCHSRC) $(DESTDIR)$(SHARE) ; chmod -R 644 $(PATCH)
+	@cp -r $(PATCHSRC) $(DESTDIR)$(SHARE)
 ifeq ($(BDOC),Yes)
 	@echo '* Installing Documentation'
 	@install -m -644 $(DOCSRC)/*.html $(DESTDIR)$(DOCDIR)
