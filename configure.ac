@@ -78,16 +78,6 @@ ICOND="$prefix"/share/pixmaps
 MANDIR="$prefix"/share/man/man1
 SHARE="$prefix"/share/flsdk
 WATCHD="$prefix"/share/flsdk/watch
-
-FLAMPI="$HOMEDIR"/flamp/install
-FLDIGII="$HOMEDIR"/fldigi/install
-FLLOGI="$HOMEDIR"/fllog/install
-FLMSGI="$HOMEDIR"/flmsg/install
-FLNETI="$HOMEDIR"/flnet/install
-FLRIGI="$HOMEDIR"/flrig/install
-FLWKEYI="$HOMEDIR"/flwkey/install
-FLWRAPI="$HOMEDIR"/flwrap/install
-
 AC_SUBST([LOGNAME], ["$LOGNAME"])
 AC_SUBST([BINDIR], ["$BINDIR"])
 AC_SUBST([DOCDIR], ["$DOCDIR"])
@@ -96,30 +86,10 @@ AC_SUBST([ICOND], ["$ICOND"])
 AC_SUBST([MANDIR], ["$MANDIR"])
 AC_SUBST([SHARE], ["$SHARE"])
 AC_SUBST([WATCHD], ["$WATCHD"])
-AC_SUBST([FLAMPI], ["$FLAMPI"])
-AC_SUBST([FLDIGII], ["$FLDIGII"])
-AC_SUBST([FLLOGI], ["$FLLOGI"])
-AC_SUBST([FLMSGI], ["$FLMSGI"])
-AC_SUBST([FLNETI], ["$FLNETI"])
-AC_SUBST([FLRIGI], ["$FLRIGI"])
-AC_SUBST([FLWKEYI], ["$FLWKEYI"])
-AC_SUBST([FLWRAPI], ["$FLWRAPI"])
-
-# Application Directories
-FLAMPI		:=	@FLAMPI@
-FLDIGII		:=	@FLDIGII@
-FLLOGI		:=	@FLLOGI@
-FLMSGI		:=	@FLMSGI@
-FLNETI		:=	@FLNETI@
-FLRIGI		:=	@FLRIGI@
-FLWKEYI		:=	@FLWKEYI@
-FLWRAPI		:=	@FLWRAPI@
-
 
 # ------------------------------------------------------------------------------
 # source locations paths
 # ------------------------------------------------------------------------------
-# source directories
 DATASRC=$(exec pwd)/data
 DOCSRC=$(exec pwd)/doc/source
 MANSRC=$(exec pwd)/man
@@ -197,24 +167,8 @@ AC_BUILD_PKGINFO
 AC_CONFIG_FILES([
 Makefile
 src/flsdk
-src/flsdk-flamp
-src/flsdk-fldigi
-src/flsdk-fllog
-src/flsdk-flmsg
-src/flsdk-flnet
-src/flsdk-flrig
-src/flsdk-flwkey
-src/flsdk-flwrap
 src/flsdk-versions
 man/flsdk.1.txt
-man/flsdk-flamp.1.txt
-man/flsdk-fldigi.1.txt
-man/flsdk-fllog.1.txt
-man/flsdk-flmsg.1.txt
-man/flsdk-flnet.1.txt
-man/flsdk-flrig.1.txt
-man/flsdk-flwkey.1.txt
-man/flsdk-flwrap.1.txt
 man/flsdk-versions.1.txt
 data/flsdk.desktop
 ])

@@ -21,22 +21,67 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-------------------------------------------------------------------------#
 
-# set directories
-HOMEDIR=@HOMEDIR@
-DOCS=@DOCDIR@
-WATCHD=@WATCHD@
-SRCD="$HOMEDIR/src"
-TMPD="$HOMEDIR/tmp"
+# user and group information
+LOGNAME=@LOGNAME@
+LOGGRP=$(groups @LOGNAME@ | cut -d ' ' -f 3)
+
+# home and main options
+HOMEDIR='@HOMEDIR@'
+SEPARATE='@SEPARATE@'
+JJ='@JJJJ@'
+
+# system informaiton / selections
+DESC='@DESC@'
+HOST_OS='@HOST_OS@'
+HOST_CPU='@HOST_CPU@'
+
+# system directories
+DOCS='@DOCDIR@'
+WATCHD='@WATCHD@'
+
+# application install directories
+COMPTEXTI="$HOMEDIR/comptext"
+COMPTTYI="$HOMEDIR/comptty"
+FLAMPI="$HOMEDIR/flamp"
+FLDIGII="$HOMEDIR/fldigi"
+FLLOGI="$HOMEDIR/fllog"
+FLMSGI="$HOMEDIR/flmsg"
+FLNETI="$HOMEDIR/flmsg"
+FLRIGI="$HOMEDIR/flrig"
+FLWKEYI="$HOMEDIR/flwkey"
+FLWRAPI="$HOMEDIR/flwrap"
+LINSIMI="$HOMEDIR/linsim"
+
+# flsdk general use directories
 LOGD="$HOMEDIR/logs"
 MKRD="$HOMEDIR/mkrd"
+SRCD="$HOMEDIR/src"
+TMPD="$HOMEDIR/tmp"
+WIN32="$HOMEDIR/win32"
+
+# make sure all directories exist
+mkdir -p "$HOMEDIR"/{win32,src,tmp,logs,mkrd}
+mkdir -p "$WIN32"/{flamp,fldigi,fllog,flmsg,flnet,flrig,flwkey,flwrap,comptest,comptty,linsim}
+mkdir -p "$COMPTEXTI" "$COMPTTYI" "$FLAMPI" "$FLDIGII" "$FLLOGI" "$FLMSGI" "$FLNETI" "$FLRIGI" "$FLWKEYI" "$FLWRAPI"
+
+# setup build arrays
+declare -a default_build_array=( 'build_header' 'git_check' 'get_version' \
+'configure_header' 'default_configure' 'default_make' 'default_install' \
+'default_version' 'copy_build_logs' 'install_marker' 'change_ownership' \
+'clean_after_build' 'build_summary')
+
+# setup foreground colours
+C_R='\033[01;31m'	# red
+C_G='\033[01;32m'	# green
+C_Y='\033[01;33m'	# yellow
+C_C='\033[01;36m'	# cyan
+C_NC='\033[01;37m'	# no color
 
 # set reasonable menu height & width.
-# This is an ANSI sequence, and should
-# work in most Xterm windows
 echo -e "\e[8;35;110t"
 
 ################################################################################
-# Language Section
+# LANGUAGE SECTION
 ################################################################################
 
 # backtitle lang
@@ -84,9 +129,62 @@ SETUPMSG="\n   In Order to use @PROGRAM@, you must first run setup.sh \n\
 UD=" UNDER DEVELOPMENT"
 UDMSG="\n      Build Selection is Under Development"
 
+
+################################################################################
+# MENU SECTION
+################################################################################
+
 # main menu
-touch $TMPD/MMenu.tmp
-cat << 'EOF' > $TMPD/MMenu.tmp 
+touch "$TMPD/MMenu.tmp"
+cat << 'EOF' > "$TMPD"/MMenu.tmp 
+"1" "FLDIGI .. (devel)" \
+"2" "FLAMP ... (devel)" \
+"3" "FLMSG ... (devel)" \
+"4" "FLRIG ... (devel)" \
+"5" "FLWKEY .. (devel)" \
+"6" "FLLOG ... (devel)" \
+"7" "FLNET ... (devel)" \
+"8" "FLWRAP .. (devel)" \
+"V" "Check App Versions" \
+"H" "Help" \
+"E" "Exit"
+EOF
+
+# menu for linux builds
+touch "$TMPD/BuildMenuNix.tmp"
+cat << 'EOF' > "$TMPD/BuildMenuNix.tmp"
+"1" "FLDIGI .. (devel)" \
+"2" "FLAMP ... (devel)" \
+"3" "FLMSG ... (devel)" \
+"4" "FLRIG ... (devel)" \
+"5" "FLWKEY .. (devel)" \
+"6" "FLLOG ... (devel)" \
+"7" "FLNET ... (devel)" \
+"8" "FLWRAP .. (devel)" \
+"V" "Check App Versions" \
+"H" "Help" \
+"E" "Exit"
+EOF
+
+# menu for MXE builds
+touch "$TMPD/BuildMenuMxe.tmp"
+cat << 'EOF' > "$TMPD/BuildMenuMxe.tmp"
+"1" "FLDIGI .. (devel)" \
+"2" "FLAMP ... (devel)" \
+"3" "FLMSG ... (devel)" \
+"4" "FLRIG ... (devel)" \
+"5" "FLWKEY .. (devel)" \
+"6" "FLLOG ... (devel)" \
+"7" "FLNET ... (devel)" \
+"8" "FLWRAP .. (devel)" \
+"V" "Check App Versions" \
+"H" "Help" \
+"E" "Exit"
+EOF
+
+# menu admin menu
+touch "$TMPD/MxeAdmin.tmp"
+cat << 'EOF' > "$TMPD/MxeAdmin.tmp"
 "1" "FLDIGI .. (devel)" \
 "2" "FLAMP ... (devel)" \
 "3" "FLMSG ... (devel)" \
@@ -102,7 +200,7 @@ EOF
 
 
 ################################################################################
-# Functions Section
+# COMMON FUNCTIONS
 ################################################################################
 
 #--set options------------------------------------------------------------------
@@ -110,30 +208,27 @@ set_options() {
 set -e                 # exit immediately on any error
 set -o pipefail        # pipeline fail return exit status
 set -u                 # undefined variables
-} # end set flags
-
+}
 
 #--unset options----------------------------------------------------------------
-function unset_options() {
+unset_options() {
 set +e
 set +o pipefail
 set +u
 }
 
-
 #--under development------------------------------------------------------------
-function under_development() {
+under_development() {
 
 dialog --backtitle "$BACKTITLE" --title "$UD" --msgbox "$UDMSG" 7 50
 
 }
 
-
 #--signal catch-----------------------------------------------------------------
 sig_catch_cleanup() {
 EXIT_STATUS="$?"
 
-if [[ "$EXIT_STATUS" == "0" ]]
+if [ "$EXIT_STATUS" == "0" ]
 then
    clean_exit
 
@@ -143,7 +238,7 @@ dialog --backtitle "$BACKTITLE" --title "$SIGCAUGHT" --infobox "$SIGCAUGHTMSG" 5
 	sleep 1
 
 dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
-	rm -r  $TMPD/*
+	rm -r  "$TMPD"/*
 	sleep 1
 
 dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
@@ -151,7 +246,7 @@ dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 5
 	wait
 	clear
 
-	echo "Exit Status ""[ "$EXIT_STATUS" ]"
+	echo "Exit Status [ $EXIT_STATUS ]"
 	echo "@PROGRAM@ Signal Catch Cleanup Complete"
 	echo ''
 	trap - SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
@@ -165,7 +260,7 @@ root_chk() {
 MSGCLIENT=""
 TESTD=$(dpkg --get-selections dialog | awk '{print $1}')
 
-if [[ $TESTD = "dialog" ]]
+if [ "$TESTD" = "dialog" ]
 then
    MSGCLIENT="dialog"
   else
@@ -173,7 +268,7 @@ then
 fi
 clear
 
-if [[ $EUID = "0" ]]
+if [ "$EUID" = "0" ]
 then
 "$MSGCLIENT" --title "$RCTITLE" --backtitle "$BACKTITLE" --msgbox "$RCMSG" 7 70
 clean_exit
@@ -184,21 +279,20 @@ clear
 unset {TESTVAR,MSGCLIENT}
 }
 
-
 #--dialog check-----------------------------------------------------------------
 dialog_chk() {
 INSTALLED=$(dialog --version |awk '{print $1}')
 
-if [[ $INSTALLED == Version: ]]; then
+if [ "$INSTALLED" == "Version:" ]; then
    MSGCLIENT="dialog"
 
-elif [[ $INSTALLED != dialog ]]; then
+elif [ "$INSTALLED" != "dialog" ]; then
    MSGCLIENT="whiptail"
    clear
 
 "$MSGCLIENT" --clear --title "$DITITLE" --backtitle "$BACKTITLE" --msgbox "$DIMSG" 7 70
    touch "$LOGD"/install_log
-   sudo apt-get -qy install dialog | tee 2>>"$LOGD"/install_log
+   sudo apt-get -qy install dialog | tee 2>> "$LOGD"/install_log
    wait
    dialog --create-rc ~/.dialogrc
    wait
@@ -212,16 +306,15 @@ sudo -k
 fi
 }
 
-
 #--normal shutdown--------------------------------------------------------------
 clean_exit() {
-local EXIT_STATUS=$?
+local EXIT_STATUS="$?"
 
 dialog --backtitle "$BACKTITLE" --title "$EXITWSDT" --infobox "$EXITWSDTMSG" 5 50
    sleep 1
 
 dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
-   rm -r $TMPD/*
+   rm -r "$TMPD"/*
    wait
    sleep 1
 
@@ -230,21 +323,18 @@ dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 5
 	wait
 	sleep 1
 	clear
-
-   echo "Exit Status ""[ "$EXIT_STATUS" ]"
-   echo "@PROGRAM@ Clean Exit Complete."
-   echo ''
-   trap - SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
-   unset EXIT_STATUS
+	echo "Exit Status [ $EXIT_STATUS ]"
+	echo "@PROGRAM@ Clean Exit Complete."
+	echo ''
+	trap - SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
+	unset EXIT_STATUS
 exit
 }
-
 
 #--dialog rc file---------------------------------------------------------------
 make_dialogrc() {
 
-if [ -f "$TMPD"/.dialogrc ]; then rm -f "$TMPD"/.dialogrc ; fi
-touch "$TMPD"/.dialogrc
+rm -f "$TMPD/.dialogrc" &>/dev/null ; touch "$TMPD/.dialogrc"
 
 (
 cat <<'EOF_DIALOGRC'
@@ -289,18 +379,259 @@ form_text_color = (WHITE,CYAN,ON)
 form_item_readonly_color = (CYAN,WHITE,ON)
 gauge_color = (BLUE,WHITE,ON)
 EOF_DIALOGRC
-) > "$TMPD"/.dialogrc
+) > "$TMPD/.dialogrc"
 
-# use preset dialog config file
-if [ -f "$TMPD"/.dialogrc ]; then
-	export DIALOGRC="$TMPD"/.dialogrc
-fi
+# use the new dialogrc
+export DIALOGRC="$TMPD/.dialogrc"
 
 }
 
+################################################################################
+# LINUX NATIVE FUNCTIONS
+################################################################################
+
+# main header-------------------------------------------------------------------
+build_header() {
+STEP='Main Header'
+clear
+echo ''
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" STARTING BUILD for ( $APP_NAME )"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+}
+
+# git check---------------------------------------------------------------------
+git_check() {
+STEP='Git Phase'
+if [ -f "$APP_SRC/configure.ac" ]; then
+		if [ -f "$APP_SRC/Makefile" ]; then
+			cd "$APP_SRC"
+			echo 'Cleaning Repository Tree'
+			make clean &>/dev/null
+			make distclean &>/dev/null
+			git clean -d -x -f &>/dev/null
+		fi
+	echo 'Performing Git Pull'
+	cd "$APP_SRC"
+	git pull
+else
+	echo 'Performing Git Clone'
+	rm -rf "$APP_SRC" &>/dev/null
+	cd "$SRCD"
+	git clone --depth 1 git://git.code.sf.net/p/fldigi/$APP_NAME $APP_NAME
+fi
+echo ''
+}
+
+# get version fomr configure.ac------------------------------------------------
+get_version() {
+STEP='Get Version Information Phase'
+
+# Example: From FLDIGI configure.ac 05-SEP-2015
+# ------------------------------------------------------------------------------
+#
+# NOTE: major and minor must be integers; patch may
+#       contain other characters or be empty
+#
+# m4_define(FLLOG_MAJOR,  [3])
+# m4_define(FLLOG_MINOR,  [22])
+# m4_define(FLLOG_PATCH,  [.13])
+#
+# Result Should Be ......: 3.22.13
+# ------------------------------------------------------------------------------
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" GET VERSION INFOMATION"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+echo "* Parsing [ configure.ac ]"
+VFILE="$APP_SRC/configure.ac"
+case "$APP_NAME" in 
+	fldigi)
+		MAJOR=$(cat $VFILE |grep m4_define |grep FLDIGI_MAJOR |awk '{print $2}' |cut -c2)
+		MINOR=$(cat $VFILE |grep m4_define |grep FLDIGI_MINOR |awk '{print $2}' |cut -c2)
+		RAW=$(cat $VFILE |grep m4_define |grep FLDIGI_PATCH |awk '{print $2}') ;;
+	flamp)
+		MAJOR=$(cat $VFILE |grep m4_define |grep FLAMP_MAJOR |awk '{print $2}' |cut -c2)
+		MINOR=$(cat $VFILE |grep m4_define |grep FLAMP_MINOR |awk '{print $2}' |cut -c2)
+		RAW=$(cat $VFILE |grep m4_define |grep FLAMP_PATCH |awk '{print $2}') ;;
+	*) ;;
+esac
+
+PATCH=${RAW:2:-2}
+BUILDV="$MAJOR.$MINOR.$PATCH"
+echo "* Build Version Is ..: $BUILDV"
+}
+
+# configure header--------------------------------------------------------------
+configure_header() {
+STEP='Autoreconf Phase'
+echo ''
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" CONFIGURING"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+cd "$APP_SRC"
+echo '* Running Autoreconf to generate configure and Makefile'
+autoreconf -f -i &>/dev/null
+echo ''
+}
+
+# default configure(s)----------------------------------------------------------
+default_configure() {
+STEP='Configure Phase'
+
+# set the install directory based on --enable-separate ( enabled by default )
+if [ "$SEPARATE" = "Yes" ]; then
+	INSTALLD="$HOMEDIR/$APP_NAME/$BUILDV"
+else
+	INSTALLD="$HOMEDIR/$APP_NAME/install"
+fi
+
+case "$APP_NAME" in
+	fldigi|flamp)
+		case "$HOST_CPU" in
+			*arm* )
+				./configure --prefix="$INSTALLD" --enable-static \
+				CC='gcc' \
+				CXX='g++' \
+				CFLAGS='-O2 -mfpu=vfp -mfloat-abi=hard -ffast-math -finline-functions' \
+				CXXFLAGS="$CFLAGS"
+			;;
+			* )
+				./configure --prefix="$INSTALLD" --enable-optimizations=native --enable-static
+			;;
+		esac
+	;;
+	*) # TO-DO: add some warnign message here if wrong applications is selected
+	;;
+esac
+}
+
+# default make invocation-------------------------------------------------------
+default_make() {
+STEP='Make Phase'
+echo ''
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" BUILDING"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+echo -e "* Build Type: "${C_G}'Static'${C_NC}
+echo ''
+make -j$JJ
+}
+
+
+# default install---------------------------------------------------------------
+default_install() {
+STEP='Install Phase'
+echo ''
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" INSTALLING BINARIES"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+make install-strip
+}
+
+# get version info from config.log----------------------------------------------
+default_version() {
+STEP='Get Version Info Phase'
+echo ''
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" GENERATE VERSION MARKER"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+case "$APP_NAME" in 
+	fldigi)
+		RELEASE=$(grep 'FLDIGI_VERSION =' < Makefile |awk '{print $3}') ;;
+	flamp)
+		RELEASE=$(grep 'FLAMP_VERSION =' < Makefile |awk '{print $3}') ;;
+	*) ;;
+esac
+echo "* Created version marker for: $APP_NAME-$RELEASE"
+}
+
+# build_log_copy----------------------------------------------------------------
+copy_build_logs() {
+STEP='Copy Build Log Phase'
+echo ''
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" COPY LOG FILES ( $APP_NAME )"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+echo "* Copied config.log, Makefile to: $INSTALLD"
+cp -u "$SRCD/$APP_NAME"/{config.log,Makefile} "$INSTALLD"
+}
+
+
+
+# install marker----------------------------------------------------------------
+install_marker() {
+STEP='Install Marker'
+echo ''
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" GENERATING MARKERS"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+echo '* Removed old marker'
+rm -f "$INSTALLD/version.mkr" &>/dev/null
+echo '* Installed new version marker'
+echo $RELEASE > "$INSTALLD"/version.mkr
+}
+
+# change ownership--------------------------------------------------------------
+change_ownership() {
+STEP='Change Ownership Phase'
+echo ''
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" VERIFY OWNERSHIP"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+chown -R "$LOGNAME":"$LOGGRP" "$HOMEDIR/$APP_NAME"
+echo "* Updated ownership to [ $LOGNAME ]"
+}
+
+# clean the build tree----------------------------------------------------------
+clean_after_build() {
+STEP='Clean Build Tree'
+echo ''
+echo '-----------------------------------------------------'
+echo -e ${C_Y}" CLEANING BUILD TREE"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+make clean &>/dev/null
+echo '*  Ran make clean'
+make distclean &>/dev/null
+git clean -qfd
+echo '*  Ran git clean'
+}
+
+# finish build message---------------------------------------------------------
+build_summary() {
+STEP='Finish Build Message'
+echo ''
+echo '-----------------------------------------------------'
+echo -e ${C_G}" BUILD SUMMARY"${C_NC}
+echo '-----------------------------------------------------'
+echo ''
+echo -e ' Link Config ..: '${C_G}"$LINK_TYPE"${C_NC}
+echo " Version ......: $APP_NAME-$RELEASE"
+echo " Source .......: $APP_SRC"
+echo " Install ......: $INSTALLD"
+echo ''
+echo " TO RUN $APP_NAME"
+echo " Type, ........: cd $INSTALLD/bin"
+echo " Type, ........: ./$APP_NAME"
+echo ''
+cd "$HOMEDIR"
+read -p "Press [ Enter ] to continue.."
+
+}
 
 ################################################################################
+#
 # Start Main Script
+#
 ################################################################################
 
 # set traps
@@ -319,7 +650,7 @@ dialog_chk
 make_dialogrc
 
 # menu help files
-HELP="$DOCS"/main_menu_help.txt
+HELP="$DOCS/main_menu_help.txt"
 
 # MAIN MANU --------------------------------------------------------------------
 while [ 0 ]; do
@@ -327,62 +658,73 @@ while [ 0 ]; do
 dialog --ok-label SELECT --nocancel --clear --backtitle "$BACKTITLE" --title \
 "$MMTITLE" --menu "$MENUMSG" 19 62 20 --file "$TMPD/MMenu.tmp" 2> "$TMPD/selection"
 
-MMSELECT=$(head -c 1 < $TMPD/selection)
+MMSELECT=$(head -c 1 < "$TMPD"/selection)
 
-# FLDIGI
-if [[ $MMSELECT = "1" ]]; then
-	flsdk-fldigi
+# FLDIGI -----------------------------------------------------------------------
+if [ "$MMSELECT" = "1" ]; then
+	APP_NAME='fldigi'
+	APP_SRC="$SRCD/$APP_NAME"
+	LINK_TYPE='Static'
+	for f in ${default_build_array[@]} ; do "$f" ; done
 	continue
 
-# FLAMP Menu -------------------------------------------------------------------
-elif [[ $MMSELECT = "2" ]]; then
-	flsdk-flamp
+# FLAMP ------------------------------------------------------------------------
+elif [ "$MMSELECT" = "2" ]; then
+	APP_NAME='flamp'
+	APP_SRC="$SRCD/$APP_NAME"
+	LINK_TYPE='Static'
+	for f in ${default_build_array[@]} ; do "$f" ; done
 	continue
 
-# FLMSG Menu--------------------------------------------------------------------
-elif [[ $MMSELECT = "3" ]]; then
-	flsdk-flmsg
+# FLMSG ------------------------------------------------------------------------
+elif [ "$MMSELECT" = "3" ]; then
+	under_development
+	#flsdk-flmsg
 	continue
 
 # FLRIG Menu--------------------------------------------------------------------
-elif [[ $MMSELECT = "4" ]]; then
-	flsdk-flrig
+elif [ "$MMSELECT" = "4" ]; then
+	under_development
+	#flsdk-flrig
 	continue
 
 # FLWKEY Menu--------------------------------------------------------------------
-elif [[ $MMSELECT = "5" ]]; then
-	flsdk-flwkey
+elif [ "$MMSELECT" = "5" ]; then
+	under_development
+	#flsdk-flwkey
 	continue
 
 # FLLOG Menu--------------------------------------------------------------------
-elif [[ $MMSELECT = "6" ]]; then
-	flsdk-fllog
+elif [ "$MMSELECT" = "6" ]; then
+	under_development
+	#flsdk-fllog
 	continue
 
 # FLNET Menu--------------------------------------------------------------------
-elif [[ $MMSELECT = "7" ]]; then
-	flsdk-flnet
+elif [ "$MMSELECT" = "7" ]; then
+	under_development
+	#flsdk-flnet
 	continue
 	
 # FLWRAP Menu-------------------------------------------------------------------
-elif [[ $MMSELECT = "8" ]]; then
+elif [ "$MMSELECT" = "8" ]; then
 	flsdk-flwrap
 	continue
 
 # Version Check-----------------------------------------------------------------
-elif [[ $MMSELECT = "V" ]]; then
-	flsdk-versions
+elif [ "$MMSELECT" = "V" ]; then
+	under_development
+	# flsdk-versions
 	continue
 
 # Help File---------------------------------------------------------------------
-   elif [[ $MMSELECT = "H" ]]; then
-dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" \
---textbox "$HELP" 20 80
+   elif [ "$MMSELECT" = "H" ]; then
+dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80
 	continue
 
 # Exit FLSDK----------------------------------------------------------------
-  elif [[ $MMSELECT = "E" ]]; then
+  elif [ "$MMSELECT" = "E" ]; then
    clean_exit
-   fi
-done
+fi
 
+done

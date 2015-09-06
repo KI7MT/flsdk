@@ -47,9 +47,9 @@ GIT			:=	@GIT@
 MKDIR		:=	@MKDIR@
 
 # user, groups and home
-HOMEDIR		:=	@HOMEDIR@
 LOGNAME		:=	@LOGNAME@
 LOGGRP		:=	$(shell groups @LOGNAME@ | cut -d ' ' -f 3)
+HOMEDIR		:=	@HOMEDIR@
 
 # system directories
 INSTALL		:=	install
@@ -86,9 +86,6 @@ MANSRC		:=	@MANSRC@
 
 # package information
 PKGINFO		:=	@PKGINFO@
-SCRIPTS		:=	$(src/flsdk src/flsdk-fldigi src/flsdk-flamp src/flsdk-flmsg \
-				src/flsdk-flrig src/flsdk-flwkey src/flsdk-fllog src/flsdk-flnet \
-				src/flsdk-flwrap src/flsdk-versions)
 
 # enable folder separation
 SEPARATE	:=	@SEPARATE@
@@ -104,16 +101,7 @@ C_C			:=	'\033[01;36m'	# cyan
 C_NC		:=	'\033[01;37m'	# no color
 
 # Targets
-all: conf-scripts build-doc build-manp make-summary
-
-conf-scripts:
-	@echo ''
-	@echo '---------------------------------------------'
-	@echo -e $(C_Y)"Update Build Scripts"$(C_NC)
-	@echo '---------------------------------------------'
-	@echo '' # Nothing to do at this time.
-	@echo " Finished"  
-	@echo ''
+all: build-doc build-manp make-summary
 
 build-doc:
 ifeq ($(BDOC),Yes)
@@ -144,7 +132,7 @@ endif
 make-summary:
 	@echo ''
 	@echo '---------------------------------------------'
-	@echo -e $(C_G)"MAKE SUMMARY"$(C_NC)
+	@echo -e $(C_G)'MAKE SUMMARY'$(C_NC)
 	@echo '---------------------------------------------'
 	@echo ''
 	@echo " Package ...................: $(PROGRAM) $(VERSION)"
@@ -178,16 +166,11 @@ install-binaries:
 	@echo '---------------------------------------------'
 	@echo ''
 	@echo '* Setting Up Directories'
-	@$(MKDIR) -p $(HOMEDIR)/{src,logs,tmp,mkrd}
-	@$(MKDIR) -p $(HOMEDIR)/{flamp,fldigi,fllog,flmsg,flnet,flrig,flwkey,flwrap}
 	@$(MKDIR) -p $(DESTDIR)$(BINDIR) $(DESTDIR)$(DOCDIR) $(DESTDIR)$(DTDIR)
 	@$(MKDIR) -p $(DESTDIR)$(DOCDIR) $(DESTDIR)$(ICOND) $(DESTDIR)$(MANDIR)
 	@$(MKDIR) -p $(DESTDIR)$(SHARE) $(DESTDIR)$(WATCHD)
-	@echo "* Changing $(HOMEDIR) Ownership to: [ $(LOGNAME) ]"
-	@$(CHOWN) -R $(LOGNAME):$(LOGGRP) $(HOMEDIR)
 	@echo '* Installing Scripts'
-	@install -m 755 src/{flsdk,flsdk-fldigi,flsdk-flamp,flsdk-flmsg,flsdk-flrig,\
-	flsdk-flwkey,flsdk-fllog,flsdk-flnet,flsdk-flwrap,flsdk-versions} $(DESTDIR)$(BINDIR)
+	@install -m 755 src/flsdk src/flsdk-versions $(DESTDIR)$(BINDIR)
 	@install -m 644 src/watch/* $(DESTDIR)$(WATCHD)
 	@install -m 644 src/menu/* $(DESTDIR)$(DOCDIR)
 	@install -m 644 AUTHORS ChangeLog COPYING COPYRIGHT $(DESTDIR)$(DOCDIR)
@@ -200,9 +183,7 @@ ifeq ($(BDOC),Yes)
 endif
 ifeq ($(MANP),Yes)
 	@echo '* Installing Manpages'
-	@install -m 644 man/{flsdk.1,flsdk-fldigi.1,flsdk-flamp.1,flsdk-flmsg.1,\
-	flsdk-flrig.1,flsdk-flwkey.1,flsdk-fllog.1,flsdk-flnet.1,flsdk-flwrap.1,\
-	flsdk-versions.1} $(DESTDIR)$(MANDIR)
+	@install -m 644 $(INSMAN) $(DESTDIR)$(MANDIR)
 endif	
 
 install-message:
@@ -253,12 +234,8 @@ uninstall:
 # Cleanup Source Tree
 .PHONY: clean
 clean:
-	${RM} -f src/flsdk src/flsdk-fldigi src/flsdk-flamp src/flsdk-flmsg \
-	src/flsdk-flrig src/flsdk-flwkey src/flsdk-fllog src/flsdk-flnet \
-	src/flsdk-flwrap src/flsdk-versions config.log config.status \
-	configure.scan configure Makefile src/language/language_en \
-	data/flsdk.desktop $(PKGINFO)
+	${RM} -f src/flsdk src/flsdk-versions config.log config.status \
+	configure.scan configure Makefile data/flsdk.desktop $(PKGINFO) \
+	$(DOCSRC)/*.html $(MANSRC)/{*.1,*.1.txt}
 	${RM} -rf ./autom4*
-	$(RM) -f $(DOCSRC)/*.html
-	$(RM) -f $(MANSRC)/{*.1,*.1.txt}
 
