@@ -67,8 +67,8 @@ NONE=' ✘ '
 
 # make sure all directories exist
 mkdir -p "$HOMEDIR"/{win32,src,tmp,logs,mkrd}
-mkdir -p "$WIN32"/{flamp,fldigi,fllog,flmsg,flnet,flrig,flwkey,flwrap,comptest,comptty,linsim}
-mkdir -p "$COMPTEXTI" "$COMPTTYI" "$FLAMPI" "$FLDIGII" "$FLLOGI" "$FLMSGI" "$FLNETI" "$FLRIGI" "$FLWKEYI" "$FLWRAPI"
+mkdir -p "$WIN32"/{flamp,fldigi,fllog,flmsg,flnet,flrig,flwkey,flwrap,comptext,comptty,linsim}
+mkdir -p "$COMPTEXTI" "$COMPTTYI" "$FLAMPI" "$FLDIGII" "$FLLOGI" "$FLMSGI" "$FLNETI" "$FLRIGI" "$FLWKEYI" "$FLWRAPI" "$LINSIMI"
 
 # build array
 declare -a default_build_array=( 'build_header' 'git_check' 'get_version' \
@@ -78,7 +78,7 @@ declare -a default_build_array=( 'build_header' 'git_check' 'get_version' \
 
 # general use package array
 # applications flamp,fldigi,fllog,flmsg,flnet,flrig,flwkey,flwrap,comptest,comptty,linsim
-declare -a app_array=('flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap')
+declare -a app_array=('comptext' 'comptty' 'flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap' 'linsim')
 
 # setup foreground colours
 C_R='\033[01;31m'	# red
@@ -88,7 +88,7 @@ C_C='\033[01;36m'	# cyan
 C_NC='\033[01;37m'	# no color
 
 # set reasonable menu height & width.
-echo -e "\e[8;35;110t"
+echo -e "\e[8;40;120t"
 
 ################################################################################
 # LANGUAGE SECTION
@@ -147,14 +147,17 @@ UDMSG="\n      Build Selection is Under Development"
 # main menu
 touch "$TMPD/MMenu.tmp"
 cat << 'EOF' > "$TMPD"/MMenu.tmp 
-"1" "FLDIGI .. (devel)" \
-"2" "FLAMP ... (devel)" \
-"3" "FLMSG ... (devel)" \
-"4" "FLRIG ... (devel)" \
-"5" "FLWKEY .. (devel)" \
-"6" "FLLOG ... (devel)" \
-"7" "FLNET ... (devel)" \
-"8" "FLWRAP .. (devel)" \
+"1" "COMPTTY .... (Git Repo)" \
+"2" "COMPTEXT ... (Git Repo)" \
+"3" "FLDIGI ..... (Git Repo)" \
+"4" "FLAMP ...... (Git Repo)" \
+"5" "FLMSG ...... (Git Repo)" \
+"6" "FLRIG ...... (Git Repo)" \
+"7" "FLWKEY ..... (Git Repo)" \
+"8" "FLLOG ...... (Git Repo)" \
+"9" "FLNET ...... (Git Repo)" \
+"10" "FLWRAP ..... (Git Repo)" \
+"11" "LINSIM ..... (Git Repo)" \
 "V" "Check App Versions" \
 "H" "Help" \
 "E" "Exit"
@@ -163,14 +166,17 @@ EOF
 # menu for linux builds
 touch "$TMPD/BuildMenuNix.tmp"
 cat << 'EOF' > "$TMPD/BuildMenuNix.tmp"
-"1" "FLDIGI .. (devel)" \
-"2" "FLAMP ... (devel)" \
-"3" "FLMSG ... (devel)" \
-"4" "FLRIG ... (devel)" \
-"5" "FLWKEY .. (devel)" \
-"6" "FLLOG ... (devel)" \
-"7" "FLNET ... (devel)" \
-"8" "FLWRAP .. (devel)" \
+"1" "COMPTTY .... (Git Repo)" \
+"2" "COMPTEXT ... (Git Repo)" \
+"3" "FLDIGI ..... (Git Repo)" \
+"4" "FLAMP ...... (Git Repo)" \
+"5" "FLMSG ...... (Git Repo)" \
+"6" "FLRIG ...... (Git Repo)" \
+"7" "FLWKEY ..... (Git Repo)" \
+"8" "FLLOG ...... (Git Repo)" \
+"9" "FLNET ...... (Git Repo)" \
+"10" "FLWRAP ..... (Git Repo)" \
+"11" "LINSIM ..... (Git Repo)" \
 "V" "Check App Versions" \
 "H" "Help" \
 "E" "Exit"
@@ -179,14 +185,17 @@ EOF
 # menu for MXE builds
 touch "$TMPD/BuildMenuMxe.tmp"
 cat << 'EOF' > "$TMPD/BuildMenuMxe.tmp"
-"1" "FLDIGI .. (devel)" \
-"2" "FLAMP ... (devel)" \
-"3" "FLMSG ... (devel)" \
-"4" "FLRIG ... (devel)" \
-"5" "FLWKEY .. (devel)" \
-"6" "FLLOG ... (devel)" \
-"7" "FLNET ... (devel)" \
-"8" "FLWRAP .. (devel)" \
+"1" "COMPTTY .... (Git Repo)" \
+"2" "COMPTEXT ... (Git Repo)" \
+"3" "FLDIGI ..... (Git Repo)" \
+"4" "FLAMP ...... (Git Repo)" \
+"5" "FLMSG ...... (Git Repo)" \
+"6" "FLRIG ...... (Git Repo)" \
+"7" "FLWKEY ..... (Git Repo)" \
+"8" "FLLOG ...... (Git Repo)" \
+"9" "FLNET ...... (Git Repo)" \
+"10" "FLWRAP ..... (Git Repo)" \
+"11" "LINSIM ..... (Git Repo)" \
 "V" "Check App Versions" \
 "H" "Help" \
 "E" "Exit"
@@ -195,14 +204,17 @@ EOF
 # menu admin menu
 touch "$TMPD/MxeAdmin.tmp"
 cat << 'EOF' > "$TMPD/MxeAdmin.tmp"
-"1" "FLDIGI .. (devel)" \
-"2" "FLAMP ... (devel)" \
-"3" "FLMSG ... (devel)" \
-"4" "FLRIG ... (devel)" \
-"5" "FLWKEY .. (devel)" \
-"6" "FLLOG ... (devel)" \
-"7" "FLNET ... (devel)" \
-"8" "FLWRAP .. (devel)" \
+"1" "COMPTTY .... (Git Repo)" \
+"2" "COMPTEXT ... (Git Repo)" \
+"3" "FLDIGI ..... (Git Repo)" \
+"4" "FLAMP ...... (Git Repo)" \
+"5" "FLMSG ...... (Git Repo)" \
+"6" "FLRIG ...... (Git Repo)" \
+"7" "FLWKEY ..... (Git Repo)" \
+"8" "FLLOG ...... (Git Repo)" \
+"9" "FLNET ...... (Git Repo)" \
+"10" "FLWRAP ..... (Git Repo)" \
+"11" "LINSIM ..... (Git Repo)" \
 "V" "Check App Versions" \
 "H" "Help" \
 "E" "Exit"
@@ -492,10 +504,10 @@ case "$APP_NAME" in
 		MAJOR=$(cat $VFILE |grep m4_define |grep FLWRAP_MAJOR |awk '{print $2}' |cut -c2)
 		MINOR=$(cat $VFILE |grep m4_define |grep FLWRAP_MINOR |awk '{print $2}' |cut -c2)
 		RAW=$(cat $VFILE |grep m4_define |grep FLWRAP_PATCH |awk '{print $2}') ;;				
-	linsimp)
-		MAJOR=$(cat $VFILE |grep m4_define |grep LINSIM_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep LINSIM_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep LINSIM_PATCH |awk '{print $2}') ;;
+	linsim)
+		MAJOR=$(cat $VFILE |grep m4_define |grep linsim_MAJOR |awk '{print $2}' |cut -c2)
+		MINOR=$(cat $VFILE |grep m4_define |grep linsim_MINOR |awk '{print $2}' |cut -c2)
+		RAW=$(cat $VFILE |grep m4_define |grep linsim_PATCH |awk '{print $2}') ;;
 	*) ;;
 esac
 
@@ -600,7 +612,7 @@ case "$APP_NAME" in
 	comptext)
 		RELEASE=$(grep 'comptext_VERSION =' < Makefile |awk '{print $3}') ;;
 	comptty)
-		RELEASE=$(grep 'comptext_VERSION =' < Makefile |awk '{print $3}') ;;		
+		RELEASE=$(grep 'comptty_VERSION =' < Makefile |awk '{print $3}') ;;		
 	fldigi)
 		RELEASE=$(grep 'FLDIGI_VERSION =' < Makefile |awk '{print $3}') ;;
 	flamp)
@@ -618,7 +630,7 @@ case "$APP_NAME" in
 	flwrap)
 		RELEASE=$(grep 'FLWRAP_VERSION =' < Makefile |awk '{print $3}') ;;
 	linsim)
-		RELEASE=$(grep 'LINSIM_VERSION =' < Makefile |awk '{print $3}') ;;
+		RELEASE=$(grep 'linsim_VERSION =' < Makefile |awk '{print $3}') ;;
 	*) ;;
 esac
 echo "* Created version marker for: $APP_NAME-$RELEASE"
@@ -701,6 +713,13 @@ read -p "Press [ Enter ] to continue.."
 
 }
 
+# build the application
+build_application() {
+	APP_SRC="$SRCD/$APP_NAME"
+	LINK_TYPE='Static'
+	for f in ${default_build_array[@]} ; do "$f" ; done
+	continue
+}
 
 ################################################################################
 #
@@ -713,6 +732,7 @@ read -p "Press [ Enter ] to continue.."
 
 # version check header----------------------------------------------------------
 version_check() {
+# set hight for displaying results
 mkdir -p "$TMPD"
 rm -f "$VERLOG"
 clear
@@ -785,21 +805,43 @@ uscan --version > /dev/null 2>&1 && echo -e "* Uscan ........ ${C_G}✔${C_NC}" 
 	exit 1
 	}
 
-# add message header to file----------------------------------------------------
-echo "APPLICATION RELEASE ALPHA LOCAL-BUILD" > "$VERLOG"
-echo '----------- ------- ----- -----------' >> "$VERLOG"
-
 # Array elements: ('flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap')
 # The difference is sed commands is due to the application name length
 # apps using sed -r 's/^.{7}//' : fldigi, flwkey, fwrap
 # apps using sed -r 's/^.{6}//' : flamp, flmsg, fllog, flrig, flnet
 
+# NOTES about COMTEXT, COMPTTY and LINSIM
+# COMPTTY and COMPTEXT *do not* have alpha folders
+# COMTEXT, COMTTY and LINSIM release downloads are all under the linsim folder
+# The relesae and alpha watch files reflect this accordingly
+# The Git Repos "do" seperate all three
+
+# add message header to file----------------------------------------------------
+echo "APPLICATION RELEASE ALPHA LOCAL-BUILD" > "$VERLOG"
+echo '----------- ------- ----- -----------' >> "$VERLOG"
+
 for f in ${app_array[@]} ; do
 APP_NAME="$f"
 
 case "$f" in
-
 	comptext)
+	
+	# release builds
+	F_R=$(uscan --watchfile @WATCHD@/$f-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
+	F_REL=$(echo ${F_R##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{9}//')
+
+
+	# alpha builds
+	if $(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
+		F_A=$(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
+		F_ALPHA=$(echo ${F_A##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{9}//')
+	else
+		F_ALPHA="$NONE"
+	fi
+	;;
+
+	comptty)
+	
 	# release builds
 	F_R=$(uscan --watchfile @WATCHD@/$f-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
 	F_REL=$(echo ${F_R##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{8}//')
@@ -814,7 +856,7 @@ case "$f" in
 	fi
 	;;
 
-	fldigi|flwkey|flwrap|comptty)
+	fldigi|flwkey|flwrap|linsim|comptty)
 	
 	# release builds
 	F_R=$(uscan --watchfile @WATCHD@/$f-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
@@ -830,7 +872,7 @@ case "$f" in
 	fi
 	;;
 	
-	flamp|flmsg|fllog|flrig|flnet|linsim)
+	flamp|flmsg|fllog|flrig|flnet)
 	
 	F_R=$(uscan --watchfile @WATCHD@/$f-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
 	F_REL=$(echo ${F_R##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
@@ -853,10 +895,25 @@ else
 	BUILDV="$NONE"
 fi
 
-# display the final for each application
+# convert to UPPER case
 DISPLAY_NAME=$(echo "$APP_NAME" | tr '[:lower:]' '[:upper:]')
+
+# add data to the log
 echo "$DISPLAY_NAME $F_REL $F_ALPHA $BUILDV" >> "$VERLOG"
-echo -e "* $DISPLAY_NAME ........ ${C_G}$CHK${C_NC}"
+
+# correct on-screen display
+case "$f" in
+	comptext)
+	DOT="....." ; echo -e "* $DISPLAY_NAME $DOT ${C_G}$CHK${C_NC}" ;;
+	comptty)
+	DOT="......" ; echo -e "* $DISPLAY_NAME $DOT ${C_G}$CHK${C_NC}" ;;
+	fldigi|flwkey|flwrap)
+	DOT="......." ; echo -e "* $DISPLAY_NAME $DOT ${C_G}$CHK${C_NC}" ;;
+	flamp|flmsg|fllog|flnet|flrig)
+	DOT="........" ; echo -e "* $DISPLAY_NAME $DOT ${C_G}$CHK${C_NC}" ;;
+	linsim)
+	DOT="......." ; echo -e "* $DISPLAY_NAME $DOT ${C_G}$CHK${C_NC}" ;;
+esac
 
 done
 
@@ -897,90 +954,50 @@ make_dialogrc
 HELP="$DOCS/main_menu_help.txt"
 
 # MAIN MANU --------------------------------------------------------------------
+
+# Menu Items
+#  1 COMPTTY
+#  2 COMPTEXT
+#  3 FLDIGI
+#  4 FLAMP
+#  5 FLMSG
+#  6 FLRIG
+#  7 FLWKEY
+#  8 FLLOG
+#  9 FLNET
+#  10 FLWRAP
+#  11 LINSIM
+#  V Check App Versions
+#  H Help
+#  E Exit
+
+
+# set the menu selection variable
+INPUT="$TMPD"/SLECTION.$$
+
 while [ 0 ]; do
 
 dialog --clear --ok-label SELECT --nocancel --clear --backtitle "$BACKTITLE" --title \
-"$MMTITLE" --menu "$MENUMSG" 19 62 20 --file "$TMPD/MMenu.tmp" 2> "$TMPD/selection"
+"$MMTITLE" --menu "$MENUMSG" 23 62 20 --file "$TMPD/MMenu.tmp" 2>"${INPUT}"
 
-MMSELECT=$(head -c 1 < "$TMPD"/selection)
+MSELECT=$(<"${INPUT}")
 
-# FLDIGI -----------------------------------------------------------------------
-if [ "$MMSELECT" = "1" ]; then
-	APP_NAME='fldigi'
-	APP_SRC="$SRCD/$APP_NAME"
-	LINK_TYPE='Static'
-	for f in ${default_build_array[@]} ; do "$f" ; done
-	continue
-
-# FLAMP ------------------------------------------------------------------------
-elif [ "$MMSELECT" = "2" ]; then
-	APP_NAME='flamp'
-	APP_SRC="$SRCD/$APP_NAME"
-	LINK_TYPE='Static'
-	for f in ${default_build_array[@]} ; do "$f" ; done
-	continue
-
-# FLMSG ------------------------------------------------------------------------
-elif [ "$MMSELECT" = "3" ]; then
-	APP_NAME='flmsg'
-	APP_SRC="$SRCD/$APP_NAME"
-	LINK_TYPE='Static'
-	for f in ${default_build_array[@]} ; do "$f" ; done
-	continue
-
-# FLRIG Menu--------------------------------------------------------------------
-elif [ "$MMSELECT" = "4" ]; then
-	APP_NAME='flrig'
-	APP_SRC="$SRCD/$APP_NAME"
-	LINK_TYPE='Static'
-	for f in ${default_build_array[@]} ; do "$f" ; done
-	continue
-
-# FLWKEY Menu--------------------------------------------------------------------
-elif [ "$MMSELECT" = "5" ]; then
-	APP_NAME='flwkey'
-	APP_SRC="$SRCD/$APP_NAME"
-	LINK_TYPE='Static'
-	for f in ${default_build_array[@]} ; do "$f" ; done
-	continue
-
-# FLLOG Menu--------------------------------------------------------------------
-elif [ "$MMSELECT" = "6" ]; then
-	APP_NAME='fllog'
-	APP_SRC="$SRCD/$APP_NAME"
-	LINK_TYPE='Static'
-	for f in ${default_build_array[@]} ; do "$f" ; done
-	continue
-
-# FLNET Menu--------------------------------------------------------------------
-elif [ "$MMSELECT" = "7" ]; then
-	APP_NAME='flnet'
-	APP_SRC="$SRCD/$APP_NAME"
-	LINK_TYPE='Static'
-	for f in ${default_build_array[@]} ; do "$f" ; done
-	continue
-	
-# FLWRAP Menu-------------------------------------------------------------------
-elif [ "$MMSELECT" = "8" ]; then
-	APP_NAME='flwrap'
-	APP_SRC="$SRCD/$APP_NAME"
-	LINK_TYPE='Static'
-	for f in ${default_build_array[@]} ; do "$f" ; done
-	continue
-
-# Version Check-----------------------------------------------------------------
-elif [ "$MMSELECT" = "V" ]; then
-	version_check
-	continue
-
-# Help File---------------------------------------------------------------------
-   elif [ "$MMSELECT" = "H" ]; then
-dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80
-	continue
-
-# Exit FLSDK----------------------------------------------------------------
-  elif [ "$MMSELECT" = "E" ]; then
-   clean_exit
-fi
+case "$MSELECT" in
+	1) APP_NAME='comptty' ; build_application ;;
+	2) APP_NAME='comptext' ; build_application ;;
+	3) APP_NAME='fldigi' ; build_application ;;
+	4) APP_NAME='flamp' ; build_application ;;
+	5) APP_NAME='flmsg' ; build_application ;;
+	6) APP_NAME='flrig' ; build_application ;;
+	7) APP_NAME='flwkey' ; build_application ;;
+	8) APP_NAME='fllog' ; build_application ;;
+	9) APP_NAME='flnet' ; build_application ;;
+	10) APP_NAME='flwrap' ; build_application ;;
+	11) APP_NAME='linsim' ; build_application ;;
+	V) version_check ; continue ;;
+	H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
+	E) clean_exit ;;
+esac
 
 done
+
