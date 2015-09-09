@@ -70,20 +70,15 @@ mkdir -p "$HOMEDIR"/{win32,src,tmp,logs,mkrd}
 mkdir -p "$WIN32"/{flamp,fldigi,fllog,flmsg,flnet,flrig,flwkey,flwrap,comptest,comptty,linsim}
 mkdir -p "$COMPTEXTI" "$COMPTTYI" "$FLAMPI" "$FLDIGII" "$FLLOGI" "$FLMSGI" "$FLNETI" "$FLRIGI" "$FLWKEYI" "$FLWRAPI"
 
-# general use package array
-declare -a app_array=('flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap')
-
 # build array
 declare -a default_build_array=( 'build_header' 'git_check' 'get_version' \
 'configure_header' 'set_installd' 'default_configure' 'default_make' 'default_install' \
 'default_version' 'copy_build_logs' 'install_marker' 'change_ownership' \
 'clean_after_build' 'build_summary')
 
-# watch file array
-declare -a watch_array=( 'flamp-alpha-watch' 'flamp-watch' 'fldigi-alpha-watch' \
-'fllog-alpha-watch' 'fllog-watch' 'flmsg-alpha-watch' 'flmsg-wath' \
-'flnet-alpha-watch' 'flnet-watch' 'flrig-alpha-watch' 'flrig-watch' \
-'flwkey-alpha-watch' 'flwkey-watch' 'flwrap-alpha-watch' 'flwrap-watch')
+# general use package array
+# applications flamp,fldigi,fllog,flmsg,flnet,flrig,flwkey,flwrap,comptest,comptty,linsim
+declare -a app_array=('flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap')
 
 # setup foreground colours
 C_R='\033[01;31m'	# red
@@ -593,7 +588,7 @@ echo ''
 make install-strip
 }
 
-# get version info from config.log----------------------------------------------
+# get version info from Makefile------------------------------------------------
 default_version() {
 STEP='Get Version Info Phase'
 echo ''
@@ -714,7 +709,7 @@ read -p "Press [ Enter ] to continue.."
 ################################################################################
 
 # NOTE: Where possible, all functions are in order of use to provide as much
-# clarity as possible / feasable
+# clarity as possible.
 
 # version check header----------------------------------------------------------
 version_check() {
@@ -794,206 +789,78 @@ uscan --version > /dev/null 2>&1 && echo -e "* Uscan ........ ${C_G}✔${C_NC}" 
 echo "APPLICATION RELEASE ALPHA LOCAL-BUILD" > "$VERLOG"
 echo '----------- ------- ----- -----------' >> "$VERLOG"
 
-# FLDIGI version check----------------------------------------------------------
-APP_NAME='fldigi'
+# Array elements: ('flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap')
+# The difference is sed commands is due to the application name length
+# apps using sed -r 's/^.{7}//' : fldigi, flwkey, fwrap
+# apps using sed -r 's/^.{6}//' : flamp, flmsg, fllog, flrig, flnet
 
-fldigi=$(uscan --watchfile @WATCHD@/fldigi-watch --package fldigi --upstream-version 0 --report |grep 'tar.gz')
-fldigi_release=$(echo ${fldigi##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
+for f in ${app_array[@]} ; do
+APP_NAME="$f"
 
-# Check Alpha builds
-if $(uscan --watchfile @WATCHD@/fldigi-alpha-watch --package fldigi --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
-	fldigia=$(uscan --watchfile @WATCHD@/fldigi-alpha-watch --package fldigi --upstream-version 0 --report |grep 'tar.gz')
-	fldigi_alpha=$(echo ${fldigia##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
-else
-	fldigi_alpha="$NONE"
-fi
+case "$f" in
 
-# look for install mkr, set with the build script
-if [ -s "$MKRD/$APP_NAME-version.mkr" ] ; then
-	buildv=$(awk -F\| '{print $1}' < $MKRD/$APP_NAME-version.mkr)
-else
-	buildv="$NONE"
-fi
-
-echo "FLDIGI $fldigi_release $fldigi_alpha $buildv" >> "$VERLOG"
-echo -e "* FLDIGI ....... ${C_G}$CHK${C_NC}"
+	comptext)
+	# release builds
+	F_R=$(uscan --watchfile @WATCHD@/$f-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
+	F_REL=$(echo ${F_R##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{8}//')
 
 
-# FLAMP version info------------------------------------------------------------
-APP_NAME='flamp'
+	# alpha builds
+	if $(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
+		F_A=$(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
+		F_ALPHA=$(echo ${F_A##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{8}//')
+	else
+		F_ALPHA="$NONE"
+	fi
+	;;
 
-flamp=$(uscan --watchfile @WATCHD@/flamp-watch --package flamp --upstream-version 0 --report |grep 'tar.gz')
-flamp_release=$(echo ${flamp##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
-
-# Check Alpha builds
-if $(uscan --watchfile @WATCHD@/flamp-alpha-watch --package flamp --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
-	flampa=$(uscan --watchfile @WATCHD@/flamp-alpha-watch --package flamp --upstream-version 0 --report |grep 'tar.gz')
-	flamp_alpha=$(echo ${flampa##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
-else
-	flamp_alpha="$NONE"
-fi
-
-# look for install mkr, set with the build script
-if [ -s "$MKRD/$APP_NAME-version.mkr" ] ; then
-	buildv=$(awk -F\| '{print $1}' < $MKRD/$APP_NAME-version.mkr)
-else
-	buildv="$NONE"
-fi
-
-echo "FLAMP $flamp_release $flamp_alpha $buildv" >> "$VERLOG"
-echo -e "* FLAMP ........ ${C_G}$CHK${C_NC}"
+	fldigi|flwkey|flwrap|comptty)
+	
+	# release builds
+	F_R=$(uscan --watchfile @WATCHD@/$f-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
+	F_REL=$(echo ${F_R##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
 
 
-# FLMSG version info------------------------------------------------------------
-APP_NAME='flmsg'
+	# alpha builds
+	if $(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
+		F_A=$(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
+		F_ALPHA=$(echo ${F_A##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
+	else
+		F_ALPHA="$NONE"
+	fi
+	;;
+	
+	flamp|flmsg|fllog|flrig|flnet|linsim)
+	
+	F_R=$(uscan --watchfile @WATCHD@/$f-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
+	F_REL=$(echo ${F_R##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
 
-flmsg=$(uscan --watchfile @WATCHD@/flmsg-watch --package flmsg --upstream-version 0 --report |grep 'tar.gz')
-flmsg_release=$(echo ${flmsg##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
 
-# Check Alpha builds
-if $(uscan --watchfile @WATCHD@/flmsg-alpha-watch --package flmsg --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
-	flmsga=$(uscan --watchfile @WATCHD@/flmsg-alpha-watch --package flmsg --upstream-version 0 --report |grep 'tar.gz')
-	flmsg_alpha=$(echo ${flmsga##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
-else
-	flmsg_alpha="$NONE"
-fi
+	# alpha builds
+	if $(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
+		F_A=$(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
+		F_ALPHA=$(echo ${F_A##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
+	else
+		F_ALPHA="$NONE"
+	fi
+	;;
+esac
 
 # look for install mkr, set with the build script
-if [ -s "$MKRD/$APP_NAME-version.mkr" ] ; then
-	buildv=$(awk -F\| '{print $1}' < $MKRD/$APP_NAME-version.mkr)
+if [ -s "$MKRD/$f-version.mkr" ] ; then
+	BUILDV=$(awk -F\| '{print $1}' < $MKRD/$f-version.mkr)
 else
-	buildv="$NONE"
+	BUILDV="$NONE"
 fi
 
-echo "FLMSG $flmsg_release $flmsg_alpha $buildv" >> "$VERLOG"
-echo -e "* FLMSG ........ ${C_G}$CHK${C_NC}"
+# display the final for each application
+DISPLAY_NAME=$(echo "$APP_NAME" | tr '[:lower:]' '[:upper:]')
+echo "$DISPLAY_NAME $F_REL $F_ALPHA $BUILDV" >> "$VERLOG"
+echo -e "* $DISPLAY_NAME ........ ${C_G}$CHK${C_NC}"
 
+done
 
-# FLRIG version info------------------------------------------------------------
-APP_NAME='flrig'
-
-flrig=$(uscan --watchfile @WATCHD@/flrig-watch --package flrig --upstream-version 0 --report |grep 'tar.gz')
-flrig_release=$(echo ${flrig##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
-
-# Check Alpha builds
-if $(uscan --watchfile @WATCHD@/flrig-alpha-watch --package flrig --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
-	flriga=$(uscan --watchfile @WATCHD@/flrig-alpha-watch --package flrig --upstream-version 0 --report |grep 'tar.gz')
-	flrig_alpha=$(echo ${flriga##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
-else
-	flrig_alpha="$NONE"
-fi
-
-# look for install mkr, set with the build script
-if [ -s "$MKRD/$APP_NAME-version.mkr" ] ; then
-	buildv=$(awk -F\| '{print $1}' < $MKRD/$APP_NAME-version.mkr)
-else
-	buildv="$NONE"
-fi
-
-echo "FLRIG $flrig_release $flrig_alpha $buildv" >> "$VERLOG"
-echo -e "* FLRIG ........ ${C_G}$CHK${C_NC}"
-
-
-# FLWKEY version info-----------------------------------------------------------
-APP_NAME='flwkey'
-
-flwkey=$(uscan --watchfile @WATCHD@/flwkey-watch --package flwkey --upstream-version 0 --report |grep 'tar.gz')
-flwkey_release=$(echo ${flwkey##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
-
-# Check Alpha builds
-if $(uscan --watchfile @WATCHD@/flwkey-alpha-watch --package flwkey --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
-	flwkeya=$(uscan --watchfile @WATCHD@/flwkey-alpha-watch --package flwkey --upstream-version 0 --report |grep 'tar.gz')
-	flwkey_alpha=$(echo ${flwkeya##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
-else
-	flwkey_alpha="$NONE"
-fi
-
-# look for install mkr, set with the build script
-if [ -s "$MKRD/$APP_NAME-version.mkr" ] ; then
-	buildv=$(awk -F\| '{print $1}' < $MKRD/$APP_NAME-version.mkr)
-else
-	buildv="$NONE"
-fi
-
-echo "FLWKEY $flwkey_release $flwkey_alpha $buildv" >> "$VERLOG"
-echo -e "* FLWKEY ....... ${C_G}$CHK${C_NC}"
-
-
-# FLWRAP version info-----------------------------------------------------------
-APP_NAME='flwrap'
-
-flwrap=$(uscan --watchfile @WATCHD@/flwrap-watch --package flwrap --upstream-version 0 --report |grep 'tar.gz')
-flwrap_release=$(echo ${flwrap##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
-
-# Check Alpha builds
-if $(uscan --watchfile @WATCHD@/flwrap-alpha-watch --package flwrap --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
-	flwrapa=$(uscan --watchfile @WATCHD@/flwrap-alpha-watch --package flwrap --upstream-version 0 --report |grep 'tar.gz')
-	flwrap_alpha=$(echo ${flampa##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
-else
-	flwrap_alpha="$NONE"
-fi
-
-# look for install mkr, set with the build script
-if [ -s "$MKRD/$APP_NAME-version.mkr" ] ; then
-	buildv=$(awk -F\| '{print $1}' < $MKRD/$APP_NAME-version.mkr)
-else
-	buildv="$NONE"
-fi
-
-echo "FLWRAP $flwrap_release $flwrap_alpha $buildv" >> "$VERLOG"
-echo -e "* FLWRAP ....... ${C_G}$CHK${C_NC}"
-
-
-# FLLOG version info -----------------------------------------------------------
-APP_NAME='fllog'
-
-fllog=$(uscan --watchfile @WATCHD@/fllog-watch --package fllog --upstream-version 0 --report |grep 'tar.gz')
-fllog_release=$(echo ${fllog##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
-
-# Check Alpha builds
-if $(uscan --watchfile @WATCHD@/fllog-alpha-watch --package fllog --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
-	flloga=$(uscan --watchfile @WATCHD@/fllog-alpha-watch --package fllog --upstream-version 0 --report |grep 'tar.gz')
-	fllog_alpha=$(echo ${flloga##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
-else
-	fllog_alpha="$NONE"
-fi
-
-# look for install mkr, set with the build script
-if [ -s "$MKRD/$APP_NAME-version.mkr" ] ; then
-	buildv=$(awk -F\| '{print $1}' < $MKRD/$APP_NAME-version.mkr)
-else
-	buildv="$NONE"
-fi
-
-echo "FLLOG $fllog_release $fllog_alpha $buildv" >> "$VERLOG"
-echo -e "* FLLOG ........ ${C_G}$CHK${C_NC}"
-
-
-# FLNET version info -----------------------------------------------------------
-APP_NAME='flnet'
-
-flnet=$(uscan --watchfile @WATCHD@/flnet-watch --package flnet --upstream-version 0 --report |grep 'tar.gz')
-flnet_release=$(echo ${flnet##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
-
-# Check Alpha builds
-if $(uscan --watchfile @WATCHD@/flnet-alpha-watch --package flnet --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
-	flneta=$(uscan --watchfile flnet-alpha-watch --package flnet --upstream-version 0 --report |grep 'tar.gz')
-	flnet_alpha=$(echo ${flneta##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
-else
-	flnet_alpha="$NONE"
-fi
-
-# look for install mkr, set with the build script
-if [ -s "$MKRD/$APP_NAME-version.mkr" ] ; then
-	buildv=$(awk -F\| '{print $1}' < $MKRD/$APP_NAME-version.mkr)
-else
-	buildv="$NONE"
-fi
-
-echo "FLNET $flnet_release $flnet_alpha $buildv" >> "$VERLOG"
-echo -e "* FLNET ........ ${C_G}$CHK${C_NC}"
-
-# display version check results-------------------------------------------------
+# display version check results table-------------------------------------------
 echo ''
 cat "$VERLOG" |column -t
 echo ''
