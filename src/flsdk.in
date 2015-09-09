@@ -362,15 +362,6 @@ rm -f "$TMPD/.dialogrc" &>/dev/null ; touch "$TMPD/.dialogrc"
 (
 cat <<'EOF_DIALOGRC'
 aspect = 0
-separate_widget = ""
-tab_len = 0
-visit_items = OFF
-use_shadow = ON
-use_colors = ON
-screen_color = (CYAN,BLUE,ON)
-shadow_color = (BLACK,BLACK,ON)
-dialog_color = (BLACK,WHITE,OFF)
-title_color = (BLUE,WHITE,ON)
 border_color = (WHITE,WHITE,ON)
 button_active_color = (WHITE,BLUE,ON)
 button_inactive_color = (BLACK,WHITE,OFF)
@@ -378,29 +369,38 @@ button_key_active_color = (WHITE,BLUE,ON)
 button_key_inactive_color = (RED,WHITE,OFF)
 button_label_active_color = (YELLOW,BLUE,ON)
 button_label_inactive_color = (BLACK,WHITE,ON)
-inputbox_color = (BLACK,WHITE,OFF)
-inputbox_border_color = (BLACK,WHITE,OFF)
-searchbox_color = (BLACK,WHITE,OFF)
-searchbox_title_color = (BLUE,WHITE,ON)
-searchbox_border_color = (WHITE,WHITE,ON)
-position_indicator_color = (BLUE,WHITE,ON)
-menubox_color = (BLACK,WHITE,OFF)
-menubox_border_color = (WHITE,WHITE,ON)
-item_color = (BLACK,WHITE,OFF)
-item_selected_color = (WHITE,BLUE,ON)
-tag_color = (BLUE,WHITE,ON)
-tag_selected_color = (YELLOW,BLUE,ON)
-tag_key_color = (BLACK,WHITE,OFF)
-tag_key_selected_color = (WHITE,BLUE,ON)
 check_color = (BLACK,WHITE,OFF)
 check_selected_color = (WHITE,BLUE,ON)
-uarrow_color = (GREEN,WHITE,ON)
 darrow_color = (GREEN,WHITE,ON)
-itemhelp_color = (WHITE,BLACK,OFF)
+dialog_color = (BLACK,WHITE,OFF)
 form_active_text_color = (WHITE,BLUE,ON)
-form_text_color = (WHITE,CYAN,ON)
 form_item_readonly_color = (CYAN,WHITE,ON)
+form_text_color = (WHITE,CYAN,ON)
 gauge_color = (BLUE,WHITE,ON)
+inputbox_border_color = (BLACK,WHITE,OFF)
+inputbox_color = (BLACK,WHITE,OFF)
+item_color = (BLACK,WHITE,OFF)
+itemhelp_color = (WHITE,BLACK,OFF)
+item_selected_color = (YELLOW,BLACK,ON)
+menubox_border_color = (WHITE,WHITE,ON)
+menubox_color = (BLACK,WHITE,OFF)
+position_indicator_color = (BLUE,WHITE,ON)
+screen_color = (CYAN,BLUE,ON)
+searchbox_border_color = (WHITE,WHITE,ON)
+searchbox_color = (BLACK,WHITE,OFF)
+searchbox_title_color = (BLUE,WHITE,ON)
+separate_widget = ""
+shadow_color = (BLACK,BLACK,ON)
+tab_len = 2
+tag_color = (BLACK,WHITE,ON)
+tag_key_color = (BLACK,WHITE,ON)
+tag_key_selected_color = (BLACK,WHITE,ON)
+tag_selected_color = (BLACK,WHITE,ON)
+title_color = (BLUE,WHITE,ON)
+uarrow_color = (RED,WHITE,ON)
+use_colors = ON
+use_shadow = ON
+visit_items = OFF
 EOF_DIALOGRC
 ) > "$TMPD/.dialogrc"
 
@@ -977,7 +977,7 @@ INPUT="$TMPD"/SLECTION.$$
 
 while [ 0 ]; do
 
-dialog --clear --ok-label SELECT --nocancel --clear --backtitle "$BACKTITLE" --title \
+dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
 "$MMTITLE" --menu "$MENUMSG" 23 62 20 --file "$TMPD/MMenu.tmp" 2>"${INPUT}"
 
 MSELECT=$(<"${INPUT}")
