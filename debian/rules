@@ -13,5 +13,4 @@ override_dh_auto_install:
 	@echo ' Override_dh_auto_install'
 	@echo '---------------------------------------'
 	@echo ''
-	@echo ' Nothing to be done for $(MAKE) install'
-	@echo ''
+

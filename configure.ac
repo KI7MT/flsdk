@@ -47,7 +47,7 @@ AC_MSG_NOTICE([Distribution is: $DESC $HOSE_CPU])
 # ------------------------------------------------------------------------------
 #  default install path, if not defined ( TO-DO: make M4 macro )
 # ------------------------------------------------------------------------------
-AC_PREFIX_DEFAULT("/usr/local")
+AC_PREFIX_DEFAULT("/usr")
 if test "$prefix" = "NONE"; then 
 	prefix=${ac_default_prefix}
 fi

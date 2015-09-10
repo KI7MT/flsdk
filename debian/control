@@ -16,14 +16,13 @@ Build-Depends: debhelper (>= 9.2.0),
          xmlto,
          libxml2-utils
 Homepage: https://sourceforge.net/projects/flsdk/
-Vcs-Git:
-Vcs-Browser:
+Vcs-Git: git://git.code.sf.net/p/flsdk/code
+Vcs-Browser: https://git.code.sf.net/p/flsdk/code
 
 Package: flsdk
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends},
+Depends: ${misc:Depends}, ${shlibs:Depends}, dialog, lsb-release
 
 Description: Build System for FLDIGI Applications
- FLSDK is a pre-configured collection of open source cross platform development
- frameworks, Gnu tools, libraries and custom written scripts designed to ease
- compilingthe FLDIGI Suite of applications, including NBEMS, from source code.
+ FLSDK is a collection of custom written shell scripts designed to ease
+ compiling FLDIGI applications and documentation from source code.

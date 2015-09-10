@@ -1,6 +1,6 @@
 ?package(jtsdk):needs="X11" \
  section="Applications/Programming" \
- description="Build System for FLDIGI Applicatinos" \
+ description="Build System for FLDIGI Applications" \
  hints="FLSDK,FLDIGI" \
  title="FLSDK" \
  icon="/usr/share/pixmaps/flsdk.xpm" \
