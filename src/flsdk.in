@@ -513,7 +513,7 @@ esac
 
 PATCH=${RAW:2:-2}
 BUILDV="$MAJOR.$MINOR.$PATCH"
-echo "* Build Version Is ..: $BUILDV"
+echo "* Package Version ..: $BUILDV"
 }
 
 # configure header--------------------------------------------------------------

@@ -59,9 +59,18 @@ DTDIR		:=	@DTDIR@
 DOCDIR		:=	@DOCDIR@
 ICOND		:=	@ICOND@
 MANDIR		:=	@MANDIR@
+MENUD		:=	@MENUD@
 PATCHD		:=	@PATCHD@
 SHARE		:=	@SHARE@
 WATCHD		:=	@WATCHD@
+
+# source directories
+DATASRC		:=	@DATASRC@
+DOCSRC		:=	@DOCSRC@
+MANSRC		:=	@MANSRC@
+MENUSRC		:=	@MENUSRC@
+PATCHSRC	:=	@PATCHSRC@
+WATCHSRC	:=	@WATCHSRC@
 
 # manpages and docs
 BDOC		:=	@BDOC@
@@ -70,12 +79,6 @@ A2X			:=	@A2X@
 ASCIIDOC	:=	@ASCIIDOC@
 MANLIST		:=	$(wildcard man/*.1.txt)
 INSMAN		:=	$(wildcard man/*.1)
-
-# source directories
-DOCSRC		:=	@DOCSRC@
-MANSRC		:=	@MANSRC@
-PATCHSRC	:=	@PATCHSRC@
-
 
 # package information
 PKGINFO		:=	@PKGINFO@
@@ -150,13 +153,13 @@ install-binaries:
 	@$(MKDIR) -p $(DESTDIR)$(SHARE) $(DESTDIR)$(WATCHD) $(DESTDIR)$(PATCH)
 	@echo '* Installing Scripts'
 	@install -m 755 src/flsdk $(DESTDIR)$(BINDIR)
-	@install -m 644 src/watch/* $(DESTDIR)$(WATCHD)
-	@install -m 644 src/menu/* $(DESTDIR)$(DOCDIR)
-	@install -m 644 AUTHORS ChangeLog COPYING COPYRIGHT $(DESTDIR)$(DOCDIR)
-	@install -m 644 data/flsdk.desktop $(DESTDIR)$(DTDIR)
-	@install -m 644 data/flsdk.xpm $(DESTDIR)$(ICOND)
+	@install -m 644 $(WATCHSRC)/* $(DESTDIR)$(WATCHD)
+	@install -m 644 $(MENUSRC)/* $(DESTDIR)$(MENUD)
+	@install -m 644 $(DATASRC)/flsdk.desktop $(DESTDIR)$(DTDIR)
+	@install -m 644 $(DATASRC)/flsdk.xpm $(DESTDIR)$(ICOND)
 	@install -m 644 $(PKGINFO) $(DESTDIR)$(DOCDIR)
 	@cp -r $(PATCHSRC) $(DESTDIR)$(SHARE)
+	@install -m 644 AUTHORS ChangeLog COPYING COPYRIGHT $(PKGINFO) $(DESTDIR)$(DOCDIR)
 ifeq ($(BDOC),Yes)
 	@echo '* Installing Documentation'
 	@install -m -644 $(DOCSRC)/*.html $(DESTDIR)$(DOCDIR)

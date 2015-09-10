@@ -76,6 +76,7 @@ DOCDIR="$prefix"/share/doc/flsdk
 DTDIR="$prefix"/share/applications
 ICOND="$prefix"/share/pixmaps
 MANDIR="$prefix"/share/man/man1
+MENUD="$prefix"/share/flsdk/menu
 PATCHD="$prefix"/share/flsdk/patch
 SHARE="$prefix"/share/flsdk
 WATCHD="$prefix"/share/flsdk/watch
@@ -85,6 +86,7 @@ AC_SUBST([DOCDIR], ["$DOCDIR"])
 AC_SUBST([DTDIR], ["$DTDIR"])
 AC_SUBST([ICOND], ["$ICOND"])
 AC_SUBST([MANDIR], ["$MANDIR"])
+AC_SUBST([MENUD], ["$MENUD"])
 AC_SUBST([PATCHD], ["$PATCHD"])
 AC_SUBST([SHARE], ["$SHARE"])
 AC_SUBST([WATCHD], ["$WATCHD"])
@@ -95,11 +97,15 @@ AC_SUBST([WATCHD], ["$WATCHD"])
 DATASRC=$(exec pwd)/data
 DOCSRC=$(exec pwd)/doc/source
 MANSRC=$(exec pwd)/man
+MENUSRC=$(exec pwd)/src/menu
 PATCHSRC=$(exec pwd)/src/patch
+WATCHSRC=$(exec pwd)/src/watch
 AC_SUBST([DATASRC], ["$DATASRC"])
 AC_SUBST([DOCSRC], ["$DOCSRC"])
 AC_SUBST([MANSRC], ["$MANSRC"])
+AC_SUBST([MENUSRC], ["$MENUSRC"])
 AC_SUBST([PATCHSRC], ["$PATCHSRC"])
+AC_SUBST([WATCHSRC], ["$WATCHSRC"])
 
 
 # ------------------------------------------------------------------------------
