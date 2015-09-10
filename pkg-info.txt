@@ -1,6 +1,0 @@
- Package ..........: FLSDK 0.0.3
- Distribution .....: Ubuntu 14.04.3 LTS x86_64
- License ..........: GPL-3
- Copyright ........: Copyright (C) 2014-2015 Greg Beam, KI7MT
- Project Website ..: https://sourceforge.net/projects/flsdk
- Report Bugs To ...: ki7mt01@gmail.com
