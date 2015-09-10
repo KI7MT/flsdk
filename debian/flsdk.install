@@ -1,8 +1,0 @@
-src/flsdk usr/bin/
-src/menu/* usr/share/flsdk/menu/
-src/watch/* usr/share/flsdk/watch/
-src/patch/* usr/share/flsdk/patch/
-data/flsdk.xpm usr/share/pixmaps/
-data/flsdk.desktop usr/share/applications/
-doc/flsdk.html usr/share/doc/flsdk/
-pkg-info.txt usr/share/doc/flsdk/
