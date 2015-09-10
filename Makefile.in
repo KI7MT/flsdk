@@ -8,12 +8,9 @@
 #                   Python2
 #
 # TARGETS:
-#
 # all             - default target, make sure everything gets built
-# config-scripts  - configure scripts based on users parameters
 # build-doc       - build all documentation 
 # build-manp      - build manpages
-# build-test      - build test scripts
 # install         - install @PROGRAM@
 # uninstall       - uninstall @PROGRAM@
 
@@ -45,11 +42,6 @@ SED			:=	@SED@
 SHELL		:=	@SHELL@
 GIT			:=	@GIT@
 MKDIR		:=	@MKDIR@
-
-# user, groups and home
-LOGNAME		:=	$$(LOGNAME)
-LOGGRP		:=	$(shell groups $$(LOGNAME) | cut -d ' ' -f 3)
-HOMEDIR		:=	/home/$$(LOGNAME)/flsdk
 
 # system directories
 INSTALL		:=	install
@@ -133,7 +125,6 @@ make-summary:
 	@echo ''
 	@echo " Package ...................: $(PROGRAM) $(VERSION)"
 	@echo " Install prefix ............: $(PREFIX)"
-	@echo " Working Directory .........: $(HOMEDIR)"
 	@echo ''
 	@echo ' To Install, type ..........: sudo make install'
 	@echo ''
@@ -175,7 +166,6 @@ endif
 	@echo ''
 	@echo " Package ...................: $(PROGRAM) $(VERSION)"
 	@echo " Install prefix ............: $(PREFIX)"
-	@echo " Home Directory ............: $(HOMEDIR)"
 	@echo " Arch.......... ............: $(HOST_CPU)"
 	@echo " Distribution ..............: $(DESC)"
 	@echo " Enable Folder Separation ..: $(SEPARATE)"
@@ -205,12 +195,7 @@ uninstall:
 	@$(RM) -rf $(DESTDIR)$(SHARE)
 	@$(RM) -f $(DESTDIR)$(ICOND)/flsdk.xpm
 	@$(RM) -f $(DESTDIR)$(DTDIR)/flsdk.desktop
-	@echo ''
-	@echo 'UNINSTALL NOTES'
-	@echo ''
-	@echo ' 1. All user generated files remain in:'
-	@echo "    PATH: $(HOMEDIR)"
-	@echo ''
+	@echo '* Finished'
 
 # Cleanup Source Tree
 .PHONY: clean
