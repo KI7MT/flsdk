@@ -49,7 +49,7 @@ MKDIR		:=	@MKDIR@
 # user, groups and home
 LOGNAME		:=	@LOGNAME@
 LOGGRP		:=	$(shell groups @LOGNAME@ | cut -d ' ' -f 3)
-HOMEDIR		:=	@HOMEDIR@
+HOMEDIR		:=	/home/@LOGNAME@/flsdk
 
 # system directories
 INSTALL		:=	install

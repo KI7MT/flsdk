@@ -26,7 +26,7 @@ LOGNAME=@LOGNAME@
 LOGGRP=$(groups @LOGNAME@ | cut -d ' ' -f 3)
 
 # home and main options
-HOMEDIR=@HOMEDIR@
+HOMEDIR=~/flsdk
 SEPARATE=@SEPARATE@
 JJ=@JJJJ@
 

@@ -54,23 +54,10 @@ fi
 AC_SUBST([PREFIX], ["$prefix"])
 AC_MSG_NOTICE([Install Prefix as: $PREFIX])
 
-
-# ------------------------------------------------------------------------------
-#  user defined home directory ( TO-DO: make m4 macro )
-# ------------------------------------------------------------------------------
-AC_ARG_WITH([homedir],
-AC_HELP_STRING([--with-homedir=PATH], [Home directory path]), [homedir=$with_homedir])
-if test -n "$with_homedir"; then
-	AC_SUBST([HOMEDIR], ["$with_homedir/flsdk"])
-else
-	AC_SUBST([HOMEDIR], ["/home/$LOGNAME/flsdk"])
-fi
-AC_MSG_NOTICE([Home Directory as: $HOMEDIR])
-
 # ------------------------------------------------------------------------------
 # install paths
 # ------------------------------------------------------------------------------
-LOGNAME="$LOGNAME"
+LOGNAME=$LOGNAME
 BINDIR="$prefix"/bin
 DOCDIR="$prefix"/share/doc/flsdk
 DTDIR="$prefix"/share/applications
