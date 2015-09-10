@@ -1,7 +1,6 @@
 = FLSDK - Software Development Kit
 :revision: 0.0.3
 :icons:
-:badges:
 :numbered:
 :keywords: amateur radio fldigi flarq flamp flwrap flmsg flrig flwkey fllog flnet
 :description: Software Development Kit
