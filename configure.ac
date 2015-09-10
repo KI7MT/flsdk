@@ -95,7 +95,7 @@ AC_SUBST([WATCHD], ["$WATCHD"])
 DATASRC=$(exec pwd)/data
 DOCSRC=$(exec pwd)/doc/source
 MANSRC=$(exec pwd)/man
-PATCHSRC=$(exec pwd)/patch
+PATCHSRC=$(exec pwd)/src/patch
 AC_SUBST([DATASRC], ["$DATASRC"])
 AC_SUBST([DOCSRC], ["$DOCSRC"])
 AC_SUBST([MANSRC], ["$MANSRC"])
