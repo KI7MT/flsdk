@@ -57,7 +57,6 @@ AC_MSG_NOTICE([Install Prefix as: $PREFIX])
 # ------------------------------------------------------------------------------
 # install paths
 # ------------------------------------------------------------------------------
-LOGNAME=$LOGNAME
 BINDIR="$prefix"/bin
 DOCDIR="$prefix"/share/doc/flsdk
 DTDIR="$prefix"/share/applications
@@ -67,7 +66,6 @@ MENUD="$prefix"/share/flsdk/menu
 PATCHD="$prefix"/share/flsdk/patch
 SHARE="$prefix"/share/flsdk
 WATCHD="$prefix"/share/flsdk/watch
-AC_SUBST([LOGNAME], ["$LOGNAME"])
 AC_SUBST([BINDIR], ["$BINDIR"])
 AC_SUBST([DOCDIR], ["$DOCDIR"])
 AC_SUBST([DTDIR], ["$DTDIR"])

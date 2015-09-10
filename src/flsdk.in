@@ -668,7 +668,9 @@ echo '-----------------------------------------------------'
 echo -e ${C_Y}" VERIFY OWNERSHIP"${C_NC}
 echo '-----------------------------------------------------'
 echo ''
-chown -R "$LOGNAME":"$LOGGRP" "$HOMEDIR/$APP_NAME"
+LOGNAME=$LOGNAME
+LOGGRP=$(groups $LOGNAME | cut -d ' ' -f 3)
+chown -R "$LOGNAME":"$LOGRP" "$HOMEDIR/$APP_NAME"
 echo "* Updated ownership to [ $LOGNAME ]"
 }
 

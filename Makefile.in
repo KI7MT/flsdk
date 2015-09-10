@@ -47,9 +47,9 @@ GIT			:=	@GIT@
 MKDIR		:=	@MKDIR@
 
 # user, groups and home
-LOGNAME		:=	@LOGNAME@
-LOGGRP		:=	$(shell groups @LOGNAME@ | cut -d ' ' -f 3)
-HOMEDIR		:=	/home/@LOGNAME@/flsdk
+LOGNAME		:=	$$(LOGNAME)
+LOGGRP		:=	$(shell groups $$(LOGNAME) | cut -d ' ' -f 3)
+HOMEDIR		:=	/home/$$(LOGNAME)/flsdk
 
 # system directories
 INSTALL		:=	install
