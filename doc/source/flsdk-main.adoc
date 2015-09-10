@@ -11,6 +11,8 @@
 // LINKS SECTION----------------------------------------------------------------
 //
 
+:comptext-info: http://www.w1hkj.com/downloads/test_suite/guide.html[COMPTEXT]
+:comptty-info: http://www.w1hkj.com/downloads/test_suite/guide.html[COMPTTY]
 :arrl-nbems: http://www.arrl.org/nbems[NBEMS]
 :cygwin-home: https://www.cygwin.com/[CygWin]
 :flamp-info: http://www.w1hkj.com/flamp-help/index.html[FLAMP]
@@ -25,6 +27,9 @@
 :flrig-info: http://www.w1hkj.com/flrig-help/index.html[FLRIG]
 :flwkey-info: http://www.w1hkj.com/flwkey-help/index.html[FLWKEY]
 :flwrap-info: http://www.w1hkj.com/Flwrap/index.html[FLWRAP]
+:flsdk-info: https://launchpad.net/~ki7mt/+archive/ubuntu/flsdk[FLSDK]
+:flsdk-meta-info: https://launchpad.net/~ki7mt/+archive/ubuntu/flsdk[FLSDK-Meta]
+:linsim-info: http://www.w1hkj.com/downloads/test_suite/guide.html[LINSIM]
 :gnu_gpl: http://www.gnu.org/licenses/gpl-3.0.txt[GNU General Public License]
 :greg_beam: mailto:ki7mt@yahoo.com[KI7MT]
 :linuxham-group: https://groups.yahoo.com/neo/groups/linuxham/info[Linuxham Group]

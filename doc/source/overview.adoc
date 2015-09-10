@@ -13,21 +13,9 @@ or part.
 Beyond the standard tools each distribution provides, {prog} will add the 
 following features:
 
-* Automated dependency installation using native package management tools
-* Menu driven build system for (9) primary applications
+* Menu driven build system for (11) primary applications
 * Version check script ( Release, Alpha, Local Build )
 * Unlimited options when manually building from the command line
-
-=== Guide Deliverables
-This guide will provide users with the following guidance ( relative to {prog} )
-
-* Installation on supported distributions
-* Application builds using default configurations
-* Command line custom configuration options
-* Brief overview of benchmark builds 
-* Advanced topics on multi-compiler selection and use
-* Outline tools and script capabilities
-* Overview of included packages, libraries and frameworks
 
 === Supported Builds
 {prog} will build the following applications from the FLDIGI Suite:
@@ -36,23 +24,25 @@ NOTE: Click on the application name to view the _Official User Manual_ for
 each application.
 
 [horizontal]
+{comptext-info}:: Used to compare two text streams
+{comptty-info}:: Used to compare two RTTY streams
+{flamp-info}:: Amateur Multi-cast Protocol
 {fldigi-info}:: Digital modem program for Linux, Free-BSD, OS X, WinXP thru Win7
 {flarq-info}:: Automatic Repeat request program
-{flamp-info}:: Amateur Multi-cast Protocol
-{flwrap-info}:: Application that encapsulates a text, image, or a binary files
-{flmsg-info}:: Simple forms editor for the amateur radio supported standard message formats.
-{flwkey-info}:: Simple interface to the {winkey} series of CW code generators
-{flrig-info}:: Transceiver control program to be used stand alone or with FLDIGI
 {fllog-info}:: Ham Radio logbook application for casual operating
+{flmsg-info}:: Simple forms editor for the amateur radio supported standard message formats.
 {flnet-info}:: Real time tool to assist Net Control Operators in managing net activities.
+{flrig-info}:: Transceiver control program to be used stand alone or with FLDIGI
+{flwkey-info}:: Simple interface to the {winkey} series of CW code generators
+{flwrap-info}:: Application that encapsulates a text, image, or a binary files
+{linsim-info}:: Tool for Amateur Radio Digital Mode evaluation under varying HF propogation conditions
 
-=== Supported Distributions
+=== Distributions
 The following distributions are currently supported:
 
-* Ubuntu 14.04, 14.10
-* Debian 7.0, 8.0
-* Mint 17.1
+* Debian / Mint / UBuntu
 * Raspbian (Debian Wheezy, Jessie)
+* Others ( where dependencies can be met )
 
 NOTE: As new package lists are made available, additional Linux distributions
 will added to the supported distribution list. If you have a particular
