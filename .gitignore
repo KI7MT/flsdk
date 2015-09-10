@@ -1,0 +1,10 @@
+Makefile
+pkg-info.txt
+config.log
+config.status
+configure
+autom4te.cache/
+data/flsdk.desktop
+doc/source/flsdk.html
+man/flsdk.1.txt
+src/flsdk
