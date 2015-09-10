@@ -1,7 +1,0 @@
-?package(flsdk):needs="X11" \
- section="Applications/Programming" \
- description="Build System for FLDIGI Applications" \
- hints="FLSDK,FLDIGI" \
- title="@PROGRAM@ @VERSION@" \
- icon="@ICOND@/flsdk.xpm" \
- command="@BINDIR@/jtsdk"
