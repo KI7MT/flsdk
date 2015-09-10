@@ -21,10 +21,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-------------------------------------------------------------------------#
 
-# user and group information
-LOGNAME=@LOGNAME@
-LOGGRP=$(groups @LOGNAME@ | cut -d ' ' -f 3)
-
 # home and main options
 HOMEDIR=~/flsdk
 SEPARATE=@SEPARATE@
