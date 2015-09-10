@@ -63,16 +63,6 @@ PATCHD		:=	@PATCHD@
 SHARE		:=	@SHARE@
 WATCHD		:=	@WATCHD@
 
-# install directories
-FLAMPI		:=	@FLAMPI@
-FLDIGII		:=	@FLDIGII@
-FLLOGI		:=	@FLLOGI@
-FLMSGI		:=	@FLMSGI@
-FLNETI		:=	@FLNETI@
-FLRIGI		:=	@FLRIGI@
-FLWKEYI		:=	@FLWKEYI@
-FLWRAPI		:=	@FLWRAPI@
-
 # manpages and docs
 BDOC		:=	@BDOC@
 MANP		:=	@MANP@
@@ -146,21 +136,7 @@ make-summary:
 	@echo ''
 
 # install @PROGRAM@ @VERSION@
-install: install-binaries install-message
-
-under-development:
-	@echo ''
-	@echo '---------------------------------------------'
-	@echo -e $(C_R)"UNDER DEVELOPMENT"$(C_NC)
-	@echo '---------------------------------------------'
-	@echo '' 
-	@echo " $(PROGRAM) is undergoing extensive re-writing."
-	@echo ' It is not possible to perform a working installation'
-	@echo ' at this time.'
-	@echo ''
-	@echo " Users should continue to use $(PROGRAM) v0.0.2 until"
-	@echo ' further notice.'
-	@echo ''
+install: install-binaries
 
 install-binaries:
 	@clear
@@ -189,8 +165,6 @@ ifeq ($(MANP),Yes)
 	@echo '* Installing Manpages'
 	@install -m 644 $(INSMAN) $(DESTDIR)$(MANDIR)
 endif	
-
-install-message:
 	@echo ''
 	@echo '---------------------------------------------'
 	@echo -e $(C_G)"FINISHED INSTALLATION "$(C_NC)
