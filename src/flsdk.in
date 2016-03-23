@@ -485,9 +485,9 @@ case "$APP_NAME" in
 		MINOR=$(cat $VFILE |grep m4_define |grep FLMSG_MINOR |awk '{print $2}' |cut -c2)
 		RAW=$(cat $VFILE |grep m4_define |grep FLMSG_PATCH |awk '{print $2}') ;;
 	flnet)
-		MAJOR=$(cat $VFILE |grep m4_define |grep flnet_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep flnet_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep flnet_PATCH |awk '{print $2}') ;;		
+		MAJOR=$(cat $VFILE |grep m4_define |grep FLNET_MAJOR |awk '{print $2}' |cut -c2)
+		MINOR=$(cat $VFILE |grep m4_define |grep FLNET_MINOR |awk '{print $2}' |cut -c2)
+		RAW=$(cat $VFILE |grep m4_define |grep FLNET_PATCH |awk '{print $2}') ;;
 	flrig)
 		MAJOR=$(cat $VFILE |grep m4_define |grep FLRIG_MAJOR |awk '{print $2}' |cut -c2)
 		MINOR=$(cat $VFILE |grep m4_define |grep FLRIG_MINOR |awk '{print $2}' |cut -c2)
@@ -618,7 +618,7 @@ case "$APP_NAME" in
 	flmsg)
 		RELEASE=$(grep 'FLMSG_VERSION =' < Makefile |awk '{print $3}') ;;
 	flnet)
-		RELEASE=$(grep 'flnet_VERSION =' < Makefile |awk '{print $3}') ;;
+		RELEASE=$(grep 'FLNET_VERSION =' < Makefile |awk '{print $3}') ;;
 	flrig)
 		RELEASE=$(grep 'FLRIG_VERSION =' < Makefile |awk '{print $3}') ;;
 	flwkey)
