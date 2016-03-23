@@ -1,0 +1,202 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# provides Pyton2 backward compatibility
+from __future__ import print_function
+
+#
+#       chksf.py
+#
+#       Copyright (C) 2014-2016 Greg Beam, KI7MT
+#
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; Version 3 of the License
+#
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, the license can be downloaded here:
+#
+#       http://www.gnu.org/licenses/gpl.html
+
+# standard Python modules
+import os
+import sys
+import requests
+import pwd
+import sqlite3
+
+# Additional Python packages / modules, used for HTML parsing
+from bs4 import BeautifulSoup
+
+# meta data
+__author__ = "@AUTHORS"
+__copyright__ = "Copyright (C) 2014-2016 Greg Beam, KI7MT"
+__license__ = "GPL-3"
+__date__ = "2016-03-23"
+__version__ = "0.0.3"
+__email__ = "ki7mt@yahoo.com"
+__status__ = "Development"
+
+# variables used in process
+ext = "tar.gz/download"
+app_list = ('comptext','comptty','flamp','fldigi','fllog','flmsg','flnet','flrig','flwkey','flwrap','linsim')
+user =(pwd.getpwuid(os.getuid())[0])
+flsdk_path = ("/home" + (os.sep) + user + (os.sep) + "flsdk")
+mkrd = (flsdk_path + (os.sep) + "mkrd")
+dbf=(flsdk_path + (os.sep) + "flsdk.db")
+dirs=['flsdk_path', 'mkrd']
+
+# add some color
+C_R='\033[01;31m'		# red
+C_G='\033[01;32m'		# green
+C_Y='\033[01;33m'		# yellow
+C_C='\033[01;36m'		# cyan
+C_NC='\033[01;37m'		# no color
+
+# make directories if they do not exist
+for z in dirs:
+    if not os.path.exists(z):
+        os.mkdir(z)
+
+def clear_screen():
+    """Clear based on the platform"""
+    if sys.platform == 'win32':
+        os.system('cls')
+    else:
+        os.system('clear')
+
+def csvf(Url):
+    """Parse SF FLDIGI Alpha Folder html page for extensions ( zip or gz )"""
+    list = BeautifulSoup(requests.get(Url).text, "html.parser")
+    for a in list.find_all('a'):
+        yield a['href']
+
+def chk_ext():
+    """Set archive file extension ( zip or gz ) based on operating system type"""
+    if sys.platform == "win32":
+        ext = ("zip" + "/download")
+    else:
+        ext = ("gz" + "/download")
+
+def main():
+    """
+     The main function performs the following tasks:
+      * creates a small single table SQLite3 database
+      * Check the Alpha Test Folder on Sourceforge
+      * Check the Test Suite Folder on Sourceforge
+      * Check local FLSDK folder for build markers
+      * Renders Program Name and Version information
+    """
+    chk_ext()
+
+    # create the SQLite3 database by connecting to it    
+    conn = sqlite3.connect(dbf)
+    cur = conn.cursor()
+    cur.execute("""DROP TABLE IF EXISTS VER""")
+    cur.execute('''CREATE TABLE VER
+       (NAME    TEXT    PRIMARY KEY UNIQUE NOT NULL,
+       ALPHA    TEXT,
+       RELEASED TEXT,
+       LOCAL    TEXT);''')
+
+    # Loop through each file found in the Alpha Folder
+    Url = "https://sourceforge.net/projects/fldigi/files/alpha_tests/"
+    print("* Alpha Programs")
+    for l in csvf(Url):
+        if l.endswith(ext):
+            af = l.split("alpha_tests/", 1)[1][:-9]
+            an = af.split("-", 1)[0]
+            av = af.split("-", 1)[1][:-7]
+            cur.execute('''INSERT or IGNORE into VER (NAME,ALPHA) values (?,?);''', (an,av))
+            conn.commit()
+            cur.execute('''UPDATE VER SET NAME= ?, ALPHA = ? WHERE NAME= ?;''', (an,av,an))
+            conn.commit()
+    
+    # Loop through each file found in the Test Folder
+    print("* Test Suite Programs")
+    Url = "https://sourceforge.net/projects/fldigi/files/test_suite/"
+    for l in csvf(Url):
+        if l.endswith(ext):
+            tf = l.split("test_suite/", 1)[1][:-9]
+            tn = tf.split("-", 1)[0]
+            tv = tf.split("-", 1)[1][:-7]
+            cur.execute('''INSERT or IGNORE into VER (NAME,RELEASED) values (?,?);''', (tn,tv))            
+            conn.commit()
+            cur.execute('''UPDATE VER SET NAME= ?, RELEASED = ? WHERE NAME = ?;''', (tn,tv,tn))
+            conn.commit()
+
+    # Loop through each file found in the Released Folder
+    print("* Released Programs:")
+    for p in app_list:
+        print(C_C + "  %s" % p + C_NC)
+        Url = ("https://sourceforge.net/projects/fldigi/files/" + p + "/")
+        for l in csvf(Url):
+            if l.endswith(ext):
+                if p == "fldigi":
+                    rf = l.split("files/fldigi/", 1)[1][:-9]
+                else:       
+                    rf = l.split(p + "/", 1)[1][:-9]
+                
+                rn = rf.split("-", 1)[0]
+                rv = rf.split("-", 1)[1][:-7]
+                cur.execute('''INSERT or IGNORE into VER (NAME,RELEASED) values (?,?);''', (rn,rv))
+                conn.commit()
+                cur.execute('''UPDATE VER SET NAME= ?, RELEASED = ? WHERE NAME = ?;''', (rn,rv,rn))
+                conn.commit()
+
+    # Loop through FLSDK build marker files
+
+    # -- BEGIN for FLSDK use Only --
+    for p in app_list:
+        lfile = (flsdk_path + (os.sep) + "mkrd" + (os.sep) + p + "-version.mkr")
+        if os.path.isfile(lfile):
+            with open(lfile) as f:
+                lver = f.read().splitlines()[0]
+            f.close()
+            cur.execute('''INSERT or IGNORE into VER (NAME,LOCAL) values (?,?);''', (p,lver))
+            conn.commit()
+            cur.execute('''UPDATE VER SET NAME= ?, LOCAL = ? WHERE NAME = ?;''', (p,lver,p))
+            conn.commit()
+    # -- END for FLSDK use Only --
+ 
+    # print the data table header
+    print('')
+    print(C_G + 'Program\t\t','Alpha\t\t', 'Released\t', 'Local' + C_NC)
+    print(60 * '-')
+    cur.execute("SELECT * from VER ORDER by NAME ASC")
+
+    # Format the output form sql query
+    for row in cur:
+        dname = row[0]
+        dalpha = row[1]
+        dreleased = row[2]
+        dlocal = row[3]
+
+        if len(dname) < 7:
+            tb1 = '\t\t'
+        else:
+            tb1 = '\t'
+
+        if dalpha == None:
+            tb2 = '\t\t'
+        else:
+            tb2 = '\t'
+
+        if len(dreleased) < 6:
+            tb3 = '\t\t'
+        else:
+            tb3 = '\t'
+
+        """ print the data from the VERSION table"""
+        print(dname,tb1,dalpha,tb2,dreleased,tb3,dlocal)
+
+    conn.close()
+    print('' + C_NC)
+
+if __name__ == "__main__":
+    main()

@@ -4,7 +4,7 @@
 # License.........: @LICENSE@
 # Contributors....: @AUTHORS@
 # Comment.........: Part of the @PROGRAM@ Linux Project
-# Dependencies....: AsciiDoc, Autotools, Bash, Core Utils, Git, lsb-release
+# Dependencies....: AsciiDoctor, Autotools, Bash, Core Utils, Git, lsb-release
 #                   Python2
 #
 # TARGETS:
@@ -37,6 +37,7 @@ CHOWN		:=	@CHOWN@
 CHMOD		:=	@CHMOD@
 LN			:=	@LN@
 MV			:=	@MV@
+PYTHON      :=  @PYTHON@
 RM			:=	@RM@
 SED			:=	@SED@
 SHELL		:=	@SHELL@
@@ -54,7 +55,6 @@ MANDIR		:=	@MANDIR@
 MENUD		:=	@MENUD@
 PATCHD		:=	@PATCHD@
 SHARE		:=	@SHARE@
-WATCHD		:=	@WATCHD@
 
 # source directories
 DATASRC		:=	@DATASRC@
@@ -62,7 +62,6 @@ DOCSRC		:=	@DOCSRC@
 MANSRC		:=	@MANSRC@
 MENUSRC		:=	@MENUSRC@
 PATCHSRC	:=	@PATCHSRC@
-WATCHSRC	:=	@WATCHSRC@
 
 # manpages and docs
 BDOC		:=	@BDOC@
@@ -141,10 +140,10 @@ install-binaries:
 	@echo '* Setting Up Directories'
 	@$(MKDIR) -p $(DESTDIR)$(BINDIR) $(DESTDIR)$(DOCDIR) $(DESTDIR)$(DTDIR)
 	@$(MKDIR) -p $(DESTDIR)$(DOCDIR) $(DESTDIR)$(ICOND) $(DESTDIR)$(MANDIR)
-	@$(MKDIR) -p $(DESTDIR)$(SHARE) $(DESTDIR)$(WATCHD) $(DESTDIR)$(PATCH)
+	@$(MKDIR) -p $(DESTDIR)$(SHARE) $(DESTDIR)$(PATCH)
 	@echo '* Installing Scripts'
 	@install -m 755 src/flsdk $(DESTDIR)$(BINDIR)
-	@install -m 644 $(WATCHSRC)/* $(DESTDIR)$(WATCHD)
+	@install -m 755 src/flsdk-version $(DESTDIR)$(BINDIR)
 	@install -m 644 $(MENUSRC)/* $(DESTDIR)$(MENUD)
 	@install -m 644 $(DATASRC)/flsdk.desktop $(DESTDIR)$(DTDIR)
 	@install -m 644 $(DATASRC)/flsdk.xpm $(DESTDIR)$(ICOND)

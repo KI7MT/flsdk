@@ -2,10 +2,10 @@
 # Process this file with -*- autoconf -*- to produce the configure script
 # ------------------------------------------------------------------------------
 AC_PREREQ([2.65])
-AC_INIT([FLSDK],[0.0.3],[ki7mt01@gmail.com],[],[https://sourceforge.net/projects/flsdk])
+AC_INIT([FLSDK],[0.0.4],[ki7mt01@gmail.com],[],[https://sourceforge.net/projects/flsdk])
 AC_MSG_NOTICE([FLSDK - Build System For FLDIGI Applications.])
 FLSDK_AUTHOR="Greg Beam, KI7MT"
-FLSDK_COPYRIGHT="Copyright (C) 2014-2015 Greg Beam, KI7MT"
+FLSDK_COPYRIGHT="Copyright (C) 2014-2016 Greg Beam, KI7MT"
 FLSDK_LICENSE="GPL-3"
 AC_SUBST([PROGRAM], ["$PACKAGE_NAME"])
 AC_SUBST([VERSION], ["$PACKAGE_VERSION"])
@@ -67,7 +67,6 @@ MANDIR="$prefix"/share/man/man1
 MENUD="$prefix"/share/flsdk/menu
 PATCHD="$prefix"/share/flsdk/patch
 SHARE="$prefix"/share/flsdk
-WATCHD="$prefix"/share/flsdk/watch
 AC_SUBST([BINDIR], ["$BINDIR"])
 AC_SUBST([DOCDIR], ["$DOCDIR"])
 AC_SUBST([DTDIR], ["$DTDIR"])
@@ -76,7 +75,6 @@ AC_SUBST([MANDIR], ["$MANDIR"])
 AC_SUBST([MENUD], ["$MENUD"])
 AC_SUBST([PATCHD], ["$PATCHD"])
 AC_SUBST([SHARE], ["$SHARE"])
-AC_SUBST([WATCHD], ["$WATCHD"])
 
 
 # ------------------------------------------------------------------------------
@@ -87,13 +85,11 @@ DOCSRC=$(exec pwd)/doc/source
 MANSRC=$(exec pwd)/man
 MENUSRC=$(exec pwd)/src/menu
 PATCHSRC=$(exec pwd)/src/patch
-WATCHSRC=$(exec pwd)/src/watch
 AC_SUBST([DATASRC], ["$DATASRC"])
 AC_SUBST([DOCSRC], ["$DOCSRC"])
 AC_SUBST([MANSRC], ["$MANSRC"])
 AC_SUBST([MENUSRC], ["$MENUSRC"])
 AC_SUBST([PATCHSRC], ["$PATCHSRC"])
-AC_SUBST([WATCHSRC], ["$WATCHSRC"])
 
 
 # ------------------------------------------------------------------------------
@@ -111,11 +107,11 @@ AC_PATH_PROG([INSTALL], [install])
 AC_PATH_PROG([LN], [ln])
 AC_PATH_PROG([MKDIR], [mkdir])
 AC_PATH_PROG([MV], [mv])
+AC_PATH_PROG([PYTHON], [python])
 AC_PATH_PROG([RM], [rm])
 AC_PATH_PROG([SED], [sed])
 AC_PATH_PROG([SHELL], [bash])
 AC_PATH_PROG([TOUCH], [touch])
-AC_PATH_PROG([ZENITY], [zenity])
 AC_SUBST([A2X], ["$ac_cv_path_A2X"])
 AC_SUBST([ASCIIDOC], ["$ac_cv_path_ASCIIDOC"])
 AC_SUBST([AWK], ["$ac_cv_path_AWK"])
@@ -132,7 +128,6 @@ AC_SUBST([RM], ["$ac_cv_path_RM"])
 AC_SUBST([SED], ["$ac_cv_path_SED"])
 AC_SUBST([SHELL], ["$ac_cv_path_SHELL"])
 AC_SUBST([TOUCH], ["$ac_cv_path_TOUCH"])
-AC_SUBST([ZENITY], ["$ac_cv_path_ZENITY"])
 
 
 # ------------------------------------------------------------------------------
@@ -171,6 +166,7 @@ AC_BUILD_PKGINFO
 AC_CONFIG_FILES([
 Makefile
 src/flsdk
+src/flsdk-version
 man/flsdk.1.txt
 data/flsdk.desktop
 ])

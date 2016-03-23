@@ -34,7 +34,6 @@ HOST_CPU=@HOST_CPU@
 # system directories
 DOCS=@DOCDIR@
 PATCHD=@PATCHD@
-WATCHD=@WATCHD@
 
 # application install directories
 COMPTEXTI="$HOMEDIR/comptext"
@@ -730,37 +729,10 @@ build_application() {
 
 # version check header----------------------------------------------------------
 version_check() {
-# set hight for displaying results
-mkdir -p "$TMPD"
-rm -f "$VERLOG"
-clear
-echo '-----------------------------'
-echo -e ${C_Y}'CHECKING VERSION INFORMATION'${C_NC}
-echo '-----------------------------'
-echo ''
-
-# check for uscan
-uscan --version > /dev/null 2>&1 && echo -e "* Uscan ........ ${C_G}✔${C_NC}" || {
-	clear
-	echo ''
-	echo 'You must have *uscan* from the Debian devscripts'
-	echo 'package installed in order to perform version checks.'
-	echo ''
-	echo 'Due to the number of packages involed with devscripts,'
-	echo 'it is not installed as part of the default FLSDK install.'
-	echo 'As such, the installation is up to the user to perform.'
-	echo ''
-	echo 'There are many useful tools included with the package.'
-	echo 'It is highly advisable to install it. From a frsh distro'
-	echo 'stanpoint, total disk usage is only 3MB after install.'
-	echo ''
-	echo 'For Debian, Ubuntu and Mint, install with:'
-	echo ''
-	echo 'sudo apt-get devscripts'
-	echo ''
-	echo ''
-	continue
-	}
+clear ||:
+echo '-----------------------------------------------------'
+echo -e ${C_G}"FLSDK Application Version Check"${C_NC}
+echo '-----------------------------------------------------'
 
 # check Internet connectivity---------------------------------------------------
 ((ping -w5 -c3 www.w1hkj.com || ping -w5 -c3 8.8.8.8 || ping -w5 -c3 208.67.222.222) > /dev/null 2>&1) && \
@@ -803,125 +775,10 @@ uscan --version > /dev/null 2>&1 && echo -e "* Uscan ........ ${C_G}✔${C_NC}" 
 	exit 1
 	}
 
-# Array elements: ('flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap')
-# The difference is sed commands is due to the application name length
-# apps using sed -r 's/^.{7}//' : fldigi, flwkey, fwrap
-# apps using sed -r 's/^.{6}//' : flamp, flmsg, fllog, flrig, flnet
+# now simply call the Python Script:
+@PYTHON@ @BINDIR@/flsdk-version
 
-# NOTES about COMTEXT, COMPTTY and LINSIM
-# COMPTTY and COMPTEXT *do not* have alpha folders
-# COMTEXT, COMTTY and LINSIM release downloads are all under the linsim folder
-# The relesae and alpha watch files reflect this accordingly
-# The Git Repos "do" seperate all three
-
-# add message header to file----------------------------------------------------
-echo "APPLICATION RELEASE ALPHA LOCAL-BUILD" > "$VERLOG"
-echo '----------- ------- ----- -----------' >> "$VERLOG"
-
-for f in ${app_array[@]} ; do
-APP_NAME="$f"
-
-case "$f" in
-	comptext)
-	
-	# release builds
-	F_R=$(uscan --watchfile @WATCHD@/$f-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
-	F_REL=$(echo ${F_R##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{9}//')
-
-
-	# alpha builds
-	if $(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
-		F_A=$(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
-		F_ALPHA=$(echo ${F_A##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{9}//')
-	else
-		F_ALPHA="$NONE"
-	fi
-	;;
-
-	comptty)
-	
-	# release builds
-	F_R=$(uscan --watchfile @WATCHD@/$f-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
-	F_REL=$(echo ${F_R##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{8}//')
-
-
-	# alpha builds
-	if $(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
-		F_A=$(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
-		F_ALPHA=$(echo ${F_A##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{8}//')
-	else
-		F_ALPHA="$NONE"
-	fi
-	;;
-
-	fldigi|flwkey|flwrap|linsim|comptty)
-	
-	# release builds
-	F_R=$(uscan --watchfile @WATCHD@/$f-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
-	F_REL=$(echo ${F_R##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
-
-
-	# alpha builds
-	if $(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
-		F_A=$(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
-		F_ALPHA=$(echo ${F_A##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{7}//')
-	else
-		F_ALPHA="$NONE"
-	fi
-	;;
-	
-	flamp|flmsg|fllog|flrig|flnet)
-	
-	F_R=$(uscan --watchfile @WATCHD@/$f-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
-	F_REL=$(echo ${F_R##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
-
-
-	# alpha builds
-	if $(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report > /dev/null 2>&1) ; [[ "$?" == "0" ]]; then
-		F_A=$(uscan --watchfile @WATCHD@/$f-alpha-watch --package $f --upstream-version 0 --report |grep 'tar.gz')
-		F_ALPHA=$(echo ${F_A##*/} | sed -r 's/\.[[:alnum:]]+\.[[:alnum:]]+$//' |sed -r 's/^.{6}//')
-	else
-		F_ALPHA="$NONE"
-	fi
-	;;
-esac
-
-# look for install mkr, set with the build script
-if [ -s "$MKRD/$f-version.mkr" ] ; then
-	BUILDV=$(awk -F\| '{print $1}' < $MKRD/$f-version.mkr)
-else
-	BUILDV="$NONE"
-fi
-
-# convert to UPPER case
-DISPLAY_NAME=$(echo "$APP_NAME" | tr '[:lower:]' '[:upper:]')
-
-# add data to the log
-echo "$DISPLAY_NAME $F_REL $F_ALPHA $BUILDV" >> "$VERLOG"
-
-# correct on-screen display
-case "$f" in
-	comptext)
-	DOT="....." ; echo -e "* $DISPLAY_NAME $DOT ${C_G}$CHK${C_NC}" ;;
-	comptty)
-	DOT="......" ; echo -e "* $DISPLAY_NAME $DOT ${C_G}$CHK${C_NC}" ;;
-	fldigi|flwkey|flwrap)
-	DOT="......." ; echo -e "* $DISPLAY_NAME $DOT ${C_G}$CHK${C_NC}" ;;
-	flamp|flmsg|fllog|flnet|flrig)
-	DOT="........" ; echo -e "* $DISPLAY_NAME $DOT ${C_G}$CHK${C_NC}" ;;
-	linsim)
-	DOT="......." ; echo -e "* $DISPLAY_NAME $DOT ${C_G}$CHK${C_NC}" ;;
-esac
-
-done
-
-# display version check results table-------------------------------------------
-echo ''
-cat "$VERLOG" |column -t
-echo ''
-echo -e "An ( ✘ ) in ALPHA means a tar.gz file was not found at www.w1hkj.com"
-echo -e "An ( ✘ ) in LOCAL-BUILD means you have not built the application"
-echo ''
+# pause after the python script finishes
 read -p "Press [ Enter ] to continue ..."
 
 }
