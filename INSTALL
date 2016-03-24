@@ -1,6 +1,6 @@
 DESCRIPTION
 
-FLSDK v0.0.3 is a collection of Bash scripts designed to assist
+FLSDK is a collection of Bash scripts designed to assist
 users in compiling the various FLDIGI applications used by
 Amateur Radio Operators.
 
@@ -15,14 +15,20 @@ Extract:
 * cd ./flsdk-<version>
 
 Configure, make, make install:
-* ./autogen.sh
+* ./autogen.sh --prefix=/usr/local
 * make
 * sudo make isntall
+
+Options:
+* To disable manpage generation add --disable-manpages
+* To disable documentation add --disable-docs
+
+Example:
+./autogen.sh --prefix=/usr/local --disable-manpages --disable-docs
 
 
 RUN FLSDK
 * Open A Terminal, then type: flsdk
-
 
 SUPPORT
 

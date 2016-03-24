@@ -1,11 +1,23 @@
-= FLSDK - Software Development Kit
-:revision: 0.0.3
-:icons:
-:numbered:
-:keywords: amateur radio fldigi flarq flamp flwrap flmsg flrig flwkey fllog flnet
-:description: Software Development Kit
-:page: FLSDK Installation Guide
 :prog: FLSDK
+:version: 0.0.4
+:page: {program} v{version}
+:keywords: amateur radio fldigi flarq flamp flwrap flmsg flrig flwkey fllog flnet
+:description: Software Development Kit for FLDIGI Applications
+:imagesdir: ./images
+:icons: font
+:numbered:
+:toclevels: 2
+:experimental:
+:docinfo1:
+:source-highlighter: coderay
+:y: icon:check[role="green"]
+:n: icon:times[role="red"]
+:o: icon:circle-thin[role="blue"]
+:sr: icon:exclamation-circle[role="red"]
+:sb: icon:sticky-note[role="blue"]
+:sg: icon:stop[role="green"]
+:ub: icon:tty[role="yellow"]
+:ico: icon:tags[role="maroon"]
 
 //
 // LINKS SECTION----------------------------------------------------------------
@@ -48,6 +60,8 @@
 //
 //  START MAIN PAGE ------------------------------------------------------------
 //
+
+= FLSDK - Software Development Kit
 
 *****
 *INTENDED AUDIENCE*: This document is intended for beginners through advances

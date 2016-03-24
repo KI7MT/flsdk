@@ -96,7 +96,7 @@ AC_SUBST([PATCHSRC], ["$PATCHSRC"])
 # general use tools
 # ------------------------------------------------------------------------------
 AC_PATH_PROG([A2X], [a2x])
-AC_PATH_PROG([ASCIIDOC], [asciidoc])
+AC_PATH_PROG([ASCIIDOCTOR], [asciidoctor])
 AC_PATH_PROG([AWK], [awk])
 AC_PATH_PROG([CHMOD], [chmod])
 AC_PATH_PROG([CHOWN], [chown])
