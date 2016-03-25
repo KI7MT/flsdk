@@ -265,9 +265,9 @@ particular situation. You can find the list <<PKG-LIST,Dependency List Section>>
 
 The installation steps are as follows:
 
-* Download jtsdk-nix-2.0.19.tar.gz from {dlpackage}
-* Extract: tar -xf jtsdk-nix-2.0.19.tar.gz
-* cd ./jtsdk-nix-2.0.19
+* Download flsdk-{version}.tar.gz
+* Extract: tar -xf flsdk-{version}.tar.gz
+* cd ./flsdk-{version}
 * ./autogen.sh --prefix=/usr/local
 * make
 * sudo make install
