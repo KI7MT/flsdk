@@ -235,7 +235,7 @@ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 862549F9
 sudo nano /etc/apt/sources.list
 
 # -----
-deb http://ppa.launchpad.net/ki7mt/wsjtx-next/ubuntu trusty main
+deb http://ppa.launchpad.net/ki7mt/flsdx/ubuntu trusty main
 # -----
 
 Ctrl+X to save and exit
