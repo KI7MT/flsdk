@@ -9,7 +9,7 @@ To allow for different levels of customization, there are three categories of
 action:
 
 [horizontal]
-[red]*Required*:: Must be install or acted upon
+[red]*Required*:: Must be installed or acted upon
 [fuchsia]*Recommended*:: Not mandatory, but considered useful
 [green]*Optional*:: Perform at users discretion
 

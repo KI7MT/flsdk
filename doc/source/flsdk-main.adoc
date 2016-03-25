@@ -1,6 +1,6 @@
 :prog: FLSDK
 :version: 0.0.4
-:page: {program} v{version}
+:page: {prog} v{version}
 :keywords: amateur radio fldigi flarq flamp flwrap flmsg flrig flwkey fllog flnet
 :description: Software Development Kit for FLDIGI Applications
 :imagesdir: ./images
@@ -19,19 +19,19 @@
 :ub: icon:tty[role="yellow"]
 :ico: icon:tags[role="maroon"]
 
-//
-// LINKS SECTION----------------------------------------------------------------
-//
-
 :comptext-info: http://www.w1hkj.com/downloads/test_suite/guide.html[COMPTEXT]
 :comptty-info: http://www.w1hkj.com/downloads/test_suite/guide.html[COMPTTY]
 :arrl-nbems: http://www.arrl.org/nbems[NBEMS]
 :cygwin-home: https://www.cygwin.com/[CygWin]
+:doxy-wiki: https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO/Doxygen[Wiki]
+:doxygen-site: http://www.stack.nl/~dimitri/doxygen/[Doxygen site]
 :flamp-info: http://www.w1hkj.com/flamp-help/index.html[FLAMP]
 :flarq-info: http://www.w1hkj.com/FlarqHelpFiles/flarq.html[FLARQ]
+
 :fldigi-dev-team: http://www.w1hkj.com/FldigiHelp-3.22/recognitions_page.html[FLDIGI Development Team]
 :fldigi-info: http://www.w1hkj.com/FldigiHelp-3.22/index.html[FLDIGI]
 :fldigi-project: http://www.w1hkj.com[FLDIGI Project]
+
 :fldigi-wiki: https://fedorahosted.org/fldigi/[Wiki]
 :fllog-info: http://www.w1hkj.com/fllog-help/index.html[FLLOG]
 :flmsg-info: http://www.w1hkj.com/flmsg-help/index.html[FLMSG]
@@ -45,10 +45,11 @@
 :gnu_gpl: http://www.gnu.org/licenses/gpl-3.0.txt[GNU General Public License]
 :greg_beam: mailto:ki7mt@yahoo.com[KI7MT]
 :linuxham-group: https://groups.yahoo.com/neo/groups/linuxham/info[Linuxham Group]
+:launchpad: https://launchpad.net/~ki7mt/+archive/ubuntu/flsdk[Launchpad Repository]
 :msys-home: http://www.mingw.org/wiki/msys[MSYS]
-:sf-ki7mt: http://sourceforge.net/projects/ki7mt-builds/[Souceforge]
 :official-packages: http://www.w1hkj.com/download.html[Official Builds]
 :openssh: http://www.openssh.com/[OpenSSH]
+:ppa: https://launchpad.net/~ki7mt/+archive/ubuntu/flsdk[PPA]
 :putty: http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html[PuTTY]
 :raspbian-download: http://downloads.raspberrypi.org/raspbian_latest[Download]
 :raspbian: https://www.raspberrypi.org/[Raspbian]
@@ -58,7 +59,7 @@
 :winkey: http://k1el.tripod.com/[WinKey]
 
 //
-//  START MAIN PAGE ------------------------------------------------------------
+//  START MAIN PAGE -----------------------------------------------------------
 //
 
 = FLSDK - Software Development Kit
@@ -83,49 +84,543 @@ are by no means exhaustive.
 
 [[OVERVIEW]]
 == Overview
-include::overview.adoc[]
+{prog} is a set of command line scripts designed to ease the burden of compiling
+{fldigi-info} and associated applications from source code. It also provides
+a full set of tools for developers that want to enhance or further develop
+{fldigi-info} applications.
 
-[[INSTALLMAIN]]
-== {prog} Installation
-include::install-main.adoc[]
+This document _Is Not_ a replacement for the official {fldigi-wiki}, nor should 
+it be considered official documentation. At best, it is a supplement too the
+{fldigi-wiki}. In time, sections of this document, if deemed appropriate, may
+be added to the {fldigi-wiki} provided the maintainers find it useful, in whole
+or part.
 
-[[INSTALLUBUNTU]]
-=== Ubuntu
-include::install-ubuntu.adoc[]
+=== Core Features
+Beyond the standard tools each distribution provides, {prog} will add the 
+following features:
 
-[[INSTALLMINT]]
-=== Mint
-include::install-mint.adoc[]
+* Menu driven build system for all primary applications
+* Version check script for Release, Alpha, Local builds
+* Unlimited options when manually building from the command line
 
-[[INSTALLRASPBIAN]]
-=== Raspbian
-include::install-raspbian.adoc[]
+[[SUPPORTED-BUILDS]]
+=== Supported Builds
+{prog} will build the following applications from the FLDIGI Suite:
+
+==== Primary Applications
+[horizontal]
+{flamp-info}:: Amateur Multi-cast Protocol
+{fldigi-info}:: Digital modem program for Linux, Free-BSD, OS X, WinXP thru Win7
+{flarq-info}:: Automatic Repeat request program
+{fllog-info}:: Ham Radio logbook application for casual operating
+{flmsg-info}:: Simple forms editor for the amateur radio supported standard message formats.
+{flnet-info}:: Real time tool to assist Net Control Operators in managing net activities.
+{flrig-info}:: Transceiver control program to be used stand alone or with FLDIGI
+{flwkey-info}:: Simple interface to the {winkey} series of CW code generators
+{flwrap-info}:: Application that encapsulates a text, image, or a binary files
+
+==== Testing Applications
+[horizontal]
+{comptext-info}:: Used to compare two text streams
+{comptty-info}:: Used to compare two RTTY streams
+{linsim-info}:: Tool for Amateur Radio Digital Mode evaluation under varying HF propogation conditions
+
+[[DISTRO-MATRIX]]
+=== Distributions
+The following distributions are currently supported:
+
+* Debian / Fedora / Linux Lite / Linux Mint / Ubuntu / Raspbian
+* Others ( where dependencies can be met )
+
+NOTE: As new package lists are made available, additional Linux distributions
+will added to the supported distribution list. If you have a particular
+distribution you would like added, send an email to the {linuxham-group},
+detailing all the required dependencies and any special configuration
+details.
+
+The following matrix lists the various distributions that have
+been tested, others may also work. The matrix lists the recommended install
+method. If your distribution is not listed the default method is via 
+<<SOURCE-CODE,Install From Source Code>>
+
+[cols="1,1,1,1,1", options="header, autowidth"]
+|===
+|Distribution|Arch|Version|Method|Comments
+
+|Debian
+|i386, amd64, armv7
+|8.0 and Sid
+|<<VIA-PA,PPA>>
+|Tested on 8.0 and Sid
+
+|Fedora
+|i386, amd64
+|20, 21, 22, 23
+|<<SOURCE-CODE,Source Code>>
+|Tested on 22 and 23
+
+|Linux Lite
+|i386, amd64
+|2.0 thru 2.8
+|<<VIA-PA,PPA>>
+|Tested on 2.7 and 2.8
+
+|Linux Mint
+|i386, amd64
+|17.1, 17.2, 17.3
+|<<VIA-PA,PPA>>
+|Tested on the Mate Desktop
+
+|Ubuntu
+|i386, amd64, armv7
+|14.04, 16.04
+|<<VIA-PA,PPA>>
+| Tested on Unity Desktop
+
+|Ubuntu-Mate
+|i386, amd64, armv7
+|15.10
+|<<VIA-PA,PPA>>
+|Tested on the Mate Desktop
+
+|===
+
+== Installation
+For Debian based distros its highly advised that you use the <<PPA,PPA>>
+method of installation. By design, this is a two step process:
+
+. Installing *{prog}*
+. Install package build dependencies *FLSDK-Meta*
+
+Installing {prog} *Does Not* resolve the {fldigi-info} application build
+dependencies. This is by design as it allows developers to determine what
+packages they want installed. For non-developers, using the *FLSDK-Meta* is
+a simple one step process to install everything needed.
 
 ////
-[[VERSIONCHECK]]
-== Version Checks
-Under Construction
-
-[[APPBUILDS]]
-== Automated Builds
-Under Construction
-
-[[MANUALBUILDS]]
-== Manual Compiling
-Under Construction
-
-[[BENCHMARK]]
-== Benchmark Builds
-Under Construction
-
-[[ADVTOPIS]]
-== Advanced Topics
-Under Construction
-
-[[PKGOVERVIEW]]
-== Package Overview
-Under Construction
+--------------------------------------------------------------- INSTALL via PPA
 ////
+[[VIA-PPA]]
+=== Via PPA
+To install via *PPA*, perform the following actions in a terminal.
+
+NOTE: Debian distributions (which includes Raspbian) cannot directly
+install a {ppa} without first having added the repository to you source-list.
+To add the Launchpad Repository, see <<INSTALL-DEBIAN-PPA,Debian PPA Installation.>>
+
+[source,shell]
+----------
+# All actions are performed in a terminal session:
+
+sudo add-apt-repository ppa:ki7mt/flsdk
+sudo apt-get update
+sudo apt-get install flsdk flsdk-meta
+----------
+
+[[INSTALL-DEBIAN-PPA]]
+.Debian PPA Installation
+Installing a Launchpad {ppa} on Debian or a direct derivative distribution is
+slightly different than Ubuntu based derivative. You must first add the
+repository before installation. The following outlines the steps required to
+install {prog} on Debian.
+
+[source,shell]
+----------
+# All actions are performed in a terminal session:
+
+# Note: This process has been tested on Debian 8.0 (Jessie) and Sid
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 862549F9
+
+# Add the repository to your source.list
+sudo nano /etc/apt/sources.list
+
+# -----
+deb http://ppa.launchpad.net/ki7mt/wsjtx-next/ubuntu trusty main
+# -----
+
+Ctrl+X to save and exit
+
+sudo apt-get update
+sudo apt-get install flsdk flsdk-meta
+----------
+
+////
+------------------------------------------------------- INSTALL via SOURCE CODE
+////
+
+
+[[SOURCE-CODE]]
+=== Source Code 
+When installing from source code, you should uninstall any previous version of
+*{prog}* before installing *{version}* as many Makefile changes have been made.
+
+There are two options you may want to consider; *kbd:[--disable-docs]* and / or
+*kbd:[--disable-manpages]*. If you have not installed *AsciiDoc* and 
+*AsciiDoctor* {plus} their dependencies, you should use
+*kbd:[--disable-manpages --disable-docs]* with the autogen.sh command.
+
+A list of package dependencies is included in the {prog}, however, the package
+names may vary from distro to distro, and it may not be 100pass:[%] for your
+particular situation. You can find the list <<PKG-LIST,Dependency List Section>>
+
+The installation steps are as follows:
+
+* Download jtsdk-nix-2.0.19.tar.gz from {dlpackage}
+* Extract: tar -xf jtsdk-nix-2.0.19.tar.gz
+* cd ./jtsdk-nix-2.0.19
+* ./autogen.sh --prefix=/usr/local
+* make
+* sudo make install
+
+[IMPORTANT]
+=====
+Remember to add --disable-docs --disable-manpages  to the autogen.sh line if
+you have not install the required dependencies
+=====
+
+[[PKG-LIST]]
+== Dependency List
+This section outlines build dependencies for both {prog} and {fldigi-info}
+related applications. Package versions are stated but should not be considered
+absolute, meaning, a particular build may pass if earlier or later versions are
+used.
+
+.Special Note(s)
+*****
+* Packages were tested against the <<DISTRO-MATRIX, Distribution Matrix>>
+and may not be accurate against all derivatives. If you run into package
+conflicts or omissions, consult your package manager for the appropriate names
+or versions.
+
+* The two tables separate the requirements for {prog} and {fldigi-info}
+and may or may not contain overlapping packages. Descriptions and package
+version are based on *Ubuntu 14.04* repository control files. Each packages may
+pull in one or more additional dependencies. As a result, the lists should not
+be considered all inclusive.
+
+* For Debian and Ubuntu distributions, using the {ppa} to install dependencies
+should go a long way toward resolving conflicts and is highly encouraged.
+
+* {prog} can use either *Python 2.x* or *Python 3.2{plus}*. Both are listed
+but it is at the users discretion which to use.
+
+* *python-bs4* can be for either *Python 2* or *Python 3*, but must be installed
+for the version you are running. The matrix below lists the module for a 
+*Python 2* installation. Tis module / package is required in order to perform
+application version checks.
+
+* *AsciiDoc* (Python based) is used by both *FLSDK* and {fldigi-info}
+applications for either manpage or user guide generation, in some cases both.
+
+* *AsciiDoctor* (Ruby based) is used by {prog} to generate user guide documents
+(this guide) and requires the package *Ruby*.
+
+* *Doxygen* is used by the {fldigi-dev-team} for generating various
+documents relating to the application code itself. While interesting and certainly
+educational, it is not a requirement to build any of the {fldigi-info} suite of
+programs. A great deal of work has gone into documenting the source code.
+Those wishing contribute to the {fldigi-project} are highly
+encouraged to build these documents an review the rendered documents.
+
+*****
+
+.{prog} Dependencies
+[cols="1,^1,1", options="header, autowidth"]
+|===
+|Package|Version|Comments
+
+|asciidoc
+|8.6.9
+|Highly configurable text format for writing documentation
+
+|asciidoctor
+|1.9.1{plus}
+|AsciiDoc to HTML rendering for Ruby
+
+|bash
+|4.3
+|GNU Bourne Again SHell
+
+|dialog
+|1.2
+|Displays user-friendly dialog boxes from shell scripts
+
+|lsb-release
+|4.1
+|Linux Standard Base version reporting utility
+
+|python
+|2.7{plus}
+|Interactive high-level object-oriented language (py2 version)
+
+|python-bs4
+|4.2.1
+|Error tolerant HTML parser for Python
+
+|python
+|3.2{plus}
+|Interactive high-level object-oriented language (py3 version)
+
+|ruby
+|1.9{plus}
+|Interpreter of object-oriented scripting language Ruby
+
+
+|===
+
+.FLDIGI Suite Dependencies
+[cols="1,^1,1", options="header, autowidth"]
+|===
+|Package|Version|Comments
+
+|asciidoc
+|8.6.9
+|Highly configurable text format for writing documentation
+
+|automake
+|1.14.1
+|Tool for generating GNU Standards-compliant Makefiles
+
+|dialog
+|1.2
+|Displays user-friendly dialog boxes from shell scripts
+
+|extra-xdg-menus
+|1.0-4
+|Extra menu categories for applications under GNOME, KDE and others
+
+|fluid
+|1.3.2
+|Fast Light Toolkit - user interface designer
+
+|g{plus}{plus}
+|4.8.2
+|GNU C{plus}{plus} Compiler
+
+|gettext
+|0.18.3
+|GNU Internationalization utilities
+
+|git
+|1.9.1
+|fast, scalable, distributed revision control system
+
+|imagemagick
+|6.7.7
+|image manipulation programs
+
+|libasound2-dev
+|1.0.27
+|Shared library for ALSA applications
+
+|libcairo2-dev
+|1.13.0
+|Development files for the Cairo 2D graphics library
+
+|libfltk1.3-dev
+|1.3.1
+|Fast Light Toolkit - development files
+
+|libgl1-mesa-dev
+|10.1
+|Free implementation of the OpenGL API
+
+|libglu1-mesa-dev
+|9.0.0
+|Mesa OpenGL utility library -- development files
+
+|libhamlib-dev
+|1.2.15
+|Development library to control radio transceivers and receivers
+
+|libhamlib-utils
+|1.2.15
+|Utilities to support the hamlib radio control library
+
+|libjpeg8-dev
+|8.x.x
+|Independent JPEG Groups JPEG runtime library
+
+|libpng12-dev
+|1.2.50
+|PNG library - development
+
+|libpulse-dev
+|1.4.0
+|PulseAudio client development headers and libraries
+
+|librpc-xml-perl
+|0.77
+|Perl implementation of the XML-RPC protocol
+
+|libsamplerate0-dev
+|0.1.8
+|Development files for audio sample rate conversion
+
+|libsndfile1-dev
+|1.0.25
+|Development files for libsndfile; a library for reading/writing audio files
+
+|libterm-readline-gnu-perl
+|1.20
+|Perl extension for the GNU ReadLine/History Library
+
+|libtool
+|2.4.2
+|Generic library support script
+
+|libusb-dev
+|0.1.12
+|Userspace USB programming library
+
+|libwww-perl
+|6.05
+|Simple and consistent interface to the world-wide web
+
+|libx11-dev
+|1.6.2
+|X11 client-side library
+
+|libxext-dev
+|1.3.2
+|X11 miscellaneous extensions library
+
+|libxft-dev
+|2.3.1
+|FreeType-based font drawing library for X
+
+|libxinerama-dev
+|1.1.3
+|X11 Xinerama extension library
+
+|libxmlrpc-core-c3-dev
+|1.33.06
+|lightweight RPC library based on XML and HTTP
+
+|pkg-config
+|0.26
+|manage compile and link flags for libraries
+
+|portaudio19-dev
+|19+svn20140130-1
+|Portable audio I/O - development files
+
+|texinfo
+|5.2.0
+|Documentation system for on-line information and printed output
+
+|wine
+|1.6.2
+|Microsoft Windows Compatibility Layer
+
+|xsltproc
+|1.1.28
+|XSLT 1.0 command line processor
+
+|zlib1g-dev
+|1.2.8
+|Compression library
+
+|===
+
+
+.Doxygen ( Optional )
+From the {doxygen-site}, the application is described as:
+
+=====
+Doxygen is the de facto standard tool for generating documentation from
+annotated C++ sources, but it also supports other popular programming
+languages such as C, Objective-C, C#, PHP, Java, Python, IDL (Corba, 
+Microsoft, and UNO/OpenOffice flavors), Fortran, VHDL, Tcl, and to some
+extent D.
+=====
+
+CAUTION: Per the {doxy-wiki}, this code-analysis and documentation-generation
+time takes longer than compiling Fldigi and will require 2.0GB of free disk-space.
+
+The following packages, per the {doxy-wiki}, are required in order to build
+Doxygen Documentation. These packages are included in the *FLSDK-Meta* package
+as recommended additions. Package Names and Versions were taken from
+*Ubuntu 14.04* and may differ depending on your distribution.
+
+For Debian / Ubuntu based distros, to install the required packages, use the
+*kbd:[--install-suggests]* option with apt-get:
+
+[source,shell]
+----------
+# All actions are performed in a terminal session:
+
+sudo apt-get --install-suggests install flsdk-meta
+----------
+
+.Doxygen Packages
+[cols="1,^1,1", options="header, autowidth"]
+|===
+|Package|Version|Comments
+
+|doxygen
+|1.8.6
+|Documentation system for C, C{plus}{plus}, Java, Python and other languages
+
+|graphviz
+|2.36.0
+|Rich set of graph drawing tools
+
+|mscgen
+|0.20
+|Message Sequence Chart (MSC) generator
+
+|cppcheck
+|1.61
+|Tool for static C/C{plus}{plus} code analysis
+
+
+
+|===
+
+== Additional Resources
+There are many sites that discuss various aspects of building the 
+{fldigi-project} applications. The following matrix outlines a small subset that
+can work in conjunction with or in addition to {prog}.
+
+[cols="1,^1,1", options="header, autowidth"]
+|===
+|Topic|Link|Comments
+
+|FLDIGI Wiki
+|http://asciidoctor.org[Link]
+|Documentation, How-To's, Mailing Lists and more
+
+|Doxygen
+|https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO/Doxygen[Link]
+|Generating Doxygen Documentation
+
+|How-To's
+|https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO[Link]
+|Source, Hardware, I/O Naming, Development
+
+|MinGw Compiling
+|https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO/BuildOnMinGW[Link]
+|Compiling FLDIGI Applications Using MinGW for Windows
+
+|MXE Compiling
+|https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO/BuildWithMXE[Link]
+|Cross compiling on Linux for Windows
+
+|===
 
 == License
-include::license.adoc[]
+{prog} is free software: you can redistribute it and/or modify
+under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+{prog} is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this documentation. If not, see {gnu_gpl}.
+
+Copyright (C) 2016 Greg Beam, KI7MT.
