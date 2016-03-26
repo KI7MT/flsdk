@@ -19,10 +19,15 @@
 :ub: icon:tty[role="yellow"]
 :ico: icon:tags[role="maroon"]
 
+//
+//  LINKS ---------------------------------------------------------------------
+//
+
 :comptext-info: http://www.w1hkj.com/downloads/test_suite/guide.html[COMPTEXT]
 :comptty-info: http://www.w1hkj.com/downloads/test_suite/guide.html[COMPTTY]
 :arrl-nbems: http://www.arrl.org/nbems[NBEMS]
 :cygwin-home: https://www.cygwin.com/[CygWin]
+:debian-site: https://www.debian.org/[Debian]
 :doxy-wiki: https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO/Doxygen[Wiki]
 :doxygen-site: http://www.stack.nl/~dimitri/doxygen/[Doxygen site]
 :flamp-info: http://www.w1hkj.com/flamp-help/index.html[FLAMP]
@@ -82,6 +87,10 @@ performed for the kit as well as the associated builds, however, the basic tests
 are by no means exhaustive. 
 *****
 
+//
+//  OVERVIEW ------------------------------------------------------------------
+//
+
 [[OVERVIEW]]
 == Overview
 {prog} is a set of command line scripts designed to ease the burden of compiling
@@ -95,6 +104,10 @@ it be considered official documentation. At best, it is a supplement too the
 be added to the {fldigi-wiki} provided the maintainers find it useful, in whole
 or part.
 
+//
+//  CORE FEATURED -------------------------------------------------------------
+//
+
 === Core Features
 Beyond the standard tools each distribution provides, {prog} will add the 
 following features:
@@ -103,9 +116,17 @@ following features:
 * Version check script for Release, Alpha, Local builds
 * Unlimited options when manually building from the command line
 
+//
+//  SUPPORTED BUILDS ----------------------------------------------------------
+//
+
 [[SUPPORTED-BUILDS]]
 === Supported Builds
 {prog} will build the following applications from the FLDIGI Suite:
+
+//
+//  PRIMARY APPLICATIONS ------------------------------------------------------
+//
 
 ==== Primary Applications
 [horizontal]
@@ -115,15 +136,23 @@ following features:
 {fllog-info}:: Ham Radio logbook application for casual operating
 {flmsg-info}:: Simple forms editor for the amateur radio supported standard message formats.
 {flnet-info}:: Real time tool to assist Net Control Operators in managing net activities.
-{flrig-info}:: Transceiver control program to be used stand alone or with FLDIGI
+{flrig-info}:: Transceiver control program to be used stand alone or with {fldigi-info}
 {flwkey-info}:: Simple interface to the {winkey} series of CW code generators
 {flwrap-info}:: Application that encapsulates a text, image, or a binary files
+
+//
+//  TESTING APPLICATIONS ------------------------------------------------------
+//
 
 ==== Testing Applications
 [horizontal]
 {comptext-info}:: Used to compare two text streams
 {comptty-info}:: Used to compare two RTTY streams
-{linsim-info}:: Tool for Amateur Radio Digital Mode evaluation under varying HF propogation conditions
+{linsim-info}:: Tool for Amateur Radio Digital Mode evaluation under varying HF propagation conditions
+
+//
+//  DISTRIBUTIONS ------------------------------------------------------------
+//
 
 [[DISTRO-MATRIX]]
 === Distributions
@@ -185,6 +214,10 @@ method. If your distribution is not listed the default method is via
 
 |===
 
+//
+//  INSTALLATION --------------------------------------------------------------
+//
+
 == Installation
 For Debian based distros its highly advised that you use the <<PPA,PPA>>
 method of installation. By design, this is a two step process:
@@ -197,9 +230,10 @@ dependencies. This is by design as it allows developers to determine what
 packages they want installed. For non-developers, using the *FLSDK-Meta* is
 a simple one step process to install everything needed.
 
-////
---------------------------------------------------------------- INSTALL via PPA
-////
+//
+//  INSTALL via PPA -----------------------------------------------------------
+//
+
 [[VIA-PPA]]
 === Via PPA
 To install via *PPA*, perform the following actions in a terminal.
@@ -222,7 +256,7 @@ sudo apt-get install flsdk flsdk-meta
 Installing a Launchpad {ppa} on Debian or a direct derivative distribution is
 slightly different than Ubuntu based derivative. You must first add the
 repository before installation. The following outlines the steps required to
-install {prog} on Debian.
+install *{prog}* on *{debian-site}*.
 
 [source,shell]
 ----------
@@ -244,10 +278,9 @@ sudo apt-get update
 sudo apt-get install flsdk flsdk-meta
 ----------
 
-////
-------------------------------------------------------- INSTALL via SOURCE CODE
-////
-
+//
+//  INSTALL via SOURCE  -------------------------------------------------------
+//
 
 [[SOURCE-CODE]]
 === Source Code 
@@ -277,6 +310,10 @@ The installation steps are as follows:
 Remember to add --disable-docs --disable-manpages  to the autogen.sh line if
 you have not install the required dependencies
 =====
+
+//
+//  DEPENDENCY LIST  ----------------------------------------------------------
+//
 
 [[PKG-LIST]]
 == Dependency List
@@ -581,6 +618,10 @@ sudo apt-get --install-suggests install flsdk-meta
 
 |===
 
+//
+//  ADDITIONAL RESOURCES ------------------------------------------------------
+//
+
 == Additional Resources
 There are many sites that discuss various aspects of building the 
 {fldigi-project} applications. The following matrix outlines a small subset that
@@ -612,6 +653,10 @@ can work in conjunction with or in addition to {prog}.
 
 |===
 
+//
+//  LICENSE -------------------------------------------------------------------
+//
+
 == License
 {prog} is free software: you can redistribute it and/or modify
 under the terms of the GNU General Public License as published by
@@ -626,4 +671,4 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this documentation. If not, see {gnu_gpl}.
 
-Copyright (C) 2016 Greg Beam, KI7MT.
+Copyright (C) 2014-2016 Greg Beam, KI7MT.

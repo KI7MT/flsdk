@@ -200,7 +200,7 @@ uninstall:
 # Cleanup Source Tree
 .PHONY: clean
 clean:
-	${RM} -f src/flsdk config.log config.status \
+	${RM} -f src/flsdk src/flsdk-version config.log config.status \
 	configure.scan configure Makefile data/flsdk.desktop $(PKGINFO) \
 	$(DOCSRC)/flsdk*.html $(MANSRC)/{*.1,*.1.txt}
 	${RM} -rf ./autom4*
