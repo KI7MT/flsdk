@@ -365,6 +365,9 @@ encouraged to build these documents an review the rendered documents.
 |1.9{plus}
 |Interpreter of object-oriented scripting language Ruby
 
+|sqlite3
+|3.8.2
+|Command line interface for SQLite 3
 
 |===
 
