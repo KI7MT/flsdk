@@ -1,0 +1,8 @@
+src/flsdk usr/bin/
+src/flsdk-version usr/bin/
+src/menu/* usr/share/flsdk/menu/
+src/patch/* usr/share/flsdk/patch/
+data/flsdk.xpm usr/share/pixmaps/
+data/flsdk.desktop usr/share/applications/
+doc/source/flsdk.html usr/share/doc/flsdk/
+pkg-info.txt usr/share/doc/flsdk/

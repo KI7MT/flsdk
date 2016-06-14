@@ -1,0 +1,35 @@
+Source: flsdk
+Section: devel
+Priority: optional
+Maintainer: Debian Hamradio Maintainers <debian-hams@lists.debian.org>
+Uploaders: Greg Beam <ki7mt@yahoo.com>, Kamal Mostafa <kamal@whence.com>
+Standards-Version: 3.9.5
+Build-Depends: debhelper (>= 9.2.0),
+         dh-autoreconf,
+         libfile-fcntllock-perl,
+         autotools-dev,
+         autoconf,
+         automake,
+         asciidoc,
+         asciidoctor,
+         coderay,
+         libxml2-utils,
+         xmlto,
+         xsltproc
+Homepage: https://sourceforge.net/projects/flsdk/
+Vcs-Git: git://git.code.sf.net/p/flsdk/code
+Vcs-Browser: https://git.code.sf.net/p/flsdk/code
+
+Package: flsdk
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         ${python:depends},
+         python (>=2.6),
+         python-bs4,
+         dialog,
+         lsb-release,
+         sqlite
+Description: Build System for FLDIGI Applications
+ FLSDK is a collection of custom written shell scripts designed to ease
+ compiling FLDIGI applications and documentation from source code.
