@@ -30,6 +30,7 @@ JJ=@JJJJ@
 DESC='@DESC@'
 HOST_OS=@HOST_OS@
 HOST_CPU=@HOST_CPU@
+WIN10=@WIN10@
 
 # system directories
 DOCS=@DOCDIR@

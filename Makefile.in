@@ -26,6 +26,7 @@ WEB			=	@WEB@
 DESC		=	@DESC@
 HOST_OS		=	@HOST_OS@
 HOST_CPU	=	@HOST_CPU@
+WIN10		=	@WIN10@
 CPUS		=	@CPUS@
 JJJJ		=	@JJJJ@
 
@@ -81,9 +82,6 @@ DEFS		:=	@DEFS@
 # Windows 10 Status
 WIN10		:=	@WIN10@
 
-# MXE variables
-
-
 # foreground colours
 C_R			:=	'\033[01;31m'	# red
 C_G			:=	'\033[01;32m'	# green
@@ -94,6 +92,13 @@ C_NC		:=	'\033[01;37m'	# no color
 # Targets
 all: build-doc build-manp make-summary
 
+# disable docs and manpages if Win-10 WSL is detected
+ifeq ($(WIN10),Yes)
+	BDOC=No
+	BMANP=No
+endif
+
+# if enabled, build html documentation
 build-doc:
 ifeq ($(BDOC),Yes)
 	@echo '---------------------------------------------'
@@ -107,6 +112,7 @@ ifeq ($(BDOC),Yes)
 	@echo ''
 endif
 
+# if enabled, build manpages
 build-manp:
 ifeq ($(MANP),Yes)
 	@echo '---------------------------------------------'
