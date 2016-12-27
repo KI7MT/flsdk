@@ -92,12 +92,6 @@ C_NC		:=	'\033[01;37m'	# no color
 # Targets
 all: build-doc build-manp make-summary
 
-# disable docs and manpages if Win-10 WSL is detected
-ifeq ($(WIN10),Yes)
-	BDOC=No
-	BMANP=No
-endif
-
 # if enabled, build html documentation
 build-doc:
 ifeq ($(BDOC),Yes)
@@ -210,8 +204,8 @@ uninstall:
 # Cleanup Source Tree
 .PHONY: clean
 clean:
-	${RM} -f src/flsdk src/flsdk-version config.log config.status \
-	configure.scan configure Makefile data/flsdk.desktop $(PKGINFO) \
-	$(DOCSRC)/flsdk*.html $(MANSRC)/{*.1,*.1.txt}
+	${RM} -f src/flsdk src/flsdk-version src/flsdk-test-url config.log \
+	config.status configure.scan configure Makefile \
+	data/flsdk.desktop $(PKGINFO) $(DOCSRC)/flsdk*.html $(MANSRC)/{*.1,*.1.txt}
 	${RM} -rf ./autom4*
 

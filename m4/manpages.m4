@@ -8,16 +8,20 @@ AC_DEFUN([AC_BUILD_MANPAGES], [
                  [ac_cv_manpages=yes])
 
 if test "x$ac_cv_manpages" = "xyes"; then
-	MANP=Yes
-	AC_MSG_NOTICE([Enabled Building Manpages])
+    MANP=Yes
+    status_message="Enabled Building Manpages"
 else
 	MANP=No
-	AC_MSG_NOTICE([Disable Building Manpages])
+    status_message="Disable Building Manpages"
 fi
-	AC_SUBST([MANP], ["$MANP"])
 
+# if Windows 10, do not build manpages no matter what
 if test "x$ac_cv_win10" = "xyes"; then
-    AC_MSG_NOTICE([Override: Win-10 detected, No Manpage Builds])
+    MANP=No
+    status_message="Override: Win-10 detected, No Manpage Builds"
 fi
+
+AC_MSG_NOTICE([${status_message}])
+AC_SUBST([MANP], ["$MANP"])
 
 ])

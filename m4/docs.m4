@@ -8,16 +8,20 @@ AC_DEFUN([AC_BUILD_DOCS], [
                  [ac_cv_docs=yes])
 
 if test "x$ac_cv_docs" = "xyes"; then
-	BDOC=Yes
-	AC_MSG_NOTICE([Enabled Building HTML Documentation])
+    BDOC=Yes
+    status_message="Enabled Building HTML Documentation"
 else
-	BDOC=No
-	AC_MSG_NOTICE([Disable Building HTML Documentation])
+    BDOC=No
+    status_message="Disable Building HTML Documentation"
 fi
-	AC_SUBST([BDOC], ["$BDOC"])
 
+# if Windows 10, dont build documentation no matter what
 if test "x$ac_cv_win10" = "xyes"; then
-    AC_MSG_NOTICE([Override: Win-10 detected, No Documentation Builds])
+    BDOC=No
+    status_message="Override: Win-10 detected, No Documentation Builds"
 fi
+
+AC_MSG_NOTICE([])
+AC_SUBST([BDOC], ["$BDOC"])
 
 ])
