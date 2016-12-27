@@ -16,7 +16,7 @@ else
 fi
 	AC_SUBST([BDOC], ["$BDOC"])
 
-if test "x$ac_cv_WIN10" = "xyes"; then
+if test "x$ac_cv_win10" = "xyes"; then
     AC_MSG_NOTICE([Override: Win-10 detected, No Documentation Builds])
 fi
 
