@@ -29,7 +29,8 @@ Depends: ${misc:Depends},
          python-bs4,
          dialog,
          lsb-release,
-         sqlite
+         sqlite,
+         httping
 Description: Build System for FLDIGI Applications
  FLSDK is a collection of custom written shell scripts designed to ease
  compiling FLDIGI applications and documentation from source code.

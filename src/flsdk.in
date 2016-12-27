@@ -57,8 +57,8 @@ WIN32="$HOMEDIR/win32"
 VERLOG="$TMPD/ver.tmp"
 
 # unicode variables
-CHK=${C_G}✔${C_NC}
-NONE=' ✘ '
+CHK=${C_G}OK${C_NC}
+NONE=' - '
 
 # make sure all directories exist
 mkdir -p "$HOMEDIR"/{win32,src,tmp,logs,mkrd}
@@ -735,8 +735,8 @@ echo -e ${C_G}"FLSDK Application Version Check"${C_NC}
 echo '-----------------------------------------------------'
 
 # check Internet connectivity---------------------------------------------------
-((ping -w5 -c3 www.w1hkj.com || ping -w5 -c3 8.8.8.8 || ping -w5 -c3 208.67.222.222) > /dev/null 2>&1) && \
-	echo -e "* Internet ..... ${C_G}✔${C_NC}" || {
+((httping -t5 -c3 w1hkj.com || ping -t5 -c3 google.com || httping -t5 -c3 opendns.com) > /dev/null 2>&1) && \
+	echo -e "* Internet ..... ${C_G}OK${C_NC}" || {
 	echo ''
 	echo -e ${C_R}'** INTERNET CONNECTION FAILURE**'${C_NC}
 	echo ''
@@ -744,11 +744,11 @@ echo '-----------------------------------------------------'
 	echo 'perform version checks. The following'
 	echo 'test failed:'
 	echo ''
-	echo 'ping -w5 -c3 www.w1hkj.com || ping -w5 -c3 8.8.8.8 || ping -w5 -c3 208.67.222.222'
+	echo 'httping -t5 -c3 w1hkj.com || httping -t5 -c3 google.com || ping -t5 -c3 opendns.com'
 	echo ''
-	echo 'FLDIG Website ...: www.w1hkj.com'
-	echo 'Google DNS ......: 8.8.8.8'
-	echo 'OpenDNS .........: 208.67.222.222'
+	echo 'FLDIG Website ...: w1hkj.com'
+	echo 'Google DNS ......: google.com'
+	echo 'OpenDNS .........: opendns.com'
 	echo ''
 	echo 'Check you can access the internet, resolve any connection'
 	echo "problems, then re-run Check Version"
@@ -759,7 +759,7 @@ echo '-----------------------------------------------------'
 
 # check if we can access SourceForge repositories-------------------------------
 ((git ls-remote git://git.code.sf.net/p/fldigi/fldigi HEAD) > /dev/null 2>&1) && \
-	echo -e "* Sourceforge .. ${C_G}✔${C_NC}" || {
+	echo -e "* Sourceforge .. ${C_G}OK${C_NC}" || {
 	echo ''
 	echo -e ${C_R}'** SOURCEFORGE CONNECTION FAILURE**'${C_NC}
 	echo ''
@@ -776,7 +776,7 @@ echo '-----------------------------------------------------'
 	}
 
 # now simply call the Python Script:
-@PYTHON@ @BINDIR@/flsdk-version
+@PYTHON3@ @BINDIR@/flsdk-version
 
 # pause after the python script finishes
 read -p "Press [ Enter ] to continue ..."

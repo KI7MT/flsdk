@@ -150,7 +150,7 @@ install-binaries:
 	@install -m 644 $(DATASRC)/flsdk.xpm $(DESTDIR)$(ICOND)
 	@install -m 644 $(PKGINFO) $(DESTDIR)$(DOCDIR)
 	@cp -r $(PATCHSRC) $(DESTDIR)$(SHARE)
-	@install -m 644 AUTHORS ChangeLog COPYING COPYRIGHT $(PKGINFO) $(DESTDIR)$(DOCDIR)
+	@install -m 644 AUTHORS COPYING COPYRIGHT $(PKGINFO) $(DESTDIR)$(DOCDIR)
 ifeq ($(BDOC),Yes)
 	@echo '* Installing Documentation'
 	@install -m -644 $(DOCSRC)/*.html $(DESTDIR)$(DOCDIR)
@@ -196,6 +196,7 @@ uninstall:
 	@$(RM) -f $(DESTDIR)$(ICOND)/flsdk.xpm
 	@$(RM) -f $(DESTDIR)$(DTDIR)/flsdk.desktop
 	@echo '* Finished'
+	@echo ''
 
 # Cleanup Source Tree
 .PHONY: clean

@@ -2,7 +2,7 @@
 # Process this file with -*- autoconf -*- to produce the configure script
 # ------------------------------------------------------------------------------
 AC_PREREQ([2.65])
-AC_INIT([FLSDK],[0.0.4],[ki7mt01@gmail.com],[],[https://sourceforge.net/projects/flsdk])
+AC_INIT([FLSDK],[0.0.5],[ki7mt01@gmail.com],[],[https://sourceforge.net/projects/flsdk])
 AC_MSG_NOTICE([FLSDK - Build System For FLDIGI Applications.])
 FLSDK_AUTHOR="Greg Beam, KI7MT"
 FLSDK_COPYRIGHT="Copyright (C) 2014-2016 Greg Beam, KI7MT"
@@ -48,7 +48,7 @@ AC_MSG_NOTICE([Distribution is: $DESC $HOSE_CPU])
 # ------------------------------------------------------------------------------
 #  default install path, if not defined ( TO-DO: make M4 macro )
 # ------------------------------------------------------------------------------
-AC_PREFIX_DEFAULT("/usr")
+AC_PREFIX_DEFAULT("/usr/local")
 if test "$prefix" = "NONE"; then 
 	prefix=${ac_default_prefix}
 fi
@@ -108,6 +108,8 @@ AC_PATH_PROG([LN], [ln])
 AC_PATH_PROG([MKDIR], [mkdir])
 AC_PATH_PROG([MV], [mv])
 AC_PATH_PROG([PYTHON], [python])
+AC_PATH_PROG([PYTHON3], [python3])
+
 AC_PATH_PROG([RM], [rm])
 AC_PATH_PROG([SED], [sed])
 AC_PATH_PROG([SHELL], [bash])
@@ -118,8 +120,10 @@ AC_SUBST([AWK], ["$ac_cv_path_AWK"])
 AC_SUBST([CHMOD], ["$ac_cv_path_CHMOD"])
 AC_SUBST([CHOWN], ["$ac_cv_path_CHOWN"])
 AC_SUBST([CP], ["$ac_cv_path_CP"])
+AC_SUBST([CUT], ["$ac_cv_path_CUT"])
 AC_SUBST([DIALOG], ["$ac_cv_path_DIALOG"])
 AC_SUBST([GIT], ["$ac_cv_path_GIT"])
+AC_SUBST([HEAD], ["$ac_cv_path_HEAD"])
 AC_SUBST([INSTALL], ["$ac_cv_path_INSTALL"])
 AC_SUBST([LN], ["$ac_cv_path_LN"])
 AC_SUBST([MKDIR], ["$ac_cv_path_MKDIR"])
@@ -127,7 +131,14 @@ AC_SUBST([MV], ["$ac_cv_path_MV"])
 AC_SUBST([RM], ["$ac_cv_path_RM"])
 AC_SUBST([SED], ["$ac_cv_path_SED"])
 AC_SUBST([SHELL], ["$ac_cv_path_SHELL"])
+AC_SUBST([TAIL], ["$ac_cv_path_TAIL"])
 AC_SUBST([TOUCH], ["$ac_cv_path_TOUCH"])
+
+
+# ------------------------------------------------------------------------------
+# check parallel option
+# ------------------------------------------------------------------------------
+AC_BUILD_PYTHON3
 
 
 # ------------------------------------------------------------------------------
@@ -185,6 +196,8 @@ echo " Package ...................: ${PROGRAM} ${VERSION}"
 echo " Install prefix ............: ${PREFIX}"
 echo " OS ........................: ${HOST_OS}"
 echo " Distribution ..............: ${DESC} ${HOST_CPU}"
+echo " Python2 version ...........: $PYTHON"
+echo " Python3 version ...........: $PYTHON3"
 echo " Enable Folder Separation ..: ${SEPARATE}"
 echo " With Manpages .............: ${MANP}"
 echo " With HTML Docs ............: ${BDOC}"
