@@ -2,7 +2,7 @@
 # Process this file with -*- autoconf -*- to produce the configure script
 # ------------------------------------------------------------------------------
 AC_PREREQ([2.65])
-AC_INIT([FLSDK],[0.0.5],[ki7mt01@gmail.com],[],[https://sourceforge.net/projects/flsdk])
+AC_INIT([FLSDK],[0.0.5-beta],[ki7mt01@gmail.com],[],[https://sourceforge.net/projects/flsdk])
 AC_MSG_NOTICE([FLSDK - Build System For FLDIGI Applications.])
 FLSDK_AUTHOR="Greg Beam, KI7MT"
 FLSDK_COPYRIGHT="Copyright (C) 2014-2016 Greg Beam, KI7MT"
@@ -15,14 +15,12 @@ AC_SUBST([AUTHORS], ["$FLSDK_AUTHOR"])
 AC_SUBST([COPYRIGHT], ["$FLSDK_COPYRIGHT"])
 AC_SUBST([LICENSE], ["$FLSDK_LICENSE"])
 
-
 # ------------------------------------------------------------------------------
 #  source directory information
 # ------------------------------------------------------------------------------
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_SRCDIR([src/flsdk.in])
 AC_CONFIG_MACRO_DIR([m4])
-
 
 # ------------------------------------------------------------------------------
 #  canonical host information
@@ -36,14 +34,12 @@ AC_SUBST(HOST_NAME, [${host}])
 AC_SUBST(HOST_OS, [${host_os}])
 AC_SUBST(HOST_CPU, [${host_cpu}])
 
-
 # ------------------------------------------------------------------------------
 #  distro information ( TO-DO: make M4 macro )
 # ------------------------------------------------------------------------------
 distrosd=$(lsb_release -sd | tr -d [\(\)])
 AC_SUBST([DESC], [${distrosd}])
 AC_MSG_NOTICE([Distribution is: $DESC $HOSE_CPU])
-
 
 # ------------------------------------------------------------------------------
 #  default install path, if not defined ( TO-DO: make M4 macro )
@@ -55,7 +51,6 @@ fi
 AC_SUBST([PREFIX], ["$prefix"])
 AC_MSG_NOTICE([Install Prefix as: $PREFIX])
 
-
 # ------------------------------------------------------------------------------
 # install paths
 # ------------------------------------------------------------------------------
@@ -65,7 +60,6 @@ DTDIR="$prefix"/share/applications
 ICOND="$prefix"/share/pixmaps
 MANDIR="$prefix"/share/man/man1
 MENUD="$prefix"/share/flsdk/menu
-PATCHD="$prefix"/share/flsdk/patch
 SHARE="$prefix"/share/flsdk
 AC_SUBST([BINDIR], ["$BINDIR"])
 AC_SUBST([DOCDIR], ["$DOCDIR"])
@@ -73,9 +67,7 @@ AC_SUBST([DTDIR], ["$DTDIR"])
 AC_SUBST([ICOND], ["$ICOND"])
 AC_SUBST([MANDIR], ["$MANDIR"])
 AC_SUBST([MENUD], ["$MENUD"])
-AC_SUBST([PATCHD], ["$PATCHD"])
 AC_SUBST([SHARE], ["$SHARE"])
-
 
 # ------------------------------------------------------------------------------
 # source locations paths
@@ -84,13 +76,10 @@ DATASRC=$(exec pwd)/data
 DOCSRC=$(exec pwd)/doc/source
 MANSRC=$(exec pwd)/man
 MENUSRC=$(exec pwd)/src/menu
-PATCHSRC=$(exec pwd)/src/patch
 AC_SUBST([DATASRC], ["$DATASRC"])
 AC_SUBST([DOCSRC], ["$DOCSRC"])
 AC_SUBST([MANSRC], ["$MANSRC"])
 AC_SUBST([MENUSRC], ["$MENUSRC"])
-AC_SUBST([PATCHSRC], ["$PATCHSRC"])
-
 
 # ------------------------------------------------------------------------------
 # general use tools
@@ -107,8 +96,8 @@ AC_PATH_PROG([INSTALL], [install])
 AC_PATH_PROG([LN], [ln])
 AC_PATH_PROG([MKDIR], [mkdir])
 AC_PATH_PROG([MV], [mv])
-AC_PATH_PROG([PYTHON], [python])
 AC_PATH_PROG([PYTHON3], [python3])
+AC_PATH_PROG([PYTHON], [python])
 
 AC_PATH_PROG([RM], [rm])
 AC_PATH_PROG([SED], [sed])
@@ -134,42 +123,35 @@ AC_SUBST([SHELL], ["$ac_cv_path_SHELL"])
 AC_SUBST([TAIL], ["$ac_cv_path_TAIL"])
 AC_SUBST([TOUCH], ["$ac_cv_path_TOUCH"])
 
-
 # ------------------------------------------------------------------------------
 # check parallel option
 # ------------------------------------------------------------------------------
 AC_BUILD_PYTHON3
-
 
 # ------------------------------------------------------------------------------
 # check parallel option
 # ------------------------------------------------------------------------------
 AC_BUILD_SEPARATE
 
-
 # ------------------------------------------------------------------------------
 # check parallel option
 # ------------------------------------------------------------------------------
 AC_BUILD_PARALLEL
-
 
 # ------------------------------------------------------------------------------
 # check enable docs
 # ------------------------------------------------------------------------------
 AC_BUILD_DOCS
 
-
 # ------------------------------------------------------------------------------
 # check enable manpages
 # ------------------------------------------------------------------------------
 AC_BUILD_MANPAGES
 
-
 # ------------------------------------------------------------------------------
 #  generate pkg-info.txt
 # ------------------------------------------------------------------------------
 AC_BUILD_PKGINFO
-
 
 # ------------------------------------------------------------------------------
 #  configure makefiles and scripts
@@ -182,7 +164,6 @@ src/flsdk-test-url
 man/flsdk.1.txt
 data/flsdk.desktop
 ])
-
 
 AC_OUTPUT
 # ------------------------------------------------------------------------------
