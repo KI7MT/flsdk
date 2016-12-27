@@ -34,9 +34,8 @@ from bs4 import BeautifulSoup
 __author__ = "@AUTHORS"
 __copyright__ = "@COPYRIGHT@"
 __license__ = "@LICENSE@"
-__date__ = "2016-03-23"
 __version__ = "@VERSION@"
-__email__ = "ki7mt01@yahoo.com"
+__email__ = "@BUGS@"
 __status__ = "Development"
 
 # variables used in process
@@ -158,8 +157,6 @@ def main():
                     conn.commit()
 
     # Loop through FLSDK build marker files
-
-    # -- BEGIN for FLSDK use Only --
     for p in app_list:
         lfile = (flsdk_path + (os.sep) + "mkrd" + (os.sep) + p + "-version.mkr")
         if os.path.isfile(lfile):
@@ -170,8 +167,7 @@ def main():
             conn.commit()
             cur.execute('''UPDATE VER SET NAME= ?, LOCAL = ? WHERE NAME = ?;''', (p,lver,p))
             conn.commit()
-    # -- END for FLSDK use Only --
- 
+
     # print the data table header
     print('')
     print(C_G + 'Program\t\t','Alpha\t\t', 'Released\t', 'Local' + C_NC)
