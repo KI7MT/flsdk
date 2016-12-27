@@ -19,7 +19,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#-------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------#
 
 # home and main options
 HOMEDIR=~/flsdk
@@ -65,15 +65,14 @@ mkdir -p "$HOMEDIR"/{win32,src,tmp,logs,mkrd}
 mkdir -p "$WIN32"/{flamp,fldigi,fllog,flmsg,flnet,flrig,flwkey,flwrap,comptext,comptty,linsim}
 mkdir -p "$COMPTEXTI" "$COMPTTYI" "$FLAMPI" "$FLDIGII" "$FLLOGI" "$FLMSGI" "$FLNETI" "$FLRIGI" "$FLWKEYI" "$FLWRAPI" "$LINSIMI"
 
-# build array
-declare -a default_build_array=( 'build_header' 'git_check' 'get_version' \
+# native linux build array
+default_build_array=( 'build_header' 'git_check' 'get_version' \
 'configure_header' 'set_installd' 'default_configure' 'default_make' 'default_install' \
 'default_version' 'copy_build_logs' 'install_marker' 'change_ownership' \
 'clean_after_build' 'build_summary')
 
-# general use package array
-# applications flamp,fldigi,fllog,flmsg,flnet,flrig,flwkey,flwrap,comptest,comptty,linsim
-declare -a app_array=('comptext' 'comptty' 'flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap' 'linsim')
+# package list array
+app_array=('comptext' 'comptty' 'flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap' 'linsim')
 
 # setup foreground colours
 C_R='\033[01;31m'	# red
@@ -158,7 +157,7 @@ cat << 'EOF' > "$TMPD"/MMenu.tmp
 "E" "Exit"
 EOF
 
-# menu for linux builds
+# menu for native builds
 touch "$TMPD/BuildMenuNix.tmp"
 cat << 'EOF' > "$TMPD/BuildMenuNix.tmp"
 "1" "COMPTTY .... (Git Repo)" \
@@ -215,10 +214,9 @@ cat << 'EOF' > "$TMPD/MxeAdmin.tmp"
 "E" "Exit"
 EOF
 
-
-################################################################################
+###############################################################################
 # COMMON FUNCTIONS
-################################################################################
+###############################################################################
 
 #--set options------------------------------------------------------------------
 set_options() {
@@ -227,7 +225,7 @@ set -o pipefail        # pipeline fail return exit status
 set -u                 # undefined variables
 }
 
-#--unset options----------------------------------------------------------------
+# unset options----------------------------------------------------------------
 unset_options() {
 set +e
 set +o pipefail
@@ -235,14 +233,14 @@ set +u
 unset INSTALLD
 }
 
-#--under development------------------------------------------------------------
+# under development------------------------------------------------------------
 under_development() {
 
 dialog --clear --backtitle "$BACKTITLE" --title "$UD" --msgbox "$UDMSG" 7 50
 
 }
 
-#--signal catch-----------------------------------------------------------------
+# signal catch-----------------------------------------------------------------
 sig_catch_cleanup() {
 EXIT_STATUS="$?"
 
@@ -273,7 +271,7 @@ dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 5
 fi
 }
 
-#--root check-------------------------------------------------------------------
+# root check-------------------------------------------------------------------
 root_chk() {
 MSGCLIENT=""
 TESTD=$(dpkg --get-selections dialog | awk '{print $1}')
@@ -297,7 +295,7 @@ clear
 unset {TESTVAR,MSGCLIENT}
 }
 
-#--dialog check-----------------------------------------------------------------
+# dialog check-----------------------------------------------------------------
 dialog_chk() {
 INSTALLED=$(dialog --version |awk '{print $1}')
 
@@ -324,7 +322,7 @@ sudo -k
 fi
 }
 
-#--normal shutdown--------------------------------------------------------------
+# normal shutdown--------------------------------------------------------------
 clean_exit() {
 local EXIT_STATUS="$?"
 
@@ -349,7 +347,7 @@ dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 5
 exit
 }
 
-#--dialog rc file---------------------------------------------------------------
+# dialog rc file--------------------------------------------------------------
 make_dialogrc() {
 
 rm -f "$TMPD/.dialogrc" &>/dev/null ; touch "$TMPD/.dialogrc"
@@ -404,11 +402,11 @@ export DIALOGRC="$TMPD/.dialogrc"
 
 }
 
-################################################################################
+###############################################################################
 # LINUX NATIVE FUNCTIONS
-################################################################################
+###############################################################################
 
-# main header-------------------------------------------------------------------
+# main header------------------------------------------------------------------
 build_header() {
 STEP='Main Header'
 clear
@@ -419,7 +417,7 @@ echo '-----------------------------------------------------'
 echo ''
 }
 
-# git check---------------------------------------------------------------------
+# git check--------------------------------------------------------------------
 git_check() {
 STEP='Git Phase'
 if [ -f "$APP_SRC/configure.ac" ]; then
@@ -447,11 +445,11 @@ get_version() {
 STEP='Get Version Information Phase'
 
 # Example: From FLDIGI configure.ac 05-SEP-2015
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # m4_define(FLLOG_MAJOR,  [3])
 # m4_define(FLLOG_MINOR,  [22])
 # m4_define(FLLOG_PATCH,  [.13])
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 echo '-----------------------------------------------------'
 echo -e ${C_Y}" GET VERSION INFOMATION"${C_NC}
 echo '-----------------------------------------------------'
@@ -498,7 +496,7 @@ case "$APP_NAME" in
 	flwrap)
 		MAJOR=$(cat $VFILE |grep m4_define |grep FLWRAP_MAJOR |awk '{print $2}' |cut -c2)
 		MINOR=$(cat $VFILE |grep m4_define |grep FLWRAP_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep FLWRAP_PATCH |awk '{print $2}') ;;				
+		RAW=$(cat $VFILE |grep m4_define |grep FLWRAP_PATCH |awk '{print $2}') ;;
 	linsim)
 		MAJOR=$(cat $VFILE |grep m4_define |grep linsim_MAJOR |awk '{print $2}' |cut -c2)
 		MINOR=$(cat $VFILE |grep m4_define |grep linsim_MINOR |awk '{print $2}' |cut -c2)
@@ -511,7 +509,7 @@ BUILDV="$MAJOR.$MINOR.$PATCH"
 echo "* Package Version ..: $BUILDV"
 }
 
-# configure header--------------------------------------------------------------
+# configure header-------------------------------------------------------------
 configure_header() {
 STEP='Autoreconf Phase'
 echo ''
@@ -534,7 +532,7 @@ autoreconf -f -i
 echo ''
 }
 
-# setup the install directory---------------------------------------------------
+# setup the install directory--------------------------------------------------
 set_installd() {
 
 # set the install directory based on --enable-separate ( enabled by default )
@@ -546,7 +544,7 @@ fi
 
 }
 
-# default configure(s)----------------------------------------------------------
+# default configure(s)---------------------------------------------------------
 default_configure() {
 STEP='Configure Phase'
 
@@ -570,7 +568,7 @@ case "$APP_NAME" in
 esac
 }
 
-# default make invocation-------------------------------------------------------
+# default make invocation------------------------------------------------------
 default_make() {
 STEP='Make Phase'
 echo ''
@@ -584,7 +582,7 @@ make -j$JJ
 }
 
 
-# default install---------------------------------------------------------------
+# default install--------------------------------------------------------------
 default_install() {
 STEP='Install Phase'
 echo ''
@@ -595,7 +593,7 @@ echo ''
 make install-strip
 }
 
-# get version info from Makefile------------------------------------------------
+# get version info from Makefile-----------------------------------------------
 default_version() {
 STEP='Get Version Info Phase'
 echo ''
@@ -631,7 +629,7 @@ esac
 echo "* Created version marker for: $APP_NAME-$RELEASE"
 }
 
-# build_log_copy----------------------------------------------------------------
+# build_log_copy---------------------------------------------------------------
 copy_build_logs() {
 STEP='Copy Build Log Phase'
 echo ''
@@ -643,7 +641,7 @@ echo "* Copied config.log, Makefile to: $INSTALLD"
 cp -u "$SRCD/$APP_NAME"/{config.log,Makefile} "$INSTALLD"
 }
 
-# install marker----------------------------------------------------------------
+# install marker---------------------------------------------------------------
 install_marker() {
 STEP='Install Marker'
 echo ''
@@ -659,7 +657,7 @@ echo $RELEASE > "$INSTALLD/$APP_NAME-version.mkr"
 echo $RELEASE > "$MKRD/$APP_NAME-version.mkr"
 }
 
-# change ownership--------------------------------------------------------------
+# change ownership-------------------------------------------------------------
 change_ownership() {
 STEP='Change Ownership Phase'
 echo ''
@@ -718,23 +716,14 @@ build_application() {
 	continue
 }
 
-################################################################################
-#
-# VERSION FUNCTION
-#
-################################################################################
-
-# NOTE: Where possible, all functions are in order of use to provide as much
-# clarity as possible.
-
-# version check header----------------------------------------------------------
+# version check header---------------------------------------------------------
 version_check() {
 clear ||:
 echo '-----------------------------------------------------'
 echo -e ${C_G}"FLSDK Application Version Check"${C_NC}
 echo '-----------------------------------------------------'
 
-# check Internet connectivity---------------------------------------------------
+# check Internet connectivity--------------------------------------------------
 ((httping -t5 -c3 w1hkj.com || ping -t5 -c3 google.com || httping -t5 -c3 opendns.com) > /dev/null 2>&1) && \
 	echo -e "* Internet ..... ${C_G}OK${C_NC}" || {
 	echo ''
@@ -757,7 +746,7 @@ echo '-----------------------------------------------------'
 	exit 1
 	}
 
-# check if we can access SourceForge repositories-------------------------------
+# check if we can access SourceForge repositories------------------------------
 ((git ls-remote git://git.code.sf.net/p/fldigi/fldigi HEAD) > /dev/null 2>&1) && \
 	echo -e "* Sourceforge .. ${C_G}OK${C_NC}" || {
 	echo ''
@@ -783,12 +772,9 @@ read -p "Press [ Enter ] to continue ..."
 
 }
 
-
-################################################################################
-#
+###############################################################################
 # Start Main Script
-#
-################################################################################
+###############################################################################
 
 # set traps
 trap sig_catch_cleanup SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
@@ -808,7 +794,7 @@ make_dialogrc
 # menu help files
 HELP="$DOCS/main_menu_help.txt"
 
-# MAIN MANU --------------------------------------------------------------------
+# MAIN MENU--------------------------------------------------------------------
 
 # Menu Items
 #  1 COMPTTY
