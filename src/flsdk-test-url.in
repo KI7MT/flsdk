@@ -1,19 +1,32 @@
 #!@PYTHON3@
 # -*- coding: utf-8 -*-
+#
+# Name..........: @PROGRAM@ @VERSION@
+# Execution.....: As normal user type: flsdk-test-url
+# Copyright.....: @COPYRIGHT@
+# License.......: @LICENSE@
+# Contributors..: @AUTHORS@
+# Comment.......: Part of the @PROGRAM@ Linux Project
+#
+# @PROGRAM@ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation either version 3 of the License, or
+# (at your option) any later version. 
+#
+# @PROGRAM@ is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#-------------------------------------------------------------------------#
 
 import os
 import sys
 import re
 import requests
 from bs4 import BeautifulSoup 
-
-# meta data
-__author__ = "@AUTHORS"
-__copyright__ = "@COPYRIGHT@"
-__license__ = "@LICENSE@"
-__version__ = "@VERSION@"
-__email__ = "ki7mt01@yahoo.com"
-__status__ = "Development"
 
 # process variables
 app_list = ('comptext','comptty','flamp','fldigi','fllog','flmsg','flnet','flrig','flwkey','flwrap','linsim')
