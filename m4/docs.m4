@@ -21,7 +21,7 @@ if test "x$ac_cv_win10" = "xyes"; then
     status_message="Override: Win-10 detected, No Documentation Builds"
 fi
 
-AC_MSG_NOTICE([])
+AC_MSG_NOTICE([${status_message}])
 AC_SUBST([BDOC], ["$BDOC"])
 
 ])
