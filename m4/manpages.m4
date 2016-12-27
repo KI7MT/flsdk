@@ -16,4 +16,8 @@ else
 fi
 	AC_SUBST([MANP], ["$MANP"])
 
+if test "x$ac_cv_WIN10" = "xyes"; then
+    AC_MSG_NOTICE([Override: Win-10 detected, No Manpage Builds])
+fi
+
 ])

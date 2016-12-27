@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-# Name..........: FLSDK 0.0.5
+# Name..........: FLSDK 0.0.5-rc0
 # Execution.....: As normal user type: flsdk-test-url
 # Copyright.....: Copyright (C) 2014-2016 Greg Beam, KI7MT
 # License.......: GPL-3

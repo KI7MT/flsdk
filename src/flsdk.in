@@ -33,7 +33,6 @@ HOST_CPU=@HOST_CPU@
 
 # system directories
 DOCS=@DOCDIR@
-PATCHD=@PATCHD@
 
 # application install directories
 COMPTEXTI="$HOMEDIR/comptext"

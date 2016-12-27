@@ -78,6 +78,12 @@ SEPARATE	:=	@SEPARATE@
 # config definitions
 DEFS		:=	@DEFS@
 
+# Windows 10 Status
+WIN10		:=	@WIN10@
+
+# MXE variables
+
+
 # foreground colours
 C_R			:=	'\033[01;31m'	# red
 C_G			:=	'\033[01;32m'	# green
@@ -138,7 +144,6 @@ install-binaries:
 	@echo '* Setting Up Directories'
 	@$(MKDIR) -p $(DESTDIR)$(BINDIR) $(DESTDIR)$(DOCDIR) $(DESTDIR)$(DTDIR)
 	@$(MKDIR) -p $(DESTDIR)$(DOCDIR) $(DESTDIR)$(ICOND) $(DESTDIR)$(MANDIR)
-	@$(MKDIR) -p $(DESTDIR)$(SHARE) $(DESTDIR)$(PATCH)
 	@echo '* Installing Scripts'
 	@install -m 755 src/flsdk $(DESTDIR)$(BINDIR)
 	@install -m 755 src/flsdk-version $(DESTDIR)$(BINDIR)
@@ -148,7 +153,6 @@ install-binaries:
 	@install -m 644 $(DATASRC)/flsdk.desktop $(DESTDIR)$(DTDIR)
 	@install -m 644 $(DATASRC)/flsdk.xpm $(DESTDIR)$(ICOND)
 	@install -m 644 $(PKGINFO) $(DESTDIR)$(DOCDIR)
-	@cp -r $(PATCHSRC) $(DESTDIR)$(SHARE)
 	@install -m 644 AUTHORS COPYING COPYRIGHT $(PKGINFO) $(DESTDIR)$(DOCDIR)
 ifeq ($(BDOC),Yes)
 	@echo '* Installing Documentation'
