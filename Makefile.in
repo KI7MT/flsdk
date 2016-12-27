@@ -52,7 +52,6 @@ DOCDIR		:=	@DOCDIR@
 DTDIR		:=	@DTDIR@
 ICOND		:=	@ICOND@
 MANDIR		:=	@MANDIR@
-MENUD		:=	@MENUD@
 PREFIX		:=	@PREFIX@
 SHARE		:=	@SHARE@
 
@@ -148,8 +147,7 @@ install-binaries:
 	@install -m 755 src/flsdk $(DESTDIR)$(BINDIR)
 	@install -m 755 src/flsdk-version $(DESTDIR)$(BINDIR)
 	@install -m 755 src/flsdk-test-url $(DESTDIR)$(BINDIR)
-	@install -m 644 src/menu/main_menu_help.txt $(DESTDIR)$(DOCDIR)
-	@install -m 644 $(MENUSRC)/* $(DESTDIR)$(MENUD)
+	@install -m 644 $(MENUSRC)/* $(DESTDIR)$(DOCDIR)
 	@install -m 644 $(DATASRC)/flsdk.desktop $(DESTDIR)$(DTDIR)
 	@install -m 644 $(DATASRC)/flsdk.xpm $(DESTDIR)$(ICOND)
 	@install -m 644 $(PKGINFO) $(DESTDIR)$(DOCDIR)

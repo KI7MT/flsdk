@@ -59,14 +59,12 @@ DOCDIR="$prefix"/share/doc/flsdk
 DTDIR="$prefix"/share/applications
 ICOND="$prefix"/share/pixmaps
 MANDIR="$prefix"/share/man/man1
-MENUD="$prefix"/share/flsdk/menu
 SHARE="$prefix"/share/flsdk
 AC_SUBST([BINDIR], ["$BINDIR"])
 AC_SUBST([DOCDIR], ["$DOCDIR"])
 AC_SUBST([DTDIR], ["$DTDIR"])
 AC_SUBST([ICOND], ["$ICOND"])
 AC_SUBST([MANDIR], ["$MANDIR"])
-AC_SUBST([MENUD], ["$MENUD"])
 AC_SUBST([SHARE], ["$SHARE"])
 
 # ------------------------------------------------------------------------------
