@@ -1,11 +1,5 @@
 #!@PYTHON3@
 # -*- coding: utf-8 -*-
-
-# provides Pyton2 backward compatibility
-from __future__ import print_function
-
-#
-#       chksf.py
 #
 #       @COPYRIGHT@
 #
@@ -36,8 +30,8 @@ __author__ = "@AUTHORS"
 __copyright__ = "@COPYRIGHT@"
 __license__ = "@LICENSE@"
 __date__ = "2016-03-23"
-__version__ = "0.0.3"
-__email__ = "ki7mt@yahoo.com"
+__version__ = "@VERSION@"
+__email__ = "ki7mt01@yahoo.com"
 __status__ = "Development"
 
 # variables used in process

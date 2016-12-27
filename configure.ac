@@ -178,6 +178,7 @@ AC_CONFIG_FILES([
 Makefile
 src/flsdk
 src/flsdk-version
+src/flsdk-test-url
 man/flsdk.1.txt
 data/flsdk.desktop
 ])

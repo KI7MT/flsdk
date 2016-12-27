@@ -5,7 +5,7 @@
 # Contributors....: @AUTHORS@
 # Comment.........: Part of the @PROGRAM@ Linux Project
 # Dependencies....: AsciiDoctor, Autotools, Bash, Core Utils, Git, lsb-release
-#                   Python2
+#                   Python2 (for manpages) Python3 for MXE and URL scripts
 #
 # TARGETS:
 # all             - default target, make sure everything gets built
@@ -30,30 +30,30 @@ CPUS		=	@CPUS@
 JJJJ		=	@JJJJ@
 
 # general tools
-AWK			:=	@AWK@
 A2X			:=	@A2X@
-CP			:=	@CP@
-CHOWN		:=	@CHOWN@
+AWK			:=	@AWK@
 CHMOD		:=	@CHMOD@
+CHOWN		:=	@CHOWN@
+CP			:=	@CP@
+GIT			:=	@GIT@
 LN			:=	@LN@
+MKDIR		:=	@MKDIR@
 MV			:=	@MV@
 PYTHON      :=  @PYTHON@
 RM			:=	@RM@
 SED			:=	@SED@
 SHELL		:=	@SHELL@
-GIT			:=	@GIT@
-MKDIR		:=	@MKDIR@
 
 # system directories
 INSTALL		:=	install
-PREFIX		:=	@PREFIX@
 BINDIR		:=	@BINDIR@
-DTDIR		:=	@DTDIR@
 DOCDIR		:=	@DOCDIR@
+DTDIR		:=	@DTDIR@
 ICOND		:=	@ICOND@
 MANDIR		:=	@MANDIR@
 MENUD		:=	@MENUD@
 PATCHD		:=	@PATCHD@
+PREFIX		:=	@PREFIX@
 SHARE		:=	@SHARE@
 
 # source directories
@@ -144,6 +144,7 @@ install-binaries:
 	@echo '* Installing Scripts'
 	@install -m 755 src/flsdk $(DESTDIR)$(BINDIR)
 	@install -m 755 src/flsdk-version $(DESTDIR)$(BINDIR)
+	@install -m 755 src/flsdk-test-url $(DESTDIR)$(BINDIR)
 	@install -m 644 src/menu/main_menu_help.txt $(DESTDIR)$(DOCDIR)
 	@install -m 644 $(MENUSRC)/* $(DESTDIR)$(MENUD)
 	@install -m 644 $(DATASRC)/flsdk.desktop $(DESTDIR)$(DTDIR)
@@ -174,7 +175,7 @@ endif
 	@echo " CPU Cores .................: $(CPUS)"
 	@echo " License ...................: $(LICENSE)"
 	@echo " Copyright .................: $(COPYRIGHT)"
-	@echo " Project Website ...........: $(WEB)}"
+	@echo " Project Website ...........: $(WEB)"
 	@echo " Report Bugs To ............: $(BUGS)"
 	@echo '' 
 	@echo "To Run $(PROGRAM), type ..: flsdk"

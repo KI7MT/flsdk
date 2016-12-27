@@ -1,4 +1,4 @@
-#!@PYTHON3@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -9,9 +9,9 @@ from bs4 import BeautifulSoup
 
 # meta data
 __author__ = "@AUTHORS"
-__copyright__ = "@COPYRIGHT@"
-__license__ = "@LICENSE@"
-__version__ = "@VERSION@"
+__copyright__ = "Copyright (C) 2014-2016 Greg Beam, KI7MT"
+__license__ = "GPL-3"
+__version__ = "0.0.5"
 __email__ = "ki7mt01@yahoo.com"
 __status__ = "Development"
 
