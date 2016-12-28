@@ -66,6 +66,7 @@ VERLOG="$TMPD/ver.tmp"
 # generl use variables
 CHK=${C_G}OK${C_NC}
 NONE=' - '
+LN_SELECT=""
 
 # application list array
 app_array=('comptext' 'comptty' 'flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap' 'linsim')
@@ -147,8 +148,16 @@ EXITWSDTMSG="\n      Performing Shutdown Cleanup Routine"
 
 # main menu lang
 MMTITLE=" @PROGRAM@ MAIN MENU"
-MENUMSG="            Key the letter then hit [ENTER]\n\
-     Arrow Up/Dwn or '+' or '-' Keys to Navigate\n\n"
+
+# Linux release menu message  ( linux_native_build() )
+RELMSG="   LINUX NATIVE BUILD SELECTION"
+
+# MXE cross compile menu message 
+MXECROSSMSG=" MXE CROSS CBUILD SELECTION"
+
+# menu navigation message
+MENUMSG="          Key the letter then hit [ENTER]\n\
+    Arrow Up/Dwn or '+' or '-' Keys to Navigate\n\n"
 
 # help menu lang
 HTITLE="APPLICATION BUILD HELP DOCUMENT"
@@ -207,11 +216,11 @@ then
 else
 
 dialog --backtitle "$BACKTITLE" --title "$SIGCAUGHT" --infobox "$SIGCAUGHTMSG" 5 50
-	sleep 1
+	sleep .5
 
 dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
 	rm -r  "$TMPD"/*
-	sleep 1
+	sleep .5
 
 dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
 	unset_options
@@ -929,7 +938,7 @@ cat << 'EOF' > "$TMPD"/MXEMain.tmp
 "3" "Update MXE Packages" \
 "4" "Build MXE Hamlib Package Only" \
 "5" "System Clean Up"
-"B" "Back To Main Menu"
+"B" "Back"
 EOF
 
 # application build selection menu
@@ -951,14 +960,26 @@ EOF
 
 linux_native_build() {
 
-    under_development
-#    1) APP_NAME='comptty' ; build_application ;;
-#    2) APP_NAME='comptext' ; build_application ;;
-#    3) APP_NAME='fldigi' ; build_application ;;
-#    4) APP_NAME='flamp' ; build_application ;;
-#    5) APP_NAME='flmsg' ; build_application ;;
+dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
+"$RELMSG" --menu "$MENUMSG" 20 55 20 --file "$TMPD/APPMenu.tmp" 2>"${INPUT}"
 
+    # get input from user
+    LN_SELECT=$(<"${INPUT}")
 
+    case "${LN_SELECT}" in
+        1) APP_NAME='comptty' ; build_application ;;
+        2) APP_NAME='comptext' ; build_application ;;
+        3) APP_NAME='fldigi' ; build_application ;;
+        4) APP_NAME='flamp' ; build_application ;;
+        5) APP_NAME='flmsg' ; build_application ;;
+        6) APP_NAME='flrig' ; build_application ;;
+        7) APP_NAME='flwkey' ; build_application ;;
+        8) APP_NAME='fllog' ; build_application ;;
+        9) APP_NAME='flnet' ; build_application ;;
+        10) APP_NAME='flwrap' ; build_application ;;
+        11) APP_NAME='linsim' ; build_application ;;
+        B) return 0 ;;
+    esac
 }
 
 # cross build menu funciton
@@ -1017,13 +1038,13 @@ default_build_array=( 'build_header' 'git_check' 'get_version' \
 while [ 0 ]; do
 
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
-"$MMTITLE" --menu "$MENUMSG" 23 62 20 --file "$TMPD/LinuxMenu.tmp" 2>"${INPUT}"
+"$MMTITLE" --menu "$MENUMSG" 14 55 20 --file "$TMPD/LinuxMenu.tmp" 2>"${INPUT}"
 
 MSELECT=$(<"${INPUT}")
 
 case "$MSELECT" in
     1) linux_native_build ; continue ;;
-    2) linux_native_mxe_build ; continue ;; 
+    2) mxe_cross_build ; continue ;; 
     3) mxe_setup ; continue ;;
     4) version_check ; continue ;;
     H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
