@@ -56,9 +56,16 @@ TMPD="$HOMEDIR/tmp"
 WIN32="$HOMEDIR/win32"
 VERLOG="$TMPD/ver.tmp"
 
-# unicode variables
+# generl use variables
 CHK=${C_G}OK${C_NC}
 NONE=' - '
+
+# setup foreground colours
+C_R='\033[01;31m'	# red
+C_G='\033[01;32m'	# green
+C_Y='\033[01;33m'	# yellow
+C_C='\033[01;36m'	# cyan
+C_NC='\033[01;37m'	# no color
 
 # make sure all directories exist
 mkdir -p "$HOMEDIR"/{win32,src,tmp,logs,mkrd}
@@ -74,12 +81,23 @@ default_build_array=( 'build_header' 'git_check' 'get_version' \
 # package list array
 app_array=('comptext' 'comptty' 'flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap' 'linsim')
 
-# setup foreground colours
-C_R='\033[01;31m'	# red
-C_G='\033[01;32m'	# green
-C_Y='\033[01;33m'	# yellow
-C_C='\033[01;36m'	# cyan
-C_NC='\033[01;37m'	# no color
+# system package list from MXE.cc and misc packages for flsdk
+# Note: The majority of these are installed on major distributions,
+#       however, Win-10 WSL needs this to ensure properly building
+mxe_pkg_Array=('autoconf' 'automake' 'autopoint' 'autotools-dev' 'bash' 'bison' \
+'bzip2' 'dialog' 'flex' 'gettext' 'git' 'g++''g++-multilib' 'gperf' \
+'intltool' 'libffi-dev' 'libgdk-pixbuf2.0-dev' 'libtool' 'libltdl-dev' \
+'libssl-dev' 'libxml-parser-perl' 'm4' 'make' 'openssl' 'p7zip-full' \
+'patch' 'perl' 'pkg-config' 'python' 'python3' 'python3-requests' \
+'python3-bs4' 'ruby' 'scons' 'sed' 'unzip' 'wget' 'xz-utils' 'libc6-dev-i386'
+)
+
+# mxe package list, required to build FLDIGI applications
+mxe_pkg_Array=('gcc' 'boost' 'fltk' 'gettext' 'gdb' 'glib' 'gnutls' 'hamlib' \
+	'jpeg' 'portaudio' 'libsamplerate' 'libsndfile' 'libltdl' 'libpng' \
+	'libtool' 'libxml2' 'pthreads' 'xz'
+)
+
 
 # set reasonable menu height & width.
 echo -e "\e[8;40;120t"
@@ -132,12 +150,6 @@ SETUPMSG="\n   In Order to use @PROGRAM@, you must first run setup.sh \n\
 # under development
 UD=" UNDER DEVELOPMENT"
 UDMSG="\n      Build Selection is Under Development"
-
-
-
-
-
-
 
 ################################################################################
 # MENU SECTION
@@ -216,6 +228,17 @@ cat << 'EOF' > "$TMPD/MxeAdmin.tmp"
 "11" "LINSIM ..... (Git Repo)" \
 "V" "Check App Versions" \
 "H" "Help" \
+"E" "Exit"
+EOF
+
+# main menu
+touch "$TMPD/MXEMain.tmp"
+cat << 'EOF' > "$TMPD"/MXEMain.tmp 
+"1" "Full System Setup" \
+"2" "Install / Update System Packages" \
+"3" "Install / Update MXE" \
+"4" "Build Hamlib Package Only" \
+"5" "System Clean Up"
 "E" "Exit"
 EOF
 
@@ -378,7 +401,7 @@ gauge_color = (BLUE,WHITE,ON)
 inputbox_border_color = (BLACK,WHITE,OFF)
 inputbox_color = (BLACK,WHITE,OFF)
 item_color = (BLACK,WHITE,OFF)
-itemhelp_color = (WHITE,BLACK,OFF)
+itemhelp_color = (YELLOW,BLACK,OFF)
 item_selected_color = (YELLOW,BLACK,ON)
 menubox_border_color = (WHITE,WHITE,ON)
 menubox_color = (BLACK,WHITE,OFF)
@@ -392,8 +415,8 @@ shadow_color = (BLACK,BLACK,ON)
 tab_len = 2
 tag_color = (BLACK,WHITE,ON)
 tag_key_color = (BLACK,WHITE,ON)
-tag_key_selected_color = (BLACK,WHITE,ON)
-tag_selected_color = (BLACK,WHITE,ON)
+tag_key_selected_color = (YELLOW,BLACK,ON)
+tag_selected_color = (YELLOW,BLACK,ON)
 title_color = (BLUE,WHITE,ON)
 uarrow_color = (RED,WHITE,ON)
 use_colors = ON
@@ -765,6 +788,12 @@ echo '-----------------------------------------------------'
 read -p "Press [ Enter ] to continue ..."
 
 }
+
+###############################################################################
+# MXE SPECIFIC FUNCTIONS
+###############################################################################
+
+
 
 ###############################################################################
 # Start Main Script
