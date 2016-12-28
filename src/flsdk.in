@@ -23,6 +23,7 @@
 
 # TO-DO: v0.0.6 - Add option menus / functions to build both Release & Alpha
 # TO-DO: v0.0.6 - Add M4 macro to test for sse, sse3, sse4 options
+# TO-DO: v0.0.6 - Add custom Git repository location option
 
 # home and main options
 HOMEDIR=~/flsdk
@@ -164,75 +165,10 @@ UDMSG="\n      Build Selection is Under Development"
 ################################################################################
 # MENU SECTION
 ################################################################################
-
-# main menu
-touch "$TMPD/MMenu.tmp"
-cat << 'EOF' > "$TMPD"/MMenu.tmp 
-"1" "COMPTTY .... (Git Repo)" \
-"2" "COMPTEXT ... (Git Repo)" \
-"3" "FLDIGI ..... (Git Repo)" \
-"4" "FLAMP ...... (Git Repo)" \
-"5" "FLMSG ...... (Git Repo)" \
-"6" "FLRIG ...... (Git Repo)" \
-"7" "FLWKEY ..... (Git Repo)" \
-"8" "FLLOG ...... (Git Repo)" \
-"9" "FLNET ...... (Git Repo)" \
-"10" "FLWRAP ..... (Git Repo)" \
-"11" "LINSIM ..... (Git Repo)" \
-"V" "Check App Versions" \
-"H" "Help" \
-"E" "Exit"
-EOF
-
-# menu for native builds
-touch "$TMPD/BuildMenuNix.tmp"
-cat << 'EOF' > "$TMPD/BuildMenuNix.tmp"
-"1" "COMPTTY .... (Git Repo)" \
-"2" "COMPTEXT ... (Git Repo)" \
-"3" "FLDIGI ..... (Git Repo)" \
-"4" "FLAMP ...... (Git Repo)" \
-"5" "FLMSG ...... (Git Repo)" \
-"6" "FLRIG ...... (Git Repo)" \
-"7" "FLWKEY ..... (Git Repo)" \
-"8" "FLLOG ...... (Git Repo)" \
-"9" "FLNET ...... (Git Repo)" \
-"10" "FLWRAP ..... (Git Repo)" \
-"11" "LINSIM ..... (Git Repo)" \
-"V" "Check App Versions" \
-"H" "Help" \
-"E" "Exit"
-EOF
-
-# main menu
-touch "$TMPD/MXEMain.tmp"
-cat << 'EOF' > "$TMPD"/MXEMain.tmp 
-"1" "Full System Setup" \
-"2" "Install or Update System Packages" \
-"3" "Install or Update MXE Packages" \
-"4" "Build MXE Hamlib Package Only" \
-"5" "System Clean Up"
-"E" "Exit"
-EOF
-
-# menu for MXE builds
-touch "$TMPD/MXEBuildMenu.tmp"
-cat << 'EOF' > "$TMPD/MXEBuildMenu.tmp"
-"1" "COMPTTY .... (Git Repo)" \
-"2" "COMPTEXT ... (Git Repo)" \
-"3" "FLDIGI ..... (Git Repo)" \
-"4" "FLAMP ...... (Git Repo)" \
-"5" "FLMSG ...... (Git Repo)" \
-"6" "FLRIG ...... (Git Repo)" \
-"7" "FLWKEY ..... (Git Repo)" \
-"8" "FLLOG ...... (Git Repo)" \
-"9" "FLNET ...... (Git Repo)" \
-"10" "FLWRAP ..... (Git Repo)" \
-"11" "LINSIM ..... (Git Repo)" \
-"V" "Check App Versions" \
-"H" "Help" \
-"E" "Exit"
-EOF
-
+# TO-DO: v0.0.5 - Add Main Menu Help file for dialog
+# TO-DO: v0.0.5 - Add Linux Menu help file for dialog
+# TO-DO: v0.0.5 - Add MXE Cross Build help for dialog
+# TO-DO: v0.0.5 - Add MXE Cross Setup help file for dialog
 
 ###############################################################################
 # COMMON FUNCTIONS
@@ -480,7 +416,7 @@ case "$APP_NAME" in
     comptty)
         MAJOR=$(cat $VFILE |grep m4_define |grep comptty_MAJOR |awk '{print $2}' |cut -c2)
         MINOR=$(cat $VFILE |grep m4_define |grep comptty_MINOR |awk '{print $2}' |cut -c2)
-        RAW=$(cat $VFILE |grep m4_define |grep comptty_PATCH |awk '{print $2}') ;;		
+        RAW=$(cat $VFILE |grep m4_define |grep comptty_PATCH |awk '{print $2}') ;;
     flamp)
         MAJOR=$(cat $VFILE |grep m4_define |grep FLAMP_MAJOR |awk '{print $2}' |cut -c2)
         MINOR=$(cat $VFILE |grep m4_define |grep FLAMP_MINOR |awk '{print $2}' |cut -c2)
@@ -520,7 +456,7 @@ case "$APP_NAME" in
     *) ;;
 esac
 
-# compine the version number
+# combine version number
 PATCH=${RAW:2:-2}
 BUILDV="$MAJOR.$MINOR.$PATCH"
 echo "* Package Version ..: $BUILDV"
@@ -959,6 +895,85 @@ read_pause() {
     read -p "* Press [ Enter ] to continue..."
 }
 
+###############################################################################
+# MENU FUNCTIONS
+###############################################################################
+
+# linux native main menu
+touch "$TMPD/LinuxMenu.tmp"
+cat << 'EOF' > "$TMPD"/LinuxMenu.tmp 
+"1" "Linux Native Build Selection" \
+"2" "MXE Cross Build Selection" \
+"3" "MXE Setup Menu" \
+"4" "Version Check" \
+"H" "Help" \
+"E" "Exit"
+EOF
+
+# MXE Cross Build Setup Menu
+touch "$TMPD/MXESetupMenu.tmp"
+cat << 'EOF' > "$TMPD"/MXEMain.tmp 
+"1" "Full MXE System Setup" \
+"2" "Update System Packages" \
+"3" "Update MXE Packages" \
+"4" "Build MXE Hamlib Package Only" \
+"5" "System Clean Up"
+"B" "Back To Main Menu"
+EOF
+
+# MXE Utilities Menu
+touch "$TMPD/MXESetupMenu.tmp"
+cat << 'EOF' > "$TMPD"/MXEMain.tmp 
+"1" "Full MXE System Setup" \
+"2" "Update System Packages" \
+"3" "Update MXE Packages" \
+"4" "Build MXE Hamlib Package Only" \
+"5" "System Clean Up"
+"B" "Back To Main Menu"
+EOF
+
+# application build selection menu
+touch "$TMPD/APPMenu.tmp"
+cat << 'EOF' > "$TMPD/APPMenu.tmp"
+"1" "COMPTTY .... (Git Repo)" \
+"2" "COMPTEXT ... (Git Repo)" \
+"3" "FLDIGI ..... (Git Repo)" \
+"4" "FLAMP ...... (Git Repo)" \
+"5" "FLMSG ...... (Git Repo)" \
+"6" "FLRIG ...... (Git Repo)" \
+"7" "FLWKEY ..... (Git Repo)" \
+"8" "FLLOG ...... (Git Repo)" \
+"9" "FLNET ...... (Git Repo)" \
+"10" "FLWRAP ..... (Git Repo)" \
+"11" "LINSIM ..... (Git Repo)" \
+"B" "Back to Main Menu"
+EOF
+
+linux_native_build() {
+
+    under_development
+#    1) APP_NAME='comptty' ; build_application ;;
+#    2) APP_NAME='comptext' ; build_application ;;
+#    3) APP_NAME='fldigi' ; build_application ;;
+#    4) APP_NAME='flamp' ; build_application ;;
+#    5) APP_NAME='flmsg' ; build_application ;;
+
+
+}
+
+# cross build menu funciton
+mxe_cross_build() {
+
+    under_development
+
+}
+
+# mxe seup function
+mxe_setup() {
+
+    under_development
+
+}
 
 ###############################################################################
 # Start Main Script
@@ -1002,23 +1017,15 @@ default_build_array=( 'build_header' 'git_check' 'get_version' \
 while [ 0 ]; do
 
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
-"$MMTITLE" --menu "$MENUMSG" 23 62 20 --file "$TMPD/MMenu.tmp" 2>"${INPUT}"
+"$MMTITLE" --menu "$MENUMSG" 23 62 20 --file "$TMPD/LinuxMenu.tmp" 2>"${INPUT}"
 
 MSELECT=$(<"${INPUT}")
 
 case "$MSELECT" in
-    1) APP_NAME='comptty' ; build_application ;;
-    2) APP_NAME='comptext' ; build_application ;;
-    3) APP_NAME='fldigi' ; build_application ;;
-    4) APP_NAME='flamp' ; build_application ;;
-    5) APP_NAME='flmsg' ; build_application ;;
-    6) APP_NAME='flrig' ; build_application ;;
-    7) APP_NAME='flwkey' ; build_application ;;
-    8) APP_NAME='fllog' ; build_application ;;
-    9) APP_NAME='flnet' ; build_application ;;
-    10) APP_NAME='flwrap' ; build_application ;;
-    11) APP_NAME='linsim' ; build_application ;;
-    V) version_check ; continue ;;
+    1) linux_native_build ; continue ;;
+    2) linux_native_mxe_build ; continue ;; 
+    3) mxe_setup ; continue ;;
+    4) version_check ; continue ;;
     H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
     E) clean_exit ;;
 esac
