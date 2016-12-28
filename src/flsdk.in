@@ -434,25 +434,25 @@ echo ''
 
 # git check--------------------------------------------------------------------
 git_check() {
-STEP='Git Phase'
-if [ -f "$APP_SRC/configure.ac" ]; then
-    if [ -f "$APP_SRC/Makefile" ]; then
+    STEP='Git Phase'
+    if [ -f "$APP_SRC/configure.ac" ]; then
+        if [ -f "$APP_SRC/Makefile" ]; then
+            cd "$APP_SRC"
+            echo 'Cleaning Repository Tree'
+            make clean &>/dev/null
+            make distclean &>/dev/null
+            git clean -d -x -f &>/dev/null
+        fi
+        echo 'Performing Git Pull'
         cd "$APP_SRC"
-        echo 'Cleaning Repository Tree'
-        make clean &>/dev/null
-        make distclean &>/dev/null
-        git clean -d -x -f &>/dev/null
+        git pull
+    else
+        echo 'Performing Git Clone'
+        rm -rf "$APP_SRC" &>/dev/null
+        cd "$SRCD"
+        git clone --depth 1 git://git.code.sf.net/p/fldigi/$APP_NAME $APP_NAME
     fi
-    echo 'Performing Git Pull'
-    cd "$APP_SRC"
-    git pull
-else
-    echo 'Performing Git Clone'
-    rm -rf "$APP_SRC" &>/dev/null
-    cd "$SRCD"
-    git clone --depth 1 git://git.code.sf.net/p/fldigi/$APP_NAME $APP_NAME
-fi
-echo ''
+    echo ''
 }
 
 # get version fomr configure.ac------------------------------------------------
@@ -550,6 +550,7 @@ set_installd() {
     else
         INSTALLD="$HOMEDIR/$APP_NAME/install"
     fi
+
 }
 
 # default configure(s)---------------------------------------------------------
@@ -835,10 +836,7 @@ clone_mxe() {
     cd "$HOMEDIR"
     echo ""
     if [[ -d $MXED/.git ]]; then
-        echo "* Performing Git Pull Update"
-        cd "$MXED"
-        echo ""
-        git pull
+        echo "* MXE checkout exists"
     else
         echo "* MXE not found. Cloining from Github --depth=1"
         echo ""
@@ -848,26 +846,20 @@ clone_mxe() {
     cd "$HOMEDIR"
 }
 
-
 # add hamlib.mk for packages.json file------------------------------WSL/NIX/MXE
 add_hamlib_json() {
     echo "-------------------------------------------"
-    echo -e ${C_Y}" CHECKING HAMLIB JSON ENTRY"${C_NC}
+    echo -e ${C_Y}" UPDATING HAMLIB JSON ENTRY"${C_NC}
     echo "-------------------------------------------"
     echo ""
+    # force removal of hamlib entry in json file
+    # TO-DO: v0.0.5 - When hamlib.mk reaches mxe.gi, remove this section
     if [[ -f $HOMEDIR/mxe/docs/packages.json ]]; then
-        cat $HOMEDIR/mxe/docs/packages.json | grep 'hamlib' >/dev/null 2>&1
-        if [[ $? -eq 0 ]]; then
-            echo "* Hamlib entry is OK"
-        else
-            echo "* Critical Error, cannot find packages.json file"
-            read_pause
-            break
-        fi
-    else
-        echo "* Adding hamlib entry to packages.json"
-        sed -i '/guile/a \    \"hamlib": {"version": "3.1~git", "website": "http://n0nb.users.sourceforge.net/", "description": "Hamlib"},' $MXED/docs/packages.json
+        sed -n '/hamlib/d' $HOMEDIR/mxe/docs/packages.json
     fi 
+    echo "* Adding hamlib entry to packages.json"
+    echo "* Note: when hmmlib.mk is added to mxe, this becomes obsolete"
+    sed -i '/guile/a \    \"hamlib": {"version": "3.1~rc1", "website": "http://n0nb.users.sourceforge.net/", "description": "Hamlib"},' $MXED/docs/packages.json
     echo ""
     cp -u @SHARE@/hamlib.mk $MXED/src/
 }
@@ -900,14 +892,8 @@ mxe_build_hamlib() {
     echo " * Directory: $(pwd)"
     echo " * Using [ $J1 ] parallel threads"
     echo " * Using [ $J2 ] simultaneous jobs"
-    echo " * Checking Hamlib package dependencies"
+    echo " * Building Hamlib Packages"
     echo ""
-    for i in "${mxe_hamlib_array[@]}"
-    do
-        echo " Checking : $i"
-        make JOBS=$J1 --jobs=$J2 $i
-    done
-    echo " Building : hamlib"
     make JOBS=$J1 --jobs=$J2 hamlib
     cd "$HOMEDIR"
     echo ""
@@ -1065,10 +1051,10 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
     MS_SELECT=$(<"${INPUT}")
 
     case "${MS_SELECT}" in
-    1) clear ; mxe_package_check ; mxe_sys_install ; clone_mxe ; add_hamlib_json ; mxe_build ; mxe_clean ; read_pause ;; 
+    1) clear ; mxe_package_check ; mxe_sys_install ; clone_mxe ; add_hamlib_json ; mxe_build ; mxe_build_hamlib ; mxe_clean ; read_pause ;; 
     2) clear ; wsl_sys_update ; read_pause ;; 
     3) clear ; clone_mxe ; add_hamlib_json ; mxe_build ; read_pause ;; 
-    4) clear ; mxe_build_hamlib ; read_pause ;; 
+    4) clear ; clone_mxe ; add_hamlib_json ; mxe_build_hamlib ; read_pause ;; 
     5) clear ; wsl_sys_clean ; echo "" ; mxe_clean ; read_pause ;; 
     B) return 0 ;;
     esac
