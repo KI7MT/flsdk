@@ -143,11 +143,13 @@ install-binaries:
 	@echo '* Setting Up Directories'
 	@$(MKDIR) -p $(DESTDIR)$(BINDIR) $(DESTDIR)$(DOCDIR) $(DESTDIR)$(DTDIR)
 	@$(MKDIR) -p $(DESTDIR)$(DOCDIR) $(DESTDIR)$(ICOND) $(DESTDIR)$(MANDIR)
+	@$(MKDIR) -p $(DESTDIR)$(SHARE)
 	@echo '* Installing Scripts'
 	@install -m 755 src/flsdk $(DESTDIR)$(BINDIR)
 	@install -m 755 src/flsdk-version $(DESTDIR)$(BINDIR)
 	@install -m 755 src/flsdk-test-url $(DESTDIR)$(BINDIR)
 	@install -m 644 $(MENUSRC)/* $(DESTDIR)$(DOCDIR)
+	@install -m 644 $(DATASRC)/*.mk $(DESTDIR)$(SHARE)
 	@install -m 644 $(DATASRC)/flsdk.desktop $(DESTDIR)$(DTDIR)
 	@install -m 644 $(DATASRC)/flsdk.xpm $(DESTDIR)$(ICOND)
 	@install -m 644 $(PKGINFO) $(DESTDIR)$(DOCDIR)

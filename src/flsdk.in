@@ -28,7 +28,8 @@
 # home and main options
 HOMEDIR=~/flsdk
 SEPARATE=@SEPARATE@
-JJ=@JJJJ@
+J1=@JJJJ@
+J2='2'
 MXEURL="https://github.com/mxe/mxe.git"
 
 # system informaiton / selections
@@ -58,6 +59,7 @@ LINSIMI="$HOMEDIR/linsim"
 LOGD="$HOMEDIR/logs"
 MKRD="$HOMEDIR/mkrd"
 MXEMKRD="$HOMEDIR/mxe-mkrd"
+MXED="$HOMEDIR/mxe"
 SRCD="$HOMEDIR/src"
 TMPD="$HOMEDIR/tmp"
 WIN32="$HOMEDIR/win32"
@@ -66,7 +68,6 @@ VERLOG="$TMPD/ver.tmp"
 # generl use variables
 CHK=${C_G}OK${C_NC}
 NONE=' - '
-LN_SELECT=""
 
 # application list array
 app_array=('comptext' 'comptty' 'flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap' 'linsim')
@@ -97,18 +98,68 @@ done
 # system package list from MXE.cc and misc packages for flsdk
 # Note: The majority of these are installed on major distributions,
 #       however, Win-10 WSL needs this to ensure properly building
-mxe_sys_pkg_array=('autoconf' 'automake' 'autopoint' 'autotools-dev' 'bash' 'bison' \
-'bzip2' 'dialog' 'flex' 'gettext' 'git' 'g++''g++-multilib' 'gperf' \
-'intltool' 'libffi-dev' 'libgdk-pixbuf2.0-dev' 'libtool' 'libltdl-dev' \
-'libssl-dev' 'libxml-parser-perl' 'm4' 'make' 'openssl' 'p7zip-full' \
-'patch' 'perl' 'pkg-config' 'python' 'python3' 'python3-requests' \
-'python3-bs4' 'ruby' 'scons' 'sed' 'unzip' 'wget' 'xz-utils' 'libc6-dev-i386'
+mxe_sys_pkg_array=(
+    'autoconf'
+    'automake'
+    'autopoint'
+    'autotools-dev'
+    'bash'
+    'bison'
+    'bzip2'
+    'dialog'
+    'flex'
+    'gettext'
+    'git'
+    'g++'
+    'g++-multilib'
+    'gperf'
+    'intltool'
+    'libffi-dev'
+    'libgdk-pixbuf2.0-dev'
+    'libtool'
+    'libltdl-dev'
+    'libssl-dev'
+    'libxml-parser-perl'
+    'm4'
+    'make'
+    'openssl'
+    'p7zip-full'
+    'patch'
+    'perl'
+    'pkg-config'
+    'python'
+    'python3'
+    'python3-requests'
+    'python3-bs4'
+    'ruby'
+    'scons'
+    'sed'
+    'unzip'
+    'wget'
+    'xz-utils'
+    'libc6-dev-i386'
 )
 
 # mxe build list, required to build FLDIGI applications
-mxe_pkg_array=('gcc' 'boost' 'fltk' 'gettext' 'gdb' 'glib' 'gnutls' 'hamlib' \
-	'jpeg' 'portaudio' 'libsamplerate' 'libsndfile' 'libltdl' 'libpng' \
-	'libtool' 'libxml2' 'pthreads' 'xz'
+mxe_pkg_array=(
+    'gcc'
+    'boost'
+    'fltk'
+    'gettext'
+    'gdb'
+    'glib'
+    'gnutls'
+    'hamlib'
+    'jpeg'
+    'portaudio'
+    'libsamplerate'
+    'libsndfile'
+    'libltdl'
+    'libpng'
+    'libtool'
+    'libxml2'
+    'pthreads'
+    'xz'
 )
 
 # set reasonable menu height & width.
@@ -786,50 +837,54 @@ clone_mxe() {
         cd "$MXED"
         echo ""
         git pull
-        cd "$HOMEDIR"
     else
-        cd $BASED
         echo "* MXE not found. Cloining from Github --depth=1"
         echo ""
         git clone --depth=1 "$MXEURL"
     fi
     echo ""
+    cd "$HOMEDIR"
 }
 
 
 # add hamlib.mk for packages.json file------------------------------WSL/NIX/MXE
 add_hamlib_json() {
-# TO-DO: v0.0.5 - Change location of hamlib.mk file to @SHARE@
     echo "-------------------------------------------"
     echo -e ${C_Y}" CHECKING HAMLIB JSON ENTRY"${C_NC}
     echo "-------------------------------------------"
     echo ""
-    HLCHECK=$(cat $MXED/docs/packages.json | grep 'hamlib')
-    if [[ $? -eq 0 ]]; then
-        echo "* Hamlib entry is OK"
+    if [[ -f $HOMEDIR/mxe/docs/packages.json ]]; then
+        cat $HOMEDIR/mxe/docs/packages.json | grep 'hamlib' >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
+            echo "* Hamlib entry is OK"
+        else
+            echo "* Critical Error, cannot find packages.json file"
+            read_pause
+            break
+        fi
     else
         echo "* Adding hamlib entry to packages.json"
         sed -i '/guile/a \    \"hamlib": {"version": "3.1~git", "website": "http://n0nb.users.sourceforge.net/", "description": "Hamlib"},' $MXED/docs/packages.json
     fi 
-    cp -u @SHARE@/hamlib.mk $MXED/src/
     echo ""
+    cp -u @SHARE@/hamlib.mk $MXED/src/
 }
 
 # build MXE binariles and libraries---------------------------------WSL/NIX/MXE
-build_mxe() {
+mxe_build() {
     cd "$MXED"
     echo "-------------------------------------------"
     echo -e ${C_Y}" START MXE PACKAGE BUILD"${C_NC}
     echo "-------------------------------------------"
     echo ""
-    echo " * Directory: $(pwd)"
-    echo " * Using [ $J1 ] parallel threads"
-    echo " * Using [ $J2 ] simultaneous jobs"
-    echo " * Checking MXE package build status"
+    echo "* Directory: $(pwd)"
+    echo "* Using [ $J1 ] parallel threads"
+    echo "* Using [ $J2 ] simultaneous jobs"
+    echo "* Checking MXE package build status"
     echo ""
     for i in "${mxe_pkg_array[@]}"
     do
-        echo " Checking : $i"
+        echo "FLSDK Checking : $i"
         make JOBS=$J1 --jobs=$J2 $i
     done
     echo ""
@@ -873,7 +928,7 @@ wsl_sys_update() {
 }
 
 # perform WSL system cleanup--------------------------------------------WSL/MXE
-wsl_sys_cleanup() {
+wsl_sys_clean() {
 	cd "$HOMEDIR"
 	echo "-------------------------------------------"
 	echo -e ${C_Y}" WSL System Cleanup"${C_NC}
@@ -884,16 +939,23 @@ wsl_sys_cleanup() {
 
 # MXE remove junk and unused package files--------------------------WSL/NIX/MXE
 mxe_clean() {
-    cd "$MXED/mxe"
     echo "-------------------------------------------"
     echo " CLEANING MXE JUNK FILES"
     echo "-------------------------------------------"
-    echo ""
-    echo "* remove unused files, folders, and logs"
-    make clean-junk > /dev/null 2>&1
-    echo "* remove unused package files"
-    make clean-pks > /dev/null 2>&1
-    echo ""
+    if [[ -d $MXED/mxe ]]; then
+        cd "$MXED/mxe"
+        echo ""
+        echo "* remove unused files, folders, and logs"
+        make clean-junk > /dev/null 2>&1
+        echo "* remove unused package files"
+        make clean-pks > /dev/null 2>&1
+        echo ""
+    else
+        echo ""
+        echo "* MXE is not installed"
+        echo "* Select option [1] from the MXE Setup Menu"
+        echo ""
+    fi
     cd "$HOMEDIR"
 }
 
@@ -901,11 +963,11 @@ mxe_clean() {
 # simple pause function---------------------------------------------WSL/NIX/MXE
 # simple pause function
 read_pause() {
-    read -p "* Press [ Enter ] to continue..."
+    read -p "  Press [ Enter ] to continue..."
 }
 
 ###############################################################################
-# MENU FUNCTIONS
+# MENUS ASSOCIATED FUNCTIONS
 ###############################################################################
 
 # linux native main menu
@@ -919,25 +981,14 @@ cat << 'EOF' > "$TMPD"/LinuxMenu.tmp
 "E" "Exit"
 EOF
 
-# MXE Cross Build Setup Menu
-touch "$TMPD/MXESetupMenu.tmp"
-cat << 'EOF' > "$TMPD"/MXEMain.tmp 
+# MXE Setup Utilities Menu
+touch "$TMPD/MXESetup.tmp"
+cat << 'EOF' > "$TMPD"/MXESetup.tmp
 "1" "Full MXE System Setup" \
 "2" "Update System Packages" \
 "3" "Update MXE Packages" \
-"4" "Build MXE Hamlib Package Only" \
-"5" "System Clean Up"
-"B" "Back To Main Menu"
-EOF
-
-# MXE Utilities Menu
-touch "$TMPD/MXESetupMenu.tmp"
-cat << 'EOF' > "$TMPD"/MXEMain.tmp 
-"1" "Full MXE System Setup" \
-"2" "Update System Packages" \
-"3" "Update MXE Packages" \
-"4" "Build MXE Hamlib Package Only" \
-"5" "System Clean Up"
+"4" "Build MXE Hamlib Package" \
+"5" "System Clean Up" \
 "B" "Back"
 EOF
 
@@ -955,9 +1006,10 @@ cat << 'EOF' > "$TMPD/APPMenu.tmp"
 "9" "FLNET ...... (Git Repo)" \
 "10" "FLWRAP ..... (Git Repo)" \
 "11" "LINSIM ..... (Git Repo)" \
-"B" "Back to Main Menu"
+"B" "Back"
 EOF
 
+# linux native build menu------------------------------------------------------
 linux_native_build() {
 
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
@@ -992,7 +1044,20 @@ mxe_cross_build() {
 # mxe seup function
 mxe_setup() {
 
-    under_development
+dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
+"$MXECROSSMSG" --menu "$MENUMSG" 14 55 20 --file "$TMPD/MXESetup.tmp" 2>"${INPUT}"
+
+    # get input from user
+    MX_SELECT=$(<"${INPUT}")
+
+    case "${MX_SELECT}" in
+    1) clear ; mxe_package_check ; mxe_sys_install ; clone_mxe ; add_hamlib_json ; mxe_build ; mxe_clean ; read_pause ;; 
+    2) clear ; wsl_sys_update ; read_pause ;; 
+    3) clear ; clone_mxe ; add_hamlib_json ; mxe_build ; read_pause ;; 
+    4) clear ; mxe_build_hamlib ; read_pause ;; 
+    5) clear ; wsl_sys_clean ; echo "" ; mxe_clean ; read_pause ;; 
+    B) return 0 ;;
+    esac
 
 }
 
