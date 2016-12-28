@@ -726,6 +726,7 @@ build_application() {
 
 # version check header---------------------------------------------------------
 version_check() {
+# TO-DO: v0.0.5 - Add pkg 'httping' to debian control file and meta packages
 clear ||:
 echo '-----------------------------------------------------'
 echo -e ${C_G}"FLSDK Application Version Check"${C_NC}
