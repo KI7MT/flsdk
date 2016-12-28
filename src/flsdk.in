@@ -943,6 +943,14 @@ mxe_clean() {
     cd "$HOMEDIR"
 }
 
+mxe_build_application() {
+
+    # not implemented yet
+    under_development
+
+}
+
+
 # simple pause function---------------------------------------------WSL/NIX/MXE
 read_pause() {
     read -p "  Press [ Enter ] to continue..."
@@ -1093,11 +1101,6 @@ default_build_array=( 'build_header' 'git_check' 'get_version' \
 'configure_header' 'set_installd' 'default_configure' 'default_make' 'default_install' \
 'default_version' 'copy_build_logs' 'install_marker' 'change_ownership' \
 'clean_after_build' 'build_summary')
-
-mxe_build_array=( 'build_header' 'git_check' 'get_version' 'set_installd'
-)
-
-
 
 while [ 0 ]; do
 
