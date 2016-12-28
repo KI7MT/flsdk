@@ -876,7 +876,7 @@ mxe_build() {
     echo "* Using [ $J2 ] simultaneous jobs"
     echo "* Building MXE packages"
     echo ""
-    make JOBS=$J1 --jobs=$J2 $i $(echo ${mxe_pkg_array[@]})
+    make JOBS=$J1 --jobs=$J2 $(echo ${mxe_pkg_array[@]})
     echo ""
     cd "$HOMEDIR"
 }
@@ -955,6 +955,25 @@ mxe_build_application() {
 read_pause() {
     read -p "  Press [ Enter ] to continue..."
 }
+
+
+# Linux Native Build Array
+default_build_array=( 'build_header' 'git_check' 'get_version' \
+'configure_header' 'set_installd' 'default_configure' 'default_make' 'default_install' \
+'default_version' 'copy_build_logs' 'install_marker' 'change_ownership' \
+'clean_after_build' 'build_summary')
+
+# MXE full setup array
+mxe_setup_array=( 'mxe_package_check' 'mxe_sys_install' 'clone_mxe' \
+'add_hamlib_json' 'mxe_build' 'mxe_build_hamlib' 'mxe_clean' 'read_pause'
+)
+
+# MXE update packages array
+mxe_update_array=( 'clone_mxe' 'add_hamlib_json' 'mxe_build' 'read_pause')
+
+# MXE build hamlib array
+mxe_build_hamlib_array=( 'clone_mxe' 'add_hamlib_json' 'mxe_build_hamlib' 'read_pause')
+
 
 ###############################################################################
 # MENUS ASSOCIATED FUNCTIONS
@@ -1059,14 +1078,13 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
     MS_SELECT=$(<"${INPUT}")
 
     case "${MS_SELECT}" in
-    1) clear ; mxe_package_check ; mxe_sys_install ; clone_mxe ; add_hamlib_json ; mxe_build ; mxe_build_hamlib ; mxe_clean ; read_pause ;; 
+    1) clear ; for i in "${!mxe_setup_array[@]}" ; do ${mxe_setup_array[$i]} ; done ;; 
     2) clear ; wsl_sys_update ; read_pause ;; 
-    3) clear ; clone_mxe ; add_hamlib_json ; mxe_build ; read_pause ;; 
-    4) clear ; clone_mxe ; add_hamlib_json ; mxe_build_hamlib ; read_pause ;; 
+    3) clear ; for i in "${!mxe_update_array[@]}" ; do ${mxe_update_array[$i]} ; done ;; 
+    4) clear ; for i in "${!mxe_build_hamlib_array[@]}" ; do ${mxe_build_hamlib_array[$i]} ; done ;; 
     5) clear ; wsl_sys_clean ; echo "" ; mxe_clean ; read_pause ;; 
     B) return 0 ;;
     esac
-
 }
 
 ###############################################################################
@@ -1095,12 +1113,6 @@ HELP="$DOCS/main_menu_help.txt"
 
 # set the menu selection variable
 INPUT="$TMPD"/SLECTION.$$
-
-# Linux Native Build Array
-default_build_array=( 'build_header' 'git_check' 'get_version' \
-'configure_header' 'set_installd' 'default_configure' 'default_make' 'default_install' \
-'default_version' 'copy_build_logs' 'install_marker' 'change_ownership' \
-'clean_after_build' 'build_summary')
 
 while [ 0 ]; do
 
