@@ -1,0 +1,59 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+#
+# Name..........: FLSDK 0.0.5-rc0
+# Execution.....: As normal user type: flsdk-hamlibmk
+# Copyright.....: Copyright (C) 2014-2016 Greg Beam, KI7MT
+# License.......: GPL-3
+# Contributors..: Greg Beam, KI7MT
+# Comment.......: Part of the FLSDK Linux Project
+#
+# FLSDK is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation either version 3 of the License, or
+# (at your option) any later version. 
+#
+# FLSDK is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#-------------------------------------------------------------------------#
+
+# import modules
+import datetime
+import requests
+from bs4 import BeautifulSoup 
+
+# set debug mode
+debug = 1
+
+# process variables
+hamlib_url = "http://n0nb.users.sourceforge.net/"
+
+# Get the daily-archive file information on Sourceforge
+source = requests.get(hamlib_url)
+data = source.text
+soup = BeautifulSoup(data)
+today = datetime.datetime.now()
+dtg = (str(today.year) + str(today.month) + str(today.day))
+for line in soup.body.findAll('a'):
+    if line.has_attr('href'):
+        if(line['href'].endswith('.gz')):
+            if(line['href']):
+                if (dtg) in line['href']:
+                    a1 = str(line['href'])[:-7].split("-")
+                    name = a1[0]
+                    version = a1[1]
+                    gitv = a1[2]
+                    cdate = a1[3]
+
+# Print the results if in debug mode
+if debug == 1:
+    print("Filename ....: %s" % name)
+    print("Version......: %s" % version)
+    print("Git Hash.....: %s" % gitv)
+    print("Current Date.: %s" % cdate)
+
