@@ -164,6 +164,7 @@ Makefile
 src/flsdk
 src/flsdk-version
 src/flsdk-test-url
+src/flsdk-hamlibmk
 man/flsdk.1.txt
 data/flsdk.desktop
 ])
