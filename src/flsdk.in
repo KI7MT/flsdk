@@ -21,6 +21,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-----------------------------------------------------------------------------#
 
+# TO-DO: v0.0.6 - Add option menus / functions to build both Release & Alpha
+
 # home and main options
 HOMEDIR=~/flsdk
 SEPARATE=@SEPARATE@
@@ -433,21 +435,21 @@ echo ''
 git_check() {
 STEP='Git Phase'
 if [ -f "$APP_SRC/configure.ac" ]; then
-		if [ -f "$APP_SRC/Makefile" ]; then
-			cd "$APP_SRC"
-			echo 'Cleaning Repository Tree'
-			make clean &>/dev/null
-			make distclean &>/dev/null
-			git clean -d -x -f &>/dev/null
-		fi
-	echo 'Performing Git Pull'
-	cd "$APP_SRC"
-	git pull
+    if [ -f "$APP_SRC/Makefile" ]; then
+        cd "$APP_SRC"
+        echo 'Cleaning Repository Tree'
+        make clean &>/dev/null
+        make distclean &>/dev/null
+        git clean -d -x -f &>/dev/null
+    fi
+    echo 'Performing Git Pull'
+    cd "$APP_SRC"
+    git pull
 else
-	echo 'Performing Git Clone'
-	rm -rf "$APP_SRC" &>/dev/null
-	cd "$SRCD"
-	git clone --depth 1 git://git.code.sf.net/p/fldigi/$APP_NAME $APP_NAME
+    echo 'Performing Git Clone'
+    rm -rf "$APP_SRC" &>/dev/null
+    cd "$SRCD"
+    git clone --depth 1 git://git.code.sf.net/p/fldigi/$APP_NAME $APP_NAME
 fi
 echo ''
 }
@@ -469,51 +471,51 @@ echo ''
 echo "* Parsing [ configure.ac ]"
 VFILE="$APP_SRC/configure.ac"
 case "$APP_NAME" in 
-	comptext)
-		MAJOR=$(cat $VFILE |grep m4_define |grep comptext_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep comptext_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep comptext_PATCH |awk '{print $2}') ;;
-	comptty)
-		MAJOR=$(cat $VFILE |grep m4_define |grep comptty_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep comptty_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep comptty_PATCH |awk '{print $2}') ;;		
-	flamp)
-		MAJOR=$(cat $VFILE |grep m4_define |grep FLAMP_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep FLAMP_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep FLAMP_PATCH |awk '{print $2}') ;;
-	fldigi)
-		MAJOR=$(cat $VFILE |grep m4_define |grep FLDIGI_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep FLDIGI_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep FLDIGI_PATCH |awk '{print $2}') ;;
-	fllog)
-		MAJOR=$(cat $VFILE |grep m4_define |grep FLLOG_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep FLLOG_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep FLLOG_PATCH |awk '{print $2}') ;;
-	flmsg)
-		MAJOR=$(cat $VFILE |grep m4_define |grep FLMSG_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep FLMSG_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep FLMSG_PATCH |awk '{print $2}') ;;
-	flnet)
-		MAJOR=$(cat $VFILE |grep m4_define |grep FLNET_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep FLNET_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep FLNET_PATCH |awk '{print $2}') ;;
-	flrig)
-		MAJOR=$(cat $VFILE |grep m4_define |grep FLRIG_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep FLRIG_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep FLRIG_PATCH |awk '{print $2}') ;;
-	flwkey)
-		MAJOR=$(cat $VFILE |grep m4_define |grep FLWKEY_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep FLWKEY_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep FLWKEY_PATCH |awk '{print $2}') ;;
-	flwrap)
-		MAJOR=$(cat $VFILE |grep m4_define |grep FLWRAP_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep FLWRAP_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep FLWRAP_PATCH |awk '{print $2}') ;;
-	linsim)
-		MAJOR=$(cat $VFILE |grep m4_define |grep linsim_MAJOR |awk '{print $2}' |cut -c2)
-		MINOR=$(cat $VFILE |grep m4_define |grep linsim_MINOR |awk '{print $2}' |cut -c2)
-		RAW=$(cat $VFILE |grep m4_define |grep linsim_PATCH |awk '{print $2}') ;;
-	*) ;;
+    comptext)
+        MAJOR=$(cat $VFILE |grep m4_define |grep comptext_MAJOR |awk '{print $2}' |cut -c2)
+        MINOR=$(cat $VFILE |grep m4_define |grep comptext_MINOR |awk '{print $2}' |cut -c2)
+        RAW=$(cat $VFILE |grep m4_define |grep comptext_PATCH |awk '{print $2}') ;;
+    comptty)
+        MAJOR=$(cat $VFILE |grep m4_define |grep comptty_MAJOR |awk '{print $2}' |cut -c2)
+        MINOR=$(cat $VFILE |grep m4_define |grep comptty_MINOR |awk '{print $2}' |cut -c2)
+        RAW=$(cat $VFILE |grep m4_define |grep comptty_PATCH |awk '{print $2}') ;;		
+    flamp)
+        MAJOR=$(cat $VFILE |grep m4_define |grep FLAMP_MAJOR |awk '{print $2}' |cut -c2)
+        MINOR=$(cat $VFILE |grep m4_define |grep FLAMP_MINOR |awk '{print $2}' |cut -c2)
+        RAW=$(cat $VFILE |grep m4_define |grep FLAMP_PATCH |awk '{print $2}') ;;
+    fldigi)
+        MAJOR=$(cat $VFILE |grep m4_define |grep FLDIGI_MAJOR |awk '{print $2}' |cut -c2)
+        MINOR=$(cat $VFILE |grep m4_define |grep FLDIGI_MINOR |awk '{print $2}' |cut -c2)
+        RAW=$(cat $VFILE |grep m4_define |grep FLDIGI_PATCH |awk '{print $2}') ;;
+    fllog)
+        MAJOR=$(cat $VFILE |grep m4_define |grep FLLOG_MAJOR |awk '{print $2}' |cut -c2)
+        MINOR=$(cat $VFILE |grep m4_define |grep FLLOG_MINOR |awk '{print $2}' |cut -c2)
+        RAW=$(cat $VFILE |grep m4_define |grep FLLOG_PATCH |awk '{print $2}') ;;
+    flmsg)
+        MAJOR=$(cat $VFILE |grep m4_define |grep FLMSG_MAJOR |awk '{print $2}' |cut -c2)
+        MINOR=$(cat $VFILE |grep m4_define |grep FLMSG_MINOR |awk '{print $2}' |cut -c2)
+        RAW=$(cat $VFILE |grep m4_define |grep FLMSG_PATCH |awk '{print $2}') ;;
+    flnet)
+        MAJOR=$(cat $VFILE |grep m4_define |grep FLNET_MAJOR |awk '{print $2}' |cut -c2)
+        MINOR=$(cat $VFILE |grep m4_define |grep FLNET_MINOR |awk '{print $2}' |cut -c2)
+        RAW=$(cat $VFILE |grep m4_define |grep FLNET_PATCH |awk '{print $2}') ;;
+    flrig)
+        MAJOR=$(cat $VFILE |grep m4_define |grep FLRIG_MAJOR |awk '{print $2}' |cut -c2)
+        MINOR=$(cat $VFILE |grep m4_define |grep FLRIG_MINOR |awk '{print $2}' |cut -c2)
+        RAW=$(cat $VFILE |grep m4_define |grep FLRIG_PATCH |awk '{print $2}') ;;
+    flwkey)
+        MAJOR=$(cat $VFILE |grep m4_define |grep FLWKEY_MAJOR |awk '{print $2}' |cut -c2)
+        MINOR=$(cat $VFILE |grep m4_define |grep FLWKEY_MINOR |awk '{print $2}' |cut -c2)
+        RAW=$(cat $VFILE |grep m4_define |grep FLWKEY_PATCH |awk '{print $2}') ;;
+    flwrap)
+        MAJOR=$(cat $VFILE |grep m4_define |grep FLWRAP_MAJOR |awk '{print $2}' |cut -c2)
+        MINOR=$(cat $VFILE |grep m4_define |grep FLWRAP_MINOR |awk '{print $2}' |cut -c2)
+        RAW=$(cat $VFILE |grep m4_define |grep FLWRAP_PATCH |awk '{print $2}') ;;
+    linsim)
+        MAJOR=$(cat $VFILE |grep m4_define |grep linsim_MAJOR |awk '{print $2}' |cut -c2)
+        MINOR=$(cat $VFILE |grep m4_define |grep linsim_MINOR |awk '{print $2}' |cut -c2)
+        RAW=$(cat $VFILE |grep m4_define |grep linsim_PATCH |awk '{print $2}') ;;
+    *) ;;
 esac
 
 # compine the version number
@@ -610,29 +612,29 @@ echo -e ${C_Y}" GENERATE VERSION MARKER"${C_NC}
 echo '-----------------------------------------------------'
 echo ''
 case "$APP_NAME" in 
-	comptext)
-		RELEASE=$(grep 'comptext_VERSION =' < Makefile |awk '{print $3}') ;;
-	comptty)
-		RELEASE=$(grep 'comptty_VERSION =' < Makefile |awk '{print $3}') ;;		
-	fldigi)
-		RELEASE=$(grep 'FLDIGI_VERSION =' < Makefile |awk '{print $3}') ;;
-	flamp)
-		RELEASE=$(grep 'FLAMP_VERSION =' < Makefile |awk '{print $3}') ;;
-	fllog)
-		RELEASE=$(grep 'FLLOG_VERSION =' < Makefile |awk '{print $3}') ;;
-	flmsg)
-		RELEASE=$(grep 'FLMSG_VERSION =' < Makefile |awk '{print $3}') ;;
-	flnet)
-		RELEASE=$(grep 'FLNET_VERSION =' < Makefile |awk '{print $3}') ;;
-	flrig)
-		RELEASE=$(grep 'FLRIG_VERSION =' < Makefile |awk '{print $3}') ;;
-	flwkey)
-		RELEASE=$(grep 'FLWKEY_VERSION =' < Makefile |awk '{print $3}') ;;
-	flwrap)
-		RELEASE=$(grep 'FLWRAP_VERSION =' < Makefile |awk '{print $3}') ;;
-	linsim)
-		RELEASE=$(grep 'linsim_VERSION =' < Makefile |awk '{print $3}') ;;
-	*) ;;
+    comptext)
+        RELEASE=$(grep 'comptext_VERSION =' < Makefile |awk '{print $3}') ;;
+    comptty)
+        RELEASE=$(grep 'comptty_VERSION =' < Makefile |awk '{print $3}') ;;		
+    fldigi)
+        RELEASE=$(grep 'FLDIGI_VERSION =' < Makefile |awk '{print $3}') ;;
+    flamp)
+        RELEASE=$(grep 'FLAMP_VERSION =' < Makefile |awk '{print $3}') ;;
+    fllog)
+        RELEASE=$(grep 'FLLOG_VERSION =' < Makefile |awk '{print $3}') ;;
+    flmsg)
+        RELEASE=$(grep 'FLMSG_VERSION =' < Makefile |awk '{print $3}') ;;
+    flnet)
+        RELEASE=$(grep 'FLNET_VERSION =' < Makefile |awk '{print $3}') ;;
+    flrig)
+        RELEASE=$(grep 'FLRIG_VERSION =' < Makefile |awk '{print $3}') ;;
+    flwkey)
+        RELEASE=$(grep 'FLWKEY_VERSION =' < Makefile |awk '{print $3}') ;;
+    flwrap)
+    RELEASE=$(grep 'FLWRAP_VERSION =' < Makefile |awk '{print $3}') ;;
+    linsim)
+    RELEASE=$(grep 'linsim_VERSION =' < Makefile |awk '{print $3}') ;;
+    *) ;;
 esac
 echo "* Created version marker for: $APP_NAME-$RELEASE"
 }
@@ -718,10 +720,10 @@ read -p "Press [ Enter ] to continue.."
 
 # build the application
 build_application() {
-	APP_SRC="$SRCD/$APP_NAME"
-	LINK_TYPE='Static'
-	for f in ${default_build_array[@]} ; do "$f" ; done
-	continue
+    APP_SRC="$SRCD/$APP_NAME"
+    LINK_TYPE='Static'
+    for f in ${default_build_array[@]} ; do "$f" ; done
+    continue
 }
 
 # version check header---------------------------------------------------------
@@ -734,44 +736,44 @@ echo '-----------------------------------------------------'
 
 # check Internet connectivity--------------------------------------------------
 ((httping -t5 -c3 w1hkj.com || ping -t5 -c3 google.com || httping -t5 -c3 opendns.com) > /dev/null 2>&1) && \
-	echo -e "* Internet ..... ${C_G}OK${C_NC}" || {
-	echo ''
-	echo -e ${C_R}'** INTERNET CONNECTION FAILURE**'${C_NC}
-	echo ''
-	echo 'You must have internet access inorder to'
-	echo 'perform version checks. The following'
-	echo 'test failed:'
-	echo ''
-	echo 'httping -t5 -c3 w1hkj.com || httping -t5 -c3 google.com || ping -t5 -c3 opendns.com'
-	echo ''
-	echo 'FLDIG Website ...: w1hkj.com'
-	echo 'Google DNS ......: google.com'
-	echo 'OpenDNS .........: opendns.com'
-	echo ''
-	echo 'Check you can access the internet, resolve any connection'
-	echo "problems, then re-run Check Version"
-	echo ''
-	read -p "Press [ Enter ] to continue ..."
-	exit 1
-	}
+    echo -e "* Internet ..... ${C_G}OK${C_NC}" || {
+    echo ''
+    echo -e ${C_R}'** INTERNET CONNECTION FAILURE**'${C_NC}
+    echo ''
+    echo 'You must have internet access inorder to'
+    echo 'perform version checks. The following'
+    echo 'test failed:'
+    echo ''
+    echo 'httping -t5 -c3 w1hkj.com || httping -t5 -c3 google.com || ping -t5 -c3 opendns.com'
+    echo ''
+    echo 'FLDIG Website ...: w1hkj.com'
+    echo 'Google DNS ......: google.com'
+    echo 'OpenDNS .........: opendns.com'
+    echo ''
+    echo 'Check you can access the internet, resolve any connection'
+    echo "problems, then re-run Check Version"
+    echo ''
+    read -p "Press [ Enter ] to continue ..."
+    exit 1
+    }
 
 # check if we can access SourceForge repositories------------------------------
 ((git ls-remote git://git.code.sf.net/p/fldigi/fldigi HEAD) > /dev/null 2>&1) && \
-	echo -e "* Sourceforge .. ${C_G}OK${C_NC}" || {
-	echo ''
-	echo -e ${C_R}'** SOURCEFORGE CONNECTION FAILURE**'${C_NC}
-	echo ''
-	echo '@PROGRAM@ was unable to check the Git repository'
-	echo 'on Sourceforge. This may be a temporary fault or'
-	echo 'you may have internet connections issues.'
-	echo ''
-	echo 'If the problems presists, check that you can browse to the'
-	echo 'Git Repo on SF, and chek their Net Operations messages on'
-	echo 'on Twitter'
-	echo ''
-	read -p "Press [ Enter ] to continue ..."
-	exit 1
-	}
+    echo -e "* Sourceforge .. ${C_G}OK${C_NC}" || {
+    echo ''
+    echo -e ${C_R}'** SOURCEFORGE CONNECTION FAILURE**'${C_NC}
+    echo ''
+    echo '@PROGRAM@ was unable to check the Git repository'
+    echo 'on Sourceforge. This may be a temporary fault or'
+    echo 'you may have internet connections issues.'
+    echo ''
+    echo 'If the problems presists, check that you can browse to the'
+    echo 'Git Repo on SF, and chek their Net Operations messages on'
+    echo 'on Twitter'
+    echo ''
+    read -p "Press [ Enter ] to continue ..."
+    exit 1
+    }
 
 # now simply call the Python Script:
 @PYTHON3@ @BINDIR@/flsdk-version
