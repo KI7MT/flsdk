@@ -22,6 +22,7 @@
 #-----------------------------------------------------------------------------#
 
 # TO-DO: v0.0.6 - Add option menus / functions to build both Release & Alpha
+# TO-DO: v0.0.6 - Add M4 macro to test for sse, sse3, sse4 options
 
 # home and main options
 HOMEDIR=~/flsdk
@@ -52,6 +53,7 @@ FLWRAPI="$HOMEDIR/flwrap"
 LINSIMI="$HOMEDIR/linsim"
 
 # general use directories and variables
+# TO-DO: v0.0.5 - Add MXEMKRD to configure.ac and Makfile.in
 LOGD="$HOMEDIR/logs"
 MKRD="$HOMEDIR/mkrd"
 MXEMKRD="$HOMEDIR/mxe-mkrd"
@@ -659,7 +661,7 @@ echo '-----------------------------------------------------'
 echo -e ${C_Y}" GENERATING MARKERS"${C_NC}
 echo '-----------------------------------------------------'
 echo ''
-echo '* Removing old markear'
+echo '* Removing old build marker'
 rm -f "$INSTALLD/version.mkr" &>/dev/null
 rm -f "$MKRD/$APP_NAME-version.mkr" &>/dev/null
 echo '* Installing new version markers'
@@ -690,10 +692,10 @@ echo -e ${C_Y}" CLEANING BUILD TREE"${C_NC}
 echo '-----------------------------------------------------'
 echo ''
 make clean &>/dev/null
-echo '* Ran make clean'
+echo '* Cleaned build tree with..: make clean'
 make distclean &>/dev/null
 git clean -qfd
-echo '* Ran git clean'
+echo '* Cleaned Git repo with....: git clean -qfd'
 }
 
 # finish build message---------------------------------------------------------
