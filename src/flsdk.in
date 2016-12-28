@@ -239,17 +239,17 @@ UDMSG="\n      Build Selection is Under Development"
 
 #--set options------------------------------------------------------------------
 set_options() {
-set -e                 # exit immediately on any error
-set -o pipefail        # pipeline fail return exit status
-set -u                 # undefined variables
+    set -e                 # exit immediately on any error
+    set -o pipefail        # pipeline fail return exit status
+    set -u                 # undefined variables
 }
 
 # unset options----------------------------------------------------------------
 unset_options() {
-set +e
-set +o pipefail
-set +u
-unset INSTALLD
+    set +e
+    set +o pipefail
+    set +u
+    unset INSTALLD
 }
 
 # under development------------------------------------------------------------
@@ -261,109 +261,109 @@ dialog --clear --backtitle "$BACKTITLE" --title "$UD" --msgbox "$UDMSG" 7 50
 
 # signal catch-----------------------------------------------------------------
 sig_catch_cleanup() {
-EXIT_STATUS="$?"
+    EXIT_STATUS="$?"
 
-if [ "$EXIT_STATUS" == "0" ]
-then
-   clean_exit
+    if [ "$EXIT_STATUS" == "0" ]
+    then
+       clean_exit
 
-else
+    else
 
-dialog --backtitle "$BACKTITLE" --title "$SIGCAUGHT" --infobox "$SIGCAUGHTMSG" 5 50
-	sleep .5
+    dialog --backtitle "$BACKTITLE" --title "$SIGCAUGHT" --infobox "$SIGCAUGHTMSG" 5 50
+        sleep .5
 
-dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
-	rm -r  "$TMPD"/*
-	sleep .5
+    dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
+        rm -r  "$TMPD"/*
+        sleep .5
 
-dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
-	unset_options
-	wait
-	clear
+    dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
+        unset_options
+        wait
+        clear
 
-	echo "Exit Status [ $EXIT_STATUS ]"
-	echo "@PROGRAM@ Signal Catch Cleanup Complete"
-	echo ''
-	trap - SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
-	unset exit_status
-	exit
-fi
+        echo "Exit Status [ $EXIT_STATUS ]"
+        echo "@PROGRAM@ Signal Catch Cleanup Complete"
+        echo ''
+        trap - SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
+        unset exit_status
+        exit
+    fi
 }
 
 # root check-------------------------------------------------------------------
 root_chk() {
-MSGCLIENT=""
-TESTD=$(dpkg --get-selections dialog | awk '{print $1}')
+    MSGCLIENT=""
+    TESTD=$(dpkg --get-selections dialog | awk '{print $1}')
 
-if [ "$TESTD" = "dialog" ]
-then
-   MSGCLIENT="dialog"
-  else
-   MSGCLIENT="whiptail"
-fi
-clear
+    if [ "$TESTD" = "dialog" ]
+    then
+       MSGCLIENT="dialog"
+      else
+       MSGCLIENT="whiptail"
+    fi
+    clear
 
-if [ "$EUID" = "0" ]
-then
-"$MSGCLIENT" --title "$RCTITLE" --backtitle "$BACKTITLE" --msgbox "$RCMSG" 7 70
-clean_exit
-exit
-fi
-clear
+    if [ "$EUID" = "0" ]
+    then
+    "$MSGCLIENT" --title "$RCTITLE" --backtitle "$BACKTITLE" --msgbox "$RCMSG" 7 70
+    clean_exit
+    exit
+    fi
+    clear
 
-unset {TESTVAR,MSGCLIENT}
+    unset {TESTVAR,MSGCLIENT}
 }
 
 # dialog check-----------------------------------------------------------------
 dialog_chk() {
-INSTALLED=$(dialog --version |awk '{print $1}')
+    INSTALLED=$(dialog --version |awk '{print $1}')
 
-if [ "$INSTALLED" == "Version:" ]; then
-   MSGCLIENT="dialog"
+    if [ "$INSTALLED" == "Version:" ]; then
+       MSGCLIENT="dialog"
 
-elif [ "$INSTALLED" != "dialog" ]; then
-   MSGCLIENT="whiptail"
-   clear
+    elif [ "$INSTALLED" != "dialog" ]; then
+       MSGCLIENT="whiptail"
+       clear
 
-"$MSGCLIENT" --clear --title "$DITITLE" --backtitle "$BACKTITLE" --msgbox "$DIMSG" 7 70
-   touch "$LOGD"/install_log
-   sudo apt-get -qy install dialog | tee 2>> "$LOGD"/install_log
-   wait
-   dialog --create-rc ~/.dialogrc
-   wait
-   cp "$CONFIG"/debian.rc ~/.dialogrc
-   wait
-   clear
+    "$MSGCLIENT" --clear --title "$DITITLE" --backtitle "$BACKTITLE" --msgbox "$DIMSG" 7 70
+       touch "$LOGD"/install_log
+       sudo apt-get -qy install dialog | tee 2>> "$LOGD"/install_log
+       wait
+       dialog --create-rc ~/.dialogrc
+       wait
+       cp "$CONFIG"/debian.rc ~/.dialogrc
+       wait
+       clear
 
-dialog --title "$DISUCTITLE" --backtitle "$BACKTITLE" --msgbox "$DISUCMSG" 7 40
-sudo -k
+    dialog --title "$DISUCTITLE" --backtitle "$BACKTITLE" --msgbox "$DISUCMSG" 7 40
+    sudo -k
 
-fi
+    fi
 }
 
 # normal shutdown--------------------------------------------------------------
 clean_exit() {
-local EXIT_STATUS="$?"
+    local EXIT_STATUS="$?"
 
-dialog --backtitle "$BACKTITLE" --title "$EXITWSDT" --infobox "$EXITWSDTMSG" 5 50
-   sleep 1
+    dialog --backtitle "$BACKTITLE" --title "$EXITWSDT" --infobox "$EXITWSDTMSG" 5 50
+       sleep 1
 
-dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
-   rm -r "$TMPD"/*
-   wait
-   sleep 1
+    dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
+       rm -r "$TMPD"/*
+       wait
+       sleep 1
 
-dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
-	unset_options
-	wait
-	sleep 1
-	clear
-	echo "Exit Status [ $EXIT_STATUS ]"
-	echo "@PROGRAM@ Clean Exit Complete."
-	echo ''
-	trap - SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
-	unset EXIT_STATUS
-exit
+    dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
+        unset_options
+        wait
+        sleep 1
+        clear
+        echo "Exit Status [ $EXIT_STATUS ]"
+        echo "@PROGRAM@ Clean Exit Complete."
+        echo ''
+        trap - SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
+        unset EXIT_STATUS
+    exit
 }
 
 # dialog rc file--------------------------------------------------------------
@@ -423,13 +423,13 @@ export DIALOGRC="$TMPD/.dialogrc"
 
 # main header------------------------------------------------------------------
 build_header() {
-STEP='Main Header'
-clear
-echo ''
-echo '-----------------------------------------------------'
-echo -e ${C_Y}" STARTING BUILD for ( $APP_NAME )"${C_NC}
-echo '-----------------------------------------------------'
-echo ''
+    STEP='Main Header'
+    clear
+    echo ''
+    echo '-----------------------------------------------------'
+    echo -e ${C_Y}" STARTING BUILD for ( $APP_NAME )"${C_NC}
+    echo '-----------------------------------------------------'
+    echo ''
 }
 
 # git check--------------------------------------------------------------------
@@ -455,7 +455,7 @@ git_check() {
     echo ''
 }
 
-# get version fomr configure.ac------------------------------------------------
+# get version from configure.ac------------------------------------------------
 get_version() {
     STEP='Get Version Information Phase'
 
@@ -555,171 +555,171 @@ set_installd() {
 
 # default configure(s)---------------------------------------------------------
 default_configure() {
-STEP='Configure Phase'
-
 # TO-DO: v0.0.6 - Add configuration option selection for each package
-case "$APP_NAME" in
-    comptext|comptty|fldigi|flamp|fllog|flmsg|flnet|flrig|flwkey|flwrap|linsim)
-    case "$HOST_CPU" in
-            *arm* )
-                ./configure --prefix="$INSTALLD" --enable-static \
-                CC='gcc' \
-                CXX='g++' \
-                CFLAGS='-O2 -mfpu=vfp -mfloat-abi=hard -ffast-math -finline-functions' \
-                CXXFLAGS="$CFLAGS"
-            ;;
-            * )
-            ./configure --prefix="$INSTALLD" --enable-optimizations=native --enable-static
-            ;;
-            esac
-    ;;
-# TO-DO: v0.0.6 - Add some warning message here if the wrong applications is selected somehow
-    *)
-    ;;
-esac
+
+    STEP='Configure Phase'
+    case "$APP_NAME" in
+        comptext|comptty|fldigi|flamp|fllog|flmsg|flnet|flrig|flwkey|flwrap|linsim)
+        case "$HOST_CPU" in
+                *arm* )
+                    ./configure --prefix="$INSTALLD" --enable-static \
+                    CC='gcc' \
+                    CXX='g++' \
+                    CFLAGS='-O2 -mfpu=vfp -mfloat-abi=hard -ffast-math -finline-functions' \
+                    CXXFLAGS="$CFLAGS"
+                ;;
+                * )
+                ./configure --prefix="$INSTALLD" --enable-optimizations=native --enable-static
+                ;;
+                esac
+        ;;
+    # TO-DO: v0.0.6 - Add some warning message here if the wrong applications is selected somehow
+        *)
+        ;;
+    esac
 }
 
 # default make invocation------------------------------------------------------
 default_make() {
-STEP='Make Phase'
-echo ''
-echo '-----------------------------------------------------'
-echo -e ${C_Y}" BUILDING"${C_NC}
-echo '-----------------------------------------------------'
-echo ''
-echo -e "* Build Type: "${C_G}'Static'${C_NC}
-echo ''
-make -j$JJ
+    STEP='Make Phase'
+    echo ''
+    echo '-----------------------------------------------------'
+    echo -e ${C_Y}" BUILDING"${C_NC}
+    echo '-----------------------------------------------------'
+    echo ''
+    echo -e "* Build Type: "${C_G}'Static'${C_NC}
+    echo ''
+    make -j$JJ
 }
 
 
 # default install--------------------------------------------------------------
 default_install() {
-STEP='Install Phase'
-echo ''
-echo '-----------------------------------------------------'
-echo -e ${C_Y}" INSTALLING BINARIES"${C_NC}
-echo '-----------------------------------------------------'
-echo ''
-make install-strip
+    STEP='Install Phase'
+    echo ''
+    echo '-----------------------------------------------------'
+    echo -e ${C_Y}" INSTALLING BINARIES"${C_NC}
+    echo '-----------------------------------------------------'
+    echo ''
+    make install-strip
 }
 
 # get version info from Makefile-----------------------------------------------
 default_version() {
-STEP='Get Version Info Phase'
-echo ''
-echo '-----------------------------------------------------'
-echo -e ${C_Y}" GENERATE VERSION MARKER"${C_NC}
-echo '-----------------------------------------------------'
-echo ''
-case "$APP_NAME" in 
-    comptext)
-        RELEASE=$(grep 'comptext_VERSION =' < Makefile |awk '{print $3}') ;;
-    comptty)
-        RELEASE=$(grep 'comptty_VERSION =' < Makefile |awk '{print $3}') ;;		
-    fldigi)
-        RELEASE=$(grep 'FLDIGI_VERSION =' < Makefile |awk '{print $3}') ;;
-    flamp)
-        RELEASE=$(grep 'FLAMP_VERSION =' < Makefile |awk '{print $3}') ;;
-    fllog)
-        RELEASE=$(grep 'FLLOG_VERSION =' < Makefile |awk '{print $3}') ;;
-    flmsg)
-        RELEASE=$(grep 'FLMSG_VERSION =' < Makefile |awk '{print $3}') ;;
-    flnet)
-        RELEASE=$(grep 'FLNET_VERSION =' < Makefile |awk '{print $3}') ;;
-    flrig)
-        RELEASE=$(grep 'FLRIG_VERSION =' < Makefile |awk '{print $3}') ;;
-    flwkey)
-        RELEASE=$(grep 'FLWKEY_VERSION =' < Makefile |awk '{print $3}') ;;
-    flwrap)
-    RELEASE=$(grep 'FLWRAP_VERSION =' < Makefile |awk '{print $3}') ;;
-    linsim)
-    RELEASE=$(grep 'linsim_VERSION =' < Makefile |awk '{print $3}') ;;
-    *) ;;
-esac
-echo "* Created version marker for: $APP_NAME-$RELEASE"
+    STEP='Get Version Info Phase'
+    echo ''
+    echo '-----------------------------------------------------'
+    echo -e ${C_Y}" GENERATE VERSION MARKER"${C_NC}
+    echo '-----------------------------------------------------'
+    echo ''
+    case "$APP_NAME" in 
+        comptext)
+            RELEASE=$(grep 'comptext_VERSION =' < Makefile |awk '{print $3}') ;;
+        comptty)
+            RELEASE=$(grep 'comptty_VERSION =' < Makefile |awk '{print $3}') ;;		
+        fldigi)
+            RELEASE=$(grep 'FLDIGI_VERSION =' < Makefile |awk '{print $3}') ;;
+        flamp)
+            RELEASE=$(grep 'FLAMP_VERSION =' < Makefile |awk '{print $3}') ;;
+        fllog)
+            RELEASE=$(grep 'FLLOG_VERSION =' < Makefile |awk '{print $3}') ;;
+        flmsg)
+            RELEASE=$(grep 'FLMSG_VERSION =' < Makefile |awk '{print $3}') ;;
+        flnet)
+            RELEASE=$(grep 'FLNET_VERSION =' < Makefile |awk '{print $3}') ;;
+        flrig)
+            RELEASE=$(grep 'FLRIG_VERSION =' < Makefile |awk '{print $3}') ;;
+        flwkey)
+            RELEASE=$(grep 'FLWKEY_VERSION =' < Makefile |awk '{print $3}') ;;
+        flwrap)
+        RELEASE=$(grep 'FLWRAP_VERSION =' < Makefile |awk '{print $3}') ;;
+        linsim)
+        RELEASE=$(grep 'linsim_VERSION =' < Makefile |awk '{print $3}') ;;
+        *) ;;
+    esac
+    echo "* Created version marker for: $APP_NAME-$RELEASE"
 }
 
 # build_log_copy---------------------------------------------------------------
 copy_build_logs() {
-STEP='Copy Build Log Phase'
-echo ''
-echo '-----------------------------------------------------'
-echo -e ${C_Y}" COPY LOG FILES ( $APP_NAME )"${C_NC}
-echo '-----------------------------------------------------'
-echo ''
-echo "* Copied config.log, Makefile to: $INSTALLD"
-cp -u "$SRCD/$APP_NAME"/{config.log,Makefile} "$INSTALLD"
+    STEP='Copy Build Log Phase'
+    echo ''
+    echo '-----------------------------------------------------'
+    echo -e ${C_Y}" COPY LOG FILES ( $APP_NAME )"${C_NC}
+    echo '-----------------------------------------------------'
+    echo ''
+    echo "* Copied config.log, Makefile to: $INSTALLD"
+    cp -u "$SRCD/$APP_NAME"/{config.log,Makefile} "$INSTALLD"
 }
 
 # install marker---------------------------------------------------------------
 install_marker() {
-STEP='Install Marker'
-echo ''
-echo '-----------------------------------------------------'
-echo -e ${C_Y}" GENERATING MARKERS"${C_NC}
-echo '-----------------------------------------------------'
-echo ''
-echo '* Removing old build marker'
-rm -f "$INSTALLD/version.mkr" &>/dev/null
-rm -f "$MKRD/$APP_NAME-version.mkr" &>/dev/null
-echo '* Installing new version markers'
-echo $RELEASE > "$INSTALLD/$APP_NAME-version.mkr"
-echo $RELEASE > "$MKRD/$APP_NAME-version.mkr"
+    STEP='Install Marker'
+    echo ''
+    echo '-----------------------------------------------------'
+    echo -e ${C_Y}" GENERATING MARKERS"${C_NC}
+    echo '-----------------------------------------------------'
+    echo ''
+    echo '* Removing old build marker'
+    rm -f "$INSTALLD/version.mkr" &>/dev/null
+    rm -f "$MKRD/$APP_NAME-version.mkr" &>/dev/null
+    echo '* Installing new version markers'
+    echo $RELEASE > "$INSTALLD/$APP_NAME-version.mkr"
+    echo $RELEASE > "$MKRD/$APP_NAME-version.mkr"
 }
 
 # change ownership-------------------------------------------------------------
 change_ownership() {
-STEP='Change Ownership Phase'
-echo ''
-echo '-----------------------------------------------------'
-echo -e ${C_Y}" VERIFY OWNERSHIP"${C_NC}
-echo '-----------------------------------------------------'
-echo ''
-LOGNAME=$LOGNAME
-LOGGRP=$(groups $LOGNAME | cut -d ' ' -f 3)
-chown -R "$LOGNAME":"$LOGGRP" "$HOMEDIR/$APP_NAME"
-echo "* Updated ownership to [ $LOGNAME ]"
+    STEP='Change Ownership Phase'
+    echo ''
+    echo '-----------------------------------------------------'
+    echo -e ${C_Y}" VERIFY OWNERSHIP"${C_NC}
+    echo '-----------------------------------------------------'
+    echo ''
+    LOGNAME=$LOGNAME
+    LOGGRP=$(groups $LOGNAME | cut -d ' ' -f 3)
+    chown -R "$LOGNAME":"$LOGGRP" "$HOMEDIR/$APP_NAME"
+    echo "* Updated ownership to [ $LOGNAME ]"
 }
 
 # clean the build tree----------------------------------------------------------
 clean_after_build() {
-STEP='Clean Build Tree'
-echo ''
-echo '-----------------------------------------------------'
-echo -e ${C_Y}" CLEANING BUILD TREE"${C_NC}
-echo '-----------------------------------------------------'
-echo ''
-make clean &>/dev/null
-echo '* Cleaned build tree with..: make clean'
-make distclean &>/dev/null
-git clean -qfd
-echo '* Cleaned Git repo with....: git clean -qfd'
+    STEP='Clean Build Tree'
+    echo ''
+    echo '-----------------------------------------------------'
+    echo -e ${C_Y}" CLEANING BUILD TREE"${C_NC}
+    echo '-----------------------------------------------------'
+    echo ''
+    make clean &>/dev/null
+    echo '* Cleaned build tree with..: make clean'
+    make distclean &>/dev/null
+    git clean -qfd
+    echo '* Cleaned Git repo with....: git clean -qfd'
 }
 
 # finish build message---------------------------------------------------------
 build_summary() {
-STEP='Finish Build Message'
-echo ''
-echo '-----------------------------------------------------'
-echo -e ${C_G}" BUILD SUMMARY"${C_NC}
-echo '-----------------------------------------------------'
-echo ''
-echo -e ' Link Config ..: '${C_G}"$LINK_TYPE"${C_NC}
-echo " Version ......: $APP_NAME-$RELEASE"
-echo " Source .......: $APP_SRC"
-echo " Install ......: $INSTALLD"
-echo ''
-echo " TO RUN $APP_NAME"
-echo " Type, ........: cd $INSTALLD/bin"
-echo " Type, ........: ./$APP_NAME"
-echo ''
-cd "$HOMEDIR"
-read -p "Press [ Enter ] to continue.."
+    STEP='Finish Build Message'
+    echo ''
+    echo '-----------------------------------------------------'
+    echo -e ${C_G}" BUILD SUMMARY"${C_NC}
+    echo '-----------------------------------------------------'
+    echo ''
+    echo -e ' Link Config ..: '${C_G}"$LINK_TYPE"${C_NC}
+    echo " Version ......: $APP_NAME-$RELEASE"
+    echo " Source .......: $APP_SRC"
+    echo " Install ......: $INSTALLD"
+    echo ''
+    echo " TO RUN $APP_NAME"
+    echo " Type, ........: cd $INSTALLD/bin"
+    echo " Type, ........: ./$APP_NAME"
+    echo ''
+    cd "$HOMEDIR"
+    read -p "Press [ Enter ] to continue.."
 
 }
 
-# build the application
+# build the application--------------------------------------------------------
 build_application() {
     APP_SRC="$SRCD/$APP_NAME"
     LINK_TYPE='Static'
@@ -730,10 +730,10 @@ build_application() {
 # version check header---------------------------------------------------------
 version_check() {
 # TO-DO: v0.0.5 - Add pkg 'httping' to debian control file and meta packages
-clear ||:
-echo '-----------------------------------------------------'
-echo -e ${C_G}"FLSDK Application Version Check"${C_NC}
-echo '-----------------------------------------------------'
+    clear ||:
+    echo '-----------------------------------------------------'
+    echo -e ${C_G}"FLSDK Application Version Check"${C_NC}
+    echo '-----------------------------------------------------'
 
 # check Internet connectivity--------------------------------------------------
 ((httping -t5 -c3 w1hkj.com || ping -t5 -c3 google.com || httping -t5 -c3 opendns.com) > /dev/null 2>&1) && \
@@ -754,7 +754,7 @@ echo '-----------------------------------------------------'
     echo 'Check you can access the internet, resolve any connection'
     echo "problems, then re-run Check Version"
     echo ''
-    read -p "Press [ Enter ] to continue ..."
+    read_pause
     exit 1
     }
 
@@ -772,15 +772,15 @@ echo '-----------------------------------------------------'
     echo 'Git Repo on SF, and chek their Net Operations messages on'
     echo 'on Twitter'
     echo ''
-    read -p "Press [ Enter ] to continue ..."
+    read_pause
     exit 1
     }
 
-# now simply call the Python Script:
-@PYTHON3@ @BINDIR@/flsdk-version
+    # now simply call the Python Script:
+    @PYTHON3@ @BINDIR@/flsdk-version
 
-# pause after the python script finishes
-read -p "Press [ Enter ] to continue ..."
+    # pause after the python script finishes
+    read -p "Press [ Enter ] to continue ..."
 
 }
 
@@ -858,7 +858,7 @@ add_hamlib_json() {
         sed -n '/hamlib/d' $HOMEDIR/mxe/docs/packages.json
     fi 
     echo "* Adding hamlib entry to packages.json"
-    echo "* Note: when hmmlib.mk is added to mxe, this becomes obsolete"
+    echo "* Note: when hamlib.mk is added to mxe, this becomes obsolete"
     sed -i '/guile/a \    \"hamlib": {"version": "3.1~rc1", "website": "http://n0nb.users.sourceforge.net/", "description": "Hamlib"},' $MXED/docs/packages.json
     echo ""
     cp -u @SHARE@/hamlib.mk $MXED/src/
@@ -943,6 +943,7 @@ mxe_clean() {
     cd "$HOMEDIR"
 }
 
+# MXE build applications-------------------------------------------------------
 mxe_build_application() {
 
     # not implemented yet
@@ -956,6 +957,10 @@ read_pause() {
     read -p "  Press [ Enter ] to continue..."
 }
 
+
+###############################################################################
+# MENUS and ASSOCIATED FUNCTIONS
+###############################################################################
 
 # Linux Native Build Array
 default_build_array=( 'build_header' 'git_check' 'get_version' \
@@ -973,11 +978,6 @@ mxe_update_array=( 'clone_mxe' 'add_hamlib_json' 'mxe_build' 'read_pause')
 
 # MXE build hamlib array
 mxe_build_hamlib_array=( 'clone_mxe' 'add_hamlib_json' 'mxe_build_hamlib' 'read_pause')
-
-
-###############################################################################
-# MENUS ASSOCIATED FUNCTIONS
-###############################################################################
 
 # linux native main menu
 touch "$TMPD/LinuxMenu.tmp"
@@ -1043,7 +1043,7 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
     esac
 }
 
-# cross build menu funciton
+# cross build menu funciton----------------------------------------------------
 mxe_cross_build() {
 
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
@@ -1068,7 +1068,7 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
     esac
 }
 
-# mxe seup function
+# mxe setup--------------------------------------------------------------------
 mxe_setup() {
 
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
@@ -1111,7 +1111,7 @@ HELP="$DOCS/main_menu_help.txt"
 
 # MAIN MENU--------------------------------------------------------------------
 
-# set the menu selection variable
+# set the menu selection variable, prevents set -o ( unset variable ) error
 INPUT="$TMPD"/SLECTION.$$
 
 while [ 0 ]; do
