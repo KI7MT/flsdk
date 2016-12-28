@@ -554,23 +554,25 @@ fi
 default_configure() {
 STEP='Configure Phase'
 
+# TO-DO: v0.0.6 - Add configuration option selection for each package
 case "$APP_NAME" in
-	comptext|comptty|fldigi|flamp|fllog|flmsg|flnet|flrig|flwkey|flwrap|linsim)
-		case "$HOST_CPU" in
-			*arm* )
-				./configure --prefix="$INSTALLD" --enable-static \
-				CC='gcc' \
-				CXX='g++' \
-				CFLAGS='-O2 -mfpu=vfp -mfloat-abi=hard -ffast-math -finline-functions' \
-				CXXFLAGS="$CFLAGS"
-			;;
-			* )
-				./configure --prefix="$INSTALLD" --enable-optimizations=native --enable-static
-			;;
-		esac
-	;;
-	*) # TO-DO: add some warning message here if the wrong applications is selected somehow
-	;;
+    comptext|comptty|fldigi|flamp|fllog|flmsg|flnet|flrig|flwkey|flwrap|linsim)
+    case "$HOST_CPU" in
+            *arm* )
+                ./configure --prefix="$INSTALLD" --enable-static \
+                CC='gcc' \
+                CXX='g++' \
+                CFLAGS='-O2 -mfpu=vfp -mfloat-abi=hard -ffast-math -finline-functions' \
+                CXXFLAGS="$CFLAGS"
+            ;;
+            * )
+            ./configure --prefix="$INSTALLD" --enable-optimizations=native --enable-static
+            ;;
+            esac
+    ;;
+# TO-DO: v0.0.6 - Add some warning message here if the wrong applications is selected somehow
+    *)
+    ;;
 esac
 }
 
@@ -847,7 +849,7 @@ clone_mxe() {
 
 # add hamlib.mk for packages.json file------------------------------WSL/NIX/MXE
 add_hamlib_json() {
-    # TO-DO: change location of hamlib.mk file to @SHARE@
+# TO-DO: v0.0.5 - Change location of hamlib.mk file to @SHARE@
     echo "-------------------------------------------"
     echo -e ${C_Y}" CHECKING HAMLIB JSON ENTRY"${C_NC}
     echo "-------------------------------------------"
@@ -886,7 +888,7 @@ build_mxe() {
 
 # build Hamlib with MXE---------------------------------------------WSL/NIX/MXE
 mxe_build_hamlib() {
-    # TO-DO: Add $MXED to configure ac, Makfile.in and flsdk.in. Add mxe.m4
+# TO-DO: v0.0.5 - Add $MXED to configure ac, Makfile.in and flsdk.in. Add mxe.m4
     cd "$MXED"
     echo "-------------------------------------------"
     echo -e ${C_Y}" BUILD HAMLIB via MXE"${C_NC}
@@ -977,30 +979,20 @@ HELP="$DOCS/main_menu_help.txt"
 
 # MAIN MENU--------------------------------------------------------------------
 
-# Menu Items
-#  1 COMPTTY
-#  2 COMPTEXT
-#  3 FLDIGI
-#  4 FLAMP
-#  5 FLMSG
-#  6 FLRIG
-#  7 FLWKEY
-#  8 FLLOG
-#  9 FLNET
-#  10 FLWRAP
-#  11 LINSIM
-#  V Check App Versions
-#  H Help
-#  E Exit
-
 # set the menu selection variable
 INPUT="$TMPD"/SLECTION.$$
 
-# BUILD ARRAYS
+# Linux Native Build Array
 default_build_array=( 'build_header' 'git_check' 'get_version' \
 'configure_header' 'set_installd' 'default_configure' 'default_make' 'default_install' \
 'default_version' 'copy_build_logs' 'install_marker' 'change_ownership' \
 'clean_after_build' 'build_summary')
+
+# Linux Native MXE Build Array
+# TO-DO: v0.0.5 - Add array for building Linux Native MXE Cross
+
+# WSL Cross MXE Build Array
+# TO-DO: v0.0.5 - Add array for building on WSK with MXE Cross
 
 while [ 0 ]; do
 
