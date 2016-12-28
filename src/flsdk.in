@@ -25,6 +25,7 @@
 HOMEDIR=~/flsdk
 SEPARATE=@SEPARATE@
 JJ=@JJJJ@
+MXEURL="https://github.com/mxe/mxe.git"
 
 # system informaiton / selections
 DESC='@DESC@'
@@ -51,6 +52,7 @@ LINSIMI="$HOMEDIR/linsim"
 # general use directories and variables
 LOGD="$HOMEDIR/logs"
 MKRD="$HOMEDIR/mkrd"
+MXEMKRD="$HOMEDIR/mxe-mkrd"
 SRCD="$HOMEDIR/src"
 TMPD="$HOMEDIR/tmp"
 WIN32="$HOMEDIR/win32"
@@ -60,31 +62,36 @@ VERLOG="$TMPD/ver.tmp"
 CHK=${C_G}OK${C_NC}
 NONE=' - '
 
+# application list array
+app_array=('comptext' 'comptty' 'flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap' 'linsim')
+
 # setup foreground colours
-C_R='\033[01;31m'	# red
-C_G='\033[01;32m'	# green
-C_Y='\033[01;33m'	# yellow
-C_C='\033[01;36m'	# cyan
-C_NC='\033[01;37m'	# no color
+C_R='\033[01;31m'   # red
+C_G='\033[01;32m'   # green
+C_Y='\033[01;33m'   # yellow
+C_C='\033[01;36m'   # cyan
+C_NC='\033[01;37m'  # no color
 
 # make sure all directories exist
-mkdir -p "$HOMEDIR"/{win32,src,tmp,logs,mkrd}
+mkdir -p "$HOMEDIR"/{src,tmp,logs,mkrd,mxe-mkrd}
 mkdir -p "$WIN32"/{flamp,fldigi,fllog,flmsg,flnet,flrig,flwkey,flwrap,comptext,comptty,linsim}
 mkdir -p "$COMPTEXTI" "$COMPTTYI" "$FLAMPI" "$FLDIGII" "$FLLOGI" "$FLMSGI" "$FLNETI" "$FLRIGI" "$FLWKEYI" "$FLWRAPI" "$LINSIMI"
 
-# native linux build array
-default_build_array=( 'build_header' 'git_check' 'get_version' \
-'configure_header' 'set_installd' 'default_configure' 'default_make' 'default_install' \
-'default_version' 'copy_build_logs' 'install_marker' 'change_ownership' \
-'clean_after_build' 'build_summary')
-
-# package list array
-app_array=('comptext' 'comptty' 'flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap' 'linsim')
+# for Linux, mxe installers go to.......: $WIN32/<appname>
+# for Win-10 WSL, mxe installers go to..: C:\FLSDK\installers\<app-name>
+for a in "${app_array[@]}"
+do
+    if [[ $WIN10 == "Yes" ]]; then
+        mkdir -p "/mnt/c/FLSDK/installers/$a"
+    else
+        mkdir -p "$WIN32/$a"
+    fi
+done
 
 # system package list from MXE.cc and misc packages for flsdk
 # Note: The majority of these are installed on major distributions,
 #       however, Win-10 WSL needs this to ensure properly building
-mxe_pkg_Array=('autoconf' 'automake' 'autopoint' 'autotools-dev' 'bash' 'bison' \
+mxe_sys_pkg_array=('autoconf' 'automake' 'autopoint' 'autotools-dev' 'bash' 'bison' \
 'bzip2' 'dialog' 'flex' 'gettext' 'git' 'g++''g++-multilib' 'gperf' \
 'intltool' 'libffi-dev' 'libgdk-pixbuf2.0-dev' 'libtool' 'libltdl-dev' \
 'libssl-dev' 'libxml-parser-perl' 'm4' 'make' 'openssl' 'p7zip-full' \
@@ -92,12 +99,11 @@ mxe_pkg_Array=('autoconf' 'automake' 'autopoint' 'autotools-dev' 'bash' 'bison' 
 'python3-bs4' 'ruby' 'scons' 'sed' 'unzip' 'wget' 'xz-utils' 'libc6-dev-i386'
 )
 
-# mxe package list, required to build FLDIGI applications
-mxe_pkg_Array=('gcc' 'boost' 'fltk' 'gettext' 'gdb' 'glib' 'gnutls' 'hamlib' \
+# mxe build list, required to build FLDIGI applications
+mxe_pkg_array=('gcc' 'boost' 'fltk' 'gettext' 'gdb' 'glib' 'gnutls' 'hamlib' \
 	'jpeg' 'portaudio' 'libsamplerate' 'libsndfile' 'libltdl' 'libpng' \
 	'libtool' 'libxml2' 'pthreads' 'xz'
 )
-
 
 # set reasonable menu height & width.
 echo -e "\e[8;40;120t"
@@ -193,54 +199,36 @@ cat << 'EOF' > "$TMPD/BuildMenuNix.tmp"
 "E" "Exit"
 EOF
 
-# menu for MXE builds
-touch "$TMPD/BuildMenuMxe.tmp"
-cat << 'EOF' > "$TMPD/BuildMenuMxe.tmp"
-"1" "COMPTTY .... (Git Repo)" \
-"2" "COMPTEXT ... (Git Repo)" \
-"3" "FLDIGI ..... (Git Repo)" \
-"4" "FLAMP ...... (Git Repo)" \
-"5" "FLMSG ...... (Git Repo)" \
-"6" "FLRIG ...... (Git Repo)" \
-"7" "FLWKEY ..... (Git Repo)" \
-"8" "FLLOG ...... (Git Repo)" \
-"9" "FLNET ...... (Git Repo)" \
-"10" "FLWRAP ..... (Git Repo)" \
-"11" "LINSIM ..... (Git Repo)" \
-"V" "Check App Versions" \
-"H" "Help" \
-"E" "Exit"
-EOF
-
-# menu admin menu
-touch "$TMPD/MxeAdmin.tmp"
-cat << 'EOF' > "$TMPD/MxeAdmin.tmp"
-"1" "COMPTTY .... (Git Repo)" \
-"2" "COMPTEXT ... (Git Repo)" \
-"3" "FLDIGI ..... (Git Repo)" \
-"4" "FLAMP ...... (Git Repo)" \
-"5" "FLMSG ...... (Git Repo)" \
-"6" "FLRIG ...... (Git Repo)" \
-"7" "FLWKEY ..... (Git Repo)" \
-"8" "FLLOG ...... (Git Repo)" \
-"9" "FLNET ...... (Git Repo)" \
-"10" "FLWRAP ..... (Git Repo)" \
-"11" "LINSIM ..... (Git Repo)" \
-"V" "Check App Versions" \
-"H" "Help" \
-"E" "Exit"
-EOF
-
 # main menu
 touch "$TMPD/MXEMain.tmp"
 cat << 'EOF' > "$TMPD"/MXEMain.tmp 
 "1" "Full System Setup" \
-"2" "Install / Update System Packages" \
-"3" "Install / Update MXE" \
-"4" "Build Hamlib Package Only" \
+"2" "Install or Update System Packages" \
+"3" "Install or Update MXE Packages" \
+"4" "Build MXE Hamlib Package Only" \
 "5" "System Clean Up"
 "E" "Exit"
 EOF
+
+# menu for MXE builds
+touch "$TMPD/MXEBuildMenu.tmp"
+cat << 'EOF' > "$TMPD/MXEBuildMenu.tmp"
+"1" "COMPTTY .... (Git Repo)" \
+"2" "COMPTEXT ... (Git Repo)" \
+"3" "FLDIGI ..... (Git Repo)" \
+"4" "FLAMP ...... (Git Repo)" \
+"5" "FLMSG ...... (Git Repo)" \
+"6" "FLRIG ...... (Git Repo)" \
+"7" "FLWKEY ..... (Git Repo)" \
+"8" "FLLOG ...... (Git Repo)" \
+"9" "FLNET ...... (Git Repo)" \
+"10" "FLWRAP ..... (Git Repo)" \
+"11" "LINSIM ..... (Git Repo)" \
+"V" "Check App Versions" \
+"H" "Help" \
+"E" "Exit"
+EOF
+
 
 ###############################################################################
 # COMMON FUNCTIONS
@@ -528,6 +516,7 @@ case "$APP_NAME" in
 	*) ;;
 esac
 
+# compine the version number
 PATCH=${RAW:2:-2}
 BUILDV="$MAJOR.$MINOR.$PATCH"
 echo "* Package Version ..: $BUILDV"
@@ -793,6 +782,175 @@ read -p "Press [ Enter ] to continue ..."
 # MXE SPECIFIC FUNCTIONS
 ###############################################################################
 
+# check if packages are already installed---------------------------WSL/NIX/MXE
+mxe_package_check() {
+
+    # reset installation array
+    mxe_install_sys_pkg_array=()
+
+    cd "$HOMEDIR"
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" CHECKING PACKAGE INSTALL STATUS"${C_NC}
+    echo "-------------------------------------------"
+    for p in "${mxe_sys_pkg_array[@]}"
+    do
+        echo " Checking : $p"
+        status=$(apt-cache policy $p | grep "Installed:" | awk '{print $2}')
+
+        # if the policy check fails, add package to the install array
+        if [[ $status = "(none)" ]]; then
+        mxe_install_sys_pkg_array+=($p)
+        fi
+    done
+    echo ""
+}
+
+# install packages found in mxe_install_sys_pkg_array()-------------WSL/NIX/MXE
+mxe_sys_install() {
+
+    installLength=${#mxe_install_sys_pkg_array[@]}
+
+    if [[ $installLength -gt 0 ]]; then
+        echo "-------------------------------------------"
+        echo -e ${C_Y}" START PACKAGE INSTALLATION"${C_NC}
+        echo "-------------------------------------------"
+        echo ""
+        sudo apt-get -q install -y $(echo "${mxe_install_sys_pkg_array[@]}")
+    else
+        echo "* Nothing to be done, no packages needed"
+    fi
+    echo ""
+}
+
+# clone MXE---------------------------------------------------------WSL/NIX/MXE
+clone_mxe() {
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" CHECKING INSTALL STATUS of MXE"${C_NC}
+    echo "-------------------------------------------"
+    cd "$HOMEDIR"
+    echo ""
+    if [[ -d $MXED/.git ]]; then
+        echo "* Performing Git Pull Update"
+        cd "$MXED"
+        echo ""
+        git pull
+        cd "$HOMEDIR"
+    else
+        cd $BASED
+        echo "* MXE not found. Cloining from Github --depth=1"
+        echo ""
+        git clone --depth=1 "$MXEURL"
+    fi
+    echo ""
+}
+
+
+# add hamlib.mk for packages.json file------------------------------WSL/NIX/MXE
+add_hamlib_json() {
+    # TO-DO: change location of hamlib.mk file to @SHARE@
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" CHECKING HAMLIB JSON ENTRY"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    HLCHECK=$(cat $MXED/docs/packages.json | grep 'hamlib')
+    if [[ $? -eq 0 ]]; then
+        echo "* Hamlib entry is OK"
+    else
+        echo "* Adding hamlib entry to packages.json"
+        sed -i '/guile/a \    \"hamlib": {"version": "3.1~git", "website": "http://n0nb.users.sourceforge.net/", "description": "Hamlib"},' $MXED/docs/packages.json
+    fi 
+    cp -u @SHARE@/hamlib.mk $MXED/src/
+    echo ""
+}
+
+# build MXE binariles and libraries---------------------------------WSL/NIX/MXE
+build_mxe() {
+    cd "$MXED"
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" START MXE PACKAGE BUILD"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    echo " * Directory: $(pwd)"
+    echo " * Using [ $J1 ] parallel threads"
+    echo " * Using [ $J2 ] simultaneous jobs"
+    echo " * Checking MXE package build status"
+    echo ""
+    for i in "${mxe_pkg_array[@]}"
+    do
+        echo " Checking : $i"
+        make JOBS=$J1 --jobs=$J2 $i
+    done
+    echo ""
+    cd "$HOMEDIR"
+}
+
+# build Hamlib with MXE---------------------------------------------WSL/NIX/MXE
+mxe_build_hamlib() {
+    # TO-DO: Add $MXED to configure ac, Makfile.in and flsdk.in. Add mxe.m4
+    cd "$MXED"
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" BUILD HAMLIB via MXE"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    echo " * Directory: $(pwd)"
+    echo " * Using [ $J1 ] parallel threads"
+    echo " * Using [ $J2 ] simultaneous jobs"
+    echo " * Checking Hamlib package dependencies"
+    echo ""
+    for i in "${mxe_hamlib_array[@]}"
+    do
+        echo " Checking : $i"
+        make JOBS=$J1 --jobs=$J2 $i
+    done
+    echo " Building : hamlib"
+    make JOBS=$J1 --jobs=$J2 hamlib
+    cd "$HOMEDIR"
+    echo ""
+}
+
+# perform wsl package update--------------------------------------------WSL/MXE
+wsl_sys_update() {
+    cd "$HOMEDIR"
+    clear
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" WSL System Package Update and Upgrade"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    sudo apt-get update && sudo apt-get -y upgrade
+    echo ""
+}
+
+# perform WSL system cleanup--------------------------------------------WSL/MXE
+wsl_sys_cleanup() {
+	cd "$HOMEDIR"
+	echo "-------------------------------------------"
+	echo -e ${C_Y}" WSL System Cleanup"${C_NC}
+	echo "-------------------------------------------"
+    echo ""
+    sudo apt-get clean && sudo apt-get autoclean
+}
+
+# MXE remove junk and unused package files--------------------------WSL/NIX/MXE
+mxe_clean() {
+    cd "$MXED/mxe"
+    echo "-------------------------------------------"
+    echo " CLEANING MXE JUNK FILES"
+    echo "-------------------------------------------"
+    echo ""
+    echo "* remove unused files, folders, and logs"
+    make clean-junk > /dev/null 2>&1
+    echo "* remove unused package files"
+    make clean-pks > /dev/null 2>&1
+    echo ""
+    cd "$HOMEDIR"
+}
+
+
+# simple pause function---------------------------------------------WSL/NIX/MXE
+# simple pause function
+read_pause() {
+    read -p "* Press [ Enter ] to continue..."
+}
 
 
 ###############################################################################
@@ -835,9 +993,14 @@ HELP="$DOCS/main_menu_help.txt"
 #  H Help
 #  E Exit
 
-
 # set the menu selection variable
 INPUT="$TMPD"/SLECTION.$$
+
+# BUILD ARRAYS
+default_build_array=( 'build_header' 'git_check' 'get_version' \
+'configure_header' 'set_installd' 'default_configure' 'default_make' 'default_install' \
+'default_version' 'copy_build_logs' 'install_marker' 'change_ownership' \
+'clean_after_build' 'build_summary')
 
 while [ 0 ]; do
 
@@ -847,20 +1010,20 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
 MSELECT=$(<"${INPUT}")
 
 case "$MSELECT" in
-	1) APP_NAME='comptty' ; build_application ;;
-	2) APP_NAME='comptext' ; build_application ;;
-	3) APP_NAME='fldigi' ; build_application ;;
-	4) APP_NAME='flamp' ; build_application ;;
-	5) APP_NAME='flmsg' ; build_application ;;
-	6) APP_NAME='flrig' ; build_application ;;
-	7) APP_NAME='flwkey' ; build_application ;;
-	8) APP_NAME='fllog' ; build_application ;;
-	9) APP_NAME='flnet' ; build_application ;;
-	10) APP_NAME='flwrap' ; build_application ;;
-	11) APP_NAME='linsim' ; build_application ;;
-	V) version_check ; continue ;;
-	H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
-	E) clean_exit ;;
+    1) APP_NAME='comptty' ; build_application ;;
+    2) APP_NAME='comptext' ; build_application ;;
+    3) APP_NAME='fldigi' ; build_application ;;
+    4) APP_NAME='flamp' ; build_application ;;
+    5) APP_NAME='flmsg' ; build_application ;;
+    6) APP_NAME='flrig' ; build_application ;;
+    7) APP_NAME='flwkey' ; build_application ;;
+    8) APP_NAME='fllog' ; build_application ;;
+    9) APP_NAME='flnet' ; build_application ;;
+    10) APP_NAME='flwrap' ; build_application ;;
+    11) APP_NAME='linsim' ; build_application ;;
+    V) version_check ; continue ;;
+    H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
+    E) clean_exit ;;
 esac
 
 done
