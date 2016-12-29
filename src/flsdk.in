@@ -26,6 +26,8 @@
 # TO-DO: v0.0.6 - Add custom Git repository location option
 
 # home and main options
+ORIG_PATH="$PATH"
+BUILD_TYPE="Native"
 HOMEDIR=~/flsdk
 SEPARATE=@SEPARATE@
 JJ=@JJJJ@
@@ -81,12 +83,12 @@ C_NC='\033[01;37m'  # no color
 
 # make sure all directories exist
 # for Linux, mxe installers go to.......: $WIN32/<appname>
-# for Win-10 WSL, mxe installers go to..: C:\FLSDK\installers\<app-name>
+# for Win-10 WSL, mxe installers go to..: C:\FLSDK\<app-name>
 mkdir -p "$HOMEDIR"/{src,tmp,logs,mkrd,mxe-mkrd}
 for a in "${app_array[@]}"
 do
     if [[ $WIN10 == "Yes" ]]; then
-        mkdir -p "/mnt/c/FLSDK/installers/$a"
+        mkdir -p "/mnt/c/FLSDK/$a"
     else
         mkdir -p "$WIN32/$a"
         mkdir -p "$HOMEDIR/$a"
@@ -226,7 +228,7 @@ UDMSG="\n      Build Selection is Under Development"
 
 
 ###############################################################################
-# LINUX / WSL/ MXE COMMON FUNCTIONS
+# FLSDK RELATED FUNCTIONS
 ###############################################################################
 
 # set options------------------------------------------------------------------
@@ -280,6 +282,9 @@ sig_catch_cleanup() {
         unset exit_status
         exit
     fi
+    
+    # unset MXE env variables
+    mxe_unset_env_variables
 }
 
 # root check-------------------------------------------------------------------
@@ -355,6 +360,10 @@ clean_exit() {
         echo ''
         trap - SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
         unset EXIT_STATUS
+
+    # unset MXE env variables
+    mxe_unset_env_variables
+
     exit
 }
 
@@ -413,12 +422,78 @@ export DIALOGRC="$TMPD/.dialogrc"
 
 }
 
+# version check header---------------------------------------------------------
+version_check() {
+# TO-DO: v0.0.5 - Add pkg 'httping' to debian control file and meta packages
+    clear ||:
+    echo '-----------------------------------------------------'
+    echo -e ${C_G}"FLSDK Application Version Check"${C_NC}
+    echo '-----------------------------------------------------'
+
+# check Internet connectivity--------------------------------------------------
+((httping -t5 -c3 w1hkj.com || ping -t5 -c3 google.com || httping -t5 -c3 opendns.com) > /dev/null 2>&1) && \
+    echo -e "* Internet ..... ${C_G}OK${C_NC}" || {
+    echo ''
+    echo -e ${C_R}'** INTERNET CONNECTION FAILURE**'${C_NC}
+    echo ''
+    echo 'You must have internet access inorder to'
+    echo 'perform version checks. The following'
+    echo 'test failed:'
+    echo ''
+    echo 'httping -t5 -c3 w1hkj.com || httping -t5 -c3 google.com || ping -t5 -c3 opendns.com'
+    echo ''
+    echo 'FLDIG Website ...: w1hkj.com'
+    echo 'Google DNS ......: google.com'
+    echo 'OpenDNS .........: opendns.com'
+    echo ''
+    echo 'Check you can access the internet, resolve any connection'
+    echo "problems, then re-run Check Version"
+    echo ''
+    read_pause
+    exit 1
+    }
+
+# check if we can access SourceForge repositories------------------------------
+((git ls-remote git://git.code.sf.net/p/fldigi/fldigi HEAD) > /dev/null 2>&1) && \
+    echo -e "* Sourceforge .. ${C_G}OK${C_NC}" || {
+    echo ''
+    echo -e ${C_R}'** SOURCEFORGE CONNECTION FAILURE**'${C_NC}
+    echo ''
+    echo '@PROGRAM@ was unable to check the Git repository'
+    echo 'on Sourceforge. This may be a temporary fault or'
+    echo 'you may have internet connections issues.'
+    echo ''
+    echo 'If the problems presists, check that you can browse to the'
+    echo 'Git Repo on SF, and chek their Net Operations messages on'
+    echo 'on Twitter'
+    echo ''
+    read_pause
+    exit 1
+    }
+
+    # now simply call the Python Script:
+    @PYTHON3@ @BINDIR@/flsdk-version
+
+    # pause after the python script finishes
+    read -p "Press [ Enter ] to continue ..."
+
+}
+
+# simple pause function--------------------------------------------------------
+read_pause() {
+    read -p "Press [ Enter ] to continue..."
+}
+
+###############################################################################
+# LINUX / WSL/ MXE BUILD FUNCTIONS
+###############################################################################
+
 # main header------------------------------------------------------------------
 build_header() {
     clear
     echo ''
     echo '-----------------------------------------------------'
-    echo -e ${C_Y}" STARTING BUILD for ( $APP_NAME )"${C_NC}
+    echo -e ${C_Y}" STARTING BUILD for ( $APP_NAME $BUILD_TYPE )"${C_NC}
     echo '-----------------------------------------------------'
     echo ''
 }
@@ -532,17 +607,26 @@ configure_header() {
 # setup the install directory--------------------------------------------------
 set_installd() {
 
-    # set the install directory based on --enable-separate ( enabled by default )
-    if [ "$SEPARATE" = "Yes" ]; then
-        INSTALLD="$HOMEDIR/$APP_NAME/$BUILDV"
-    else
-        INSTALLD="$HOMEDIR/$APP_NAME/install"
-    fi
-
+    case "$BUILD_TYPE" in
+        Native)
+            if [[ $SEPARATE = "Yes" ]]; then
+                INSTALLD="$HOMEDIR/$APP_NAME/$BUILDV"
+            else
+                INSTALLD="$HOMEDIR/$APP_NAME/install"
+            fi
+        ;;
+        Cross)
+            if [[ $WIN10 = "Yes" ]]; then
+                INSTALLD="/mnt/c/FLSDK/$APP_NAME"
+            else
+                INSTALLD="$WIN32/$APP_NAME"
+            fi
+        ;;
+    esac
 }
 
 # default configure(s)---------------------------------------------------------
-default_configure() {
+native_configure() {
 # TO-DO: v0.0.6 - Add configuration option selection for each package
 
     case "$APP_NAME" in
@@ -567,7 +651,7 @@ default_configure() {
 }
 
 # default make invocation------------------------------------------------------
-default_make() {
+native_make() {
     echo ''
     echo '-----------------------------------------------------'
     echo -e ${C_Y}" BUILDING"${C_NC}
@@ -579,7 +663,7 @@ default_make() {
 }
 
 # default install--------------------------------------------------------------
-default_install() {
+native_install() {
     echo ''
     echo '-----------------------------------------------------'
     echo -e ${C_Y}" INSTALLING BINARIES"${C_NC}
@@ -589,7 +673,7 @@ default_install() {
 }
 
 # get version info from Makefile-----------------------------------------------
-default_version() {
+common_version() {
     echo ''
     echo '-----------------------------------------------------'
     echo -e ${C_Y}" GENERATE VERSION MARKER"${C_NC}
@@ -627,7 +711,7 @@ default_version() {
 copy_build_logs() {
     echo ''
     echo '-----------------------------------------------------'
-    echo -e ${C_Y}" COPY LOG FILES ( $APP_NAME )"${C_NC}
+    echo -e ${C_Y}" COPY LOG FILES ( $APP_NAME $BUILD_TYPE )"${C_NC}
     echo '-----------------------------------------------------'
     echo ''
     echo "* Copied config.log, Makefile to: $INSTALLD"
@@ -642,11 +726,22 @@ install_marker() {
     echo '-----------------------------------------------------'
     echo ''
     echo '* Removing old build marker'
-    rm -f "$INSTALLD/version.mkr" &>/dev/null
-    rm -f "$MKRD/$APP_NAME-version.mkr" &>/dev/null
-    echo '* Installing new version markers'
-    echo $RELEASE > "$INSTALLD/$APP_NAME-version.mkr"
-    echo $RELEASE > "$MKRD/$APP_NAME-version.mkr"
+    case "$BUILD_TYPE" in
+        Native)
+            rm -f "$INSTALLD/version.mkr" &>/dev/null
+            rm -f "$MKRD/$APP_NAME-version.mkr" &>/dev/null
+            echo '* Installing new version markers'
+            echo $RELEASE > "$INSTALLD/$APP_NAME-version.mkr"
+            echo $RELEASE > "$MKRD/$APP_NAME-version.mkr"
+        ;;
+        Cross)
+            rm -f "$INSTALLD/version.mkr" &>/dev/null
+            rm -f "$MXEMKRD/$APP_NAME-version.mkr" &>/dev/null
+            echo '* Installing new version markers'
+            echo $RELEASE > "$INSTALLD/$APP_NAME-version.mkr"
+            echo $RELEASE > "$MXEMKRD/$APP_NAME-version.mkr"
+        ;;
+    esac
 }
 
 # change ownership-------------------------------------------------------------
@@ -656,14 +751,18 @@ change_ownership() {
     echo -e ${C_Y}" VERIFY OWNERSHIP"${C_NC}
     echo '-----------------------------------------------------'
     echo ''
-    LOGNAME=$LOGNAME
-    LOGGRP=$(groups $LOGNAME | cut -d ' ' -f 3)
-    chown -R "$LOGNAME":"$LOGGRP" "$HOMEDIR/$APP_NAME"
-    echo "* Updated ownership to [ $LOGNAME ]"
+    if [[ $BUILD_TYPE = "Native" ]]; then
+        LOGNAME=$LOGNAME
+        LOGGRP=$(groups $LOGNAME | cut -d ' ' -f 3)
+        chown -R "$LOGNAME":"$LOGGRP" "$HOMEDIR/$APP_NAME"
+        echo "* Updated ownership to [ $LOGNAME ]"
+    else
+        echo "* No ownership change needed for MXE Cross builds"
+    fi
 }
 
-# clean the build tree----------------------------------------------------------
-clean_after_build() {
+# clean the build tree---------------------------------------------------------
+clean_build_tree() {
     echo ''
     echo '-----------------------------------------------------'
     echo -e ${C_Y}" CLEANING BUILD TREE"${C_NC}
@@ -683,89 +782,31 @@ build_summary() {
     echo -e ${C_G}" BUILD SUMMARY"${C_NC}
     echo '-----------------------------------------------------'
     echo ''
-    echo -e ' Link Config ..: '${C_G}"$LINK_TYPE"${C_NC}
+    echo -e ' Build Type ...: '${C_G}"$BUILD_TYPE"${C_NC}
+    echo " Link Config ..: $LINK_TYPE"
     echo " Version ......: $APP_NAME-$RELEASE"
     echo " Source .......: $APP_SRC"
     echo " Install ......: $INSTALLD"
     echo ''
-    echo " TO RUN $APP_NAME"
-    echo " Type, ........: cd $INSTALLD/bin"
-    echo " Type, ........: ./$APP_NAME"
-    echo ''
+    if [[ $BUILD_TYPE = "Native" ]]; then
+        echo " TO RUN $APP_NAME"
+        echo " Type, ........: cd $INSTALLD/bin"
+        echo " Type, ........: ./$APP_NAME"
+        echo ''
+    fi
     cd "$HOMEDIR"
-    read -p "Press [ Enter ] to continue.."
-
+    read_pause
 }
 
 # build the application--------------------------------------------------------
 build_application() {
+    BUILD_TYPE='Cross'
     APP_SRC="$SRCD/$APP_NAME"
     LINK_TYPE='Static'
     for f in ${native_build_array[@]} ; do "$f" ; done
     continue
 }
 
-# version check header---------------------------------------------------------
-version_check() {
-# TO-DO: v0.0.5 - Add pkg 'httping' to debian control file and meta packages
-    clear ||:
-    echo '-----------------------------------------------------'
-    echo -e ${C_G}"FLSDK Application Version Check"${C_NC}
-    echo '-----------------------------------------------------'
-
-# check Internet connectivity--------------------------------------------------
-((httping -t5 -c3 w1hkj.com || ping -t5 -c3 google.com || httping -t5 -c3 opendns.com) > /dev/null 2>&1) && \
-    echo -e "* Internet ..... ${C_G}OK${C_NC}" || {
-    echo ''
-    echo -e ${C_R}'** INTERNET CONNECTION FAILURE**'${C_NC}
-    echo ''
-    echo 'You must have internet access inorder to'
-    echo 'perform version checks. The following'
-    echo 'test failed:'
-    echo ''
-    echo 'httping -t5 -c3 w1hkj.com || httping -t5 -c3 google.com || ping -t5 -c3 opendns.com'
-    echo ''
-    echo 'FLDIG Website ...: w1hkj.com'
-    echo 'Google DNS ......: google.com'
-    echo 'OpenDNS .........: opendns.com'
-    echo ''
-    echo 'Check you can access the internet, resolve any connection'
-    echo "problems, then re-run Check Version"
-    echo ''
-    read_pause
-    exit 1
-    }
-
-# check if we can access SourceForge repositories------------------------------
-((git ls-remote git://git.code.sf.net/p/fldigi/fldigi HEAD) > /dev/null 2>&1) && \
-    echo -e "* Sourceforge .. ${C_G}OK${C_NC}" || {
-    echo ''
-    echo -e ${C_R}'** SOURCEFORGE CONNECTION FAILURE**'${C_NC}
-    echo ''
-    echo '@PROGRAM@ was unable to check the Git repository'
-    echo 'on Sourceforge. This may be a temporary fault or'
-    echo 'you may have internet connections issues.'
-    echo ''
-    echo 'If the problems presists, check that you can browse to the'
-    echo 'Git Repo on SF, and chek their Net Operations messages on'
-    echo 'on Twitter'
-    echo ''
-    read_pause
-    exit 1
-    }
-
-    # now simply call the Python Script:
-    @PYTHON3@ @BINDIR@/flsdk-version
-
-    # pause after the python script finishes
-    read -p "Press [ Enter ] to continue ..."
-
-}
-
-# simple pause function--------------------------------------------------------
-read_pause() {
-    read -p "Press [ Enter ] to continue..."
-}
 
 ###############################################################################
 # MXE SPECIFIC FUNCTIONS
@@ -938,14 +979,48 @@ mxe_clean() {
     cd "$HOMEDIR"
 }
 
-# MXE build applications----------------------------------------------------MXE
-mxe_build_application() {
-
-    # not implemented yet
-    under_development
-
+# MXE set env variables-----------------------------------------------------MXE
+mxe_set_env_variables() {
+    $HOMEDIR
+    export PREFIX="$HOMEDIR/mxe/usr"
+    export CROSSCFG="--host=i686-w64-mingw32.static"
+    export PKGCFG="PKG_CONFIG=$PREFIX/bin/i686-w64-mingw32.static-pkg-config"
+    export PATH=$HOMEDIR/mxe/usr/bin/:$PATH
 }
 
+# MXE unset env variables---------------------------------------------------MXE
+mxe_unset_env_variables() {
+    export "$ORIG_PATH"
+    export PREFIX=""
+    export CROSSCFG=""
+    export PKGCFG=""
+}
+
+# default make invocation------------------------------------------------------
+mxe_run_cross_script() {
+    echo ''
+    echo '-----------------------------------------------------'
+    echo -e ${C_Y}" BUILDING"${C_NC}
+    echo '-----------------------------------------------------'
+    echo ''
+    echo ''
+    . ./buildmxe.sh
+    echo ''
+}
+
+# MXE build applications----------------------------------------------------MXE
+mxe_build_application() {
+    BUILD_TYPE='Cross'
+    APP_SRC="$SRCD/$APP_NAME"
+    for f in ${mxe_build_array[@]} ; do "$f" ; done
+    BUILD_TYPE='Native'
+    continue
+}
+
+# build the application--------------------------------------------------------
+build_application() {
+
+}
 
 ###############################################################################
 # MENUS and ASSOCIATED FUNCTIONS
@@ -973,7 +1048,7 @@ cat << 'EOF' > "$TMPD"/MXESetup.tmp
 "1" "Full MXE System Setup" \
 "2" "Update System Packages" \
 "3" "Update MXE Packages" \
-"4" "Build MXE Hamlib Package" \
+"4" "Update MXE Hamlib Package" \
 "5" "System Clean Up" \
 "B" "Back"
 EOF
@@ -1019,29 +1094,6 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
         B) return 0 ;;
     esac
 }
-
-# Linux Native Build Array
-native_build_array=( 'build_header' 'git_check' 'get_version' \
-'configure_header' 'set_installd' 'default_configure' 'default_make' \
-'default_install' 'default_version' 'copy_build_logs' 'install_marker' \
-'change_ownership' 'clean_after_build' 'build_summary')
-
-# MXE Build Array
-mxe_build_array=()
-
-# MXE full Setup
-mxe_setup_array=( 'mxe_package_check' 'mxe_sys_install' 'mxe_clone' \
-'mxe_add_hamlib_json' 'mxe_generate_hamlibmk' 'mxe_build' 'mxe_clean' \
-'read_pause'
-)
-
-# MXE Update Only
-mxe_update_array=( 'mxe_clone' 'mxe_add_hamlib_json' 'mxe_build' 'read_pause')
-
-# MXE Build Hamlib Only
-mxe_update_hamlib_array=( 'mxe_add_hamlib_json' 'mxe_generate_hamlibmk' \
-'mxe_update_hamlib' 'read_pause')
-
 
 # cross build menu funciton----------------------------------------------------
 mxe_cross_build() {
@@ -1117,6 +1169,34 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
     B) return 0 ;;
     esac
 }
+
+# Linux Native Build Array
+native_build_array=( 'build_header' 'git_check' 'get_version' \
+'configure_header' 'set_installd' 'native_configure' 'native_make' \
+'native_install' 'common_version' 'copy_build_logs' 'install_marker' \
+'change_ownership' 'clean_build_tree' 'build_summary'
+)
+
+# MXE Build Array
+mxe_build_array=( 'build_header' 'git_check' 'get_version' \
+'set_installd' 'common_version' 'mxe_set_env_variables' 'mxe_run_cross_script' \
+'copy_build_logs' 'install_marker' 'change_ownership' 'clean_build_tree' \
+'build_summary' 'mxe_unset_env_variables'
+)
+
+# MXE full Setup
+mxe_setup_array=( 'mxe_package_check' 'mxe_sys_install' 'mxe_clone' \
+'mxe_add_hamlib_json' 'mxe_generate_hamlibmk' 'mxe_build' 'mxe_clean' \
+'read_pause'
+)
+
+# MXE Update Only
+mxe_update_array=( 'mxe_clone' 'mxe_add_hamlib_json' 'mxe_build' 'read_pause')
+
+# MXE Build Hamlib Only
+mxe_update_hamlib_array=( 'mxe_add_hamlib_json' 'mxe_generate_hamlibmk' \
+'mxe_update_hamlib' 'read_pause')
+
 
 ###############################################################################
 # START MAIN SCRIPT
