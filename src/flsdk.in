@@ -162,6 +162,16 @@ mxe_pkg_array=(
     'xz'
 )
 
+# mxe package list for hamlib
+mxe_hamlib_pkg_array=(
+    'gcc'
+    'libxml2'
+    'libtool'
+    'libltdl'
+    'pthreads'
+    'libusb1'
+)
+
 # set reasonable menu height & width.
 echo -e "\e[8;40;120t"
 
@@ -846,7 +856,7 @@ clone_mxe() {
     cd "$HOMEDIR"
 }
 
-# add hamlib.mk for packages.json file------------------------------WSL/NIX/MXE
+# add hamlib entry to packages.json file----------------------------WSL/NIX/MXE
 add_hamlib_json() {
     echo "-------------------------------------------"
     echo -e ${C_Y}" UPDATING HAMLIB JSON ENTRY"${C_NC}
@@ -859,9 +869,27 @@ add_hamlib_json() {
     fi 
     echo "* Adding hamlib entry to packages.json"
     echo "* Note: when hamlib.mk is added to mxe, this becomes obsolete"
+    echo "        this step will become obsolete"
     sed -i '/guile/a \    \"hamlib": {"version": "3.1~rc1", "website": "http://n0nb.users.sourceforge.net/", "description": "Hamlib"},' $MXED/docs/packages.json
     echo ""
-    cp -u @SHARE@/hamlib.mk $MXED/src/
+}
+
+# add hamlib.mk for packages.json file------------------------------WSL/NIX/MXE
+generate_hamlib_mk_file() {
+    cd "$MXED/src"
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" GENERATING HAMLIB MX FILE"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    echo "*  Generating hamlib.mk file"
+    # call the Python Script:
+    @PYTHON3@ @BINDIR@/flsdk-hamlibmk
+    
+    # after updating or changing the .mk file, a hash update must 
+    # pe performed
+    echo "*  Updating hash for hamlib archive file"
+    make update-checksum-hamlib >/dev/null 2>&1
+    cd "$HOMEDIR"
 }
 
 # build MXE binariles and libraries---------------------------------WSL/NIX/MXE
@@ -886,7 +914,7 @@ mxe_build_hamlib() {
 # TO-DO: v0.0.5 - Add $MXED to configure ac, Makfile.in and flsdk.in. Add mxe.m4
     cd "$MXED"
     echo "-------------------------------------------"
-    echo -e ${C_Y}" BUILD HAMLIB via MXE"${C_NC}
+    echo -e ${C_Y}" START HAMLIB PACKAGE BUILD"${C_NC}
     echo "-------------------------------------------"
     echo ""
     echo " * Directory: $(pwd)"
@@ -894,7 +922,7 @@ mxe_build_hamlib() {
     echo " * Using [ $J2 ] simultaneous jobs"
     echo " * Building Hamlib Packages"
     echo ""
-    make JOBS=$J1 --jobs=$J2 hamlib
+    make JOBS=$J1 --jobs=$J2 $(echo ${mxe_hamlib_pkg_array[@]})
     cd "$HOMEDIR"
     echo ""
 }
