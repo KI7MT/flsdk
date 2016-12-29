@@ -30,6 +30,7 @@ from bs4 import BeautifulSoup
 
 # process variables
 debug = 0
+series = "3.2"
 ext = ".tar.gz"
 filename = "hamlib.mk"
 scriptname = str(os.path.basename(__file__))
@@ -47,7 +48,7 @@ for line in soup.body.findAll('a'):
     if line.has_attr('href'):
         if(line['href'].endswith(ext)):
             if(line['href']):
-                if (dtg) in line['href']:
+                if (series) in line['href']:
                     fn = line['href']
                     a1 = str(line['href'])[:-7].split("-")
 
