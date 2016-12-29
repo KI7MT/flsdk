@@ -37,12 +37,6 @@ hamlib_url = "http://n0nb.users.sourceforge.net/"
 today = datetime.datetime.now()
 dtg = (str(today.year) + str(today.month) + str(today.day))
 
-# check for debug mode
-option = sys.argv[1]
-if option == "-d":
-    debug = 1
-
-
 # get a list of files form Sourceforge
 source = requests.get(hamlib_url)
 data = source.text
