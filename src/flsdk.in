@@ -28,7 +28,7 @@
 # home and main options
 HOMEDIR=~/flsdk
 SEPARATE=@SEPARATE@
-J1=@JJJJ@
+JJ=@JJJJ@
 J2='2'
 MXEURL="https://github.com/mxe/mxe.git"
 
@@ -149,7 +149,6 @@ mxe_pkg_array=(
     'gdb'
     'glib'
     'gnutls'
-    'hamlib'
     'jpeg'
     'portaudio'
     'libsamplerate'
@@ -599,7 +598,7 @@ default_make() {
     echo ''
     echo -e "* Build Type: "${C_G}'Static'${C_NC}
     echo ''
-    make -j$JJ
+    make -j"$JJ"
 }
 
 
@@ -868,8 +867,8 @@ add_hamlib_json() {
         sed -n '/hamlib/d' $HOMEDIR/mxe/docs/packages.json
     fi 
     echo "* Adding hamlib entry to packages.json"
-    echo "* Note: when hamlib.mk is added to mxe, this becomes obsolete"
-    echo "        this step will become obsolete"
+    echo "* Note: when hamlib.mk is added to mxe, this"
+    echo "        step will become obsolete"
     sed -i '/guile/a \    \"hamlib": {"version": "3.1~rc1", "website": "http://n0nb.users.sourceforge.net/", "description": "Hamlib"},' $MXED/docs/packages.json
     echo ""
 }
@@ -900,11 +899,11 @@ mxe_build() {
     echo "-------------------------------------------"
     echo ""
     echo "* Directory: $(pwd)"
-    echo "* Using [ $J1 ] parallel threads"
-    echo "* Using [ $J2 ] simultaneous jobs"
+    echo "* Using [ "$JJ" ] parallel threads"
+    echo "* Using [ "$J2" ] simultaneous jobs"
     echo "* Building MXE packages"
     echo ""
-    make JOBS=$J1 --jobs=$J2 $(echo ${mxe_pkg_array[@]})
+    make JOBS="$JJ" --jobs="$J2" $(echo ${mxe_pkg_array[@]})
     echo ""
     cd "$HOMEDIR"
 }
@@ -918,11 +917,11 @@ mxe_build_hamlib() {
     echo "-------------------------------------------"
     echo ""
     echo " * Directory: $(pwd)"
-    echo " * Using [ $J1 ] parallel threads"
-    echo " * Using [ $J2 ] simultaneous jobs"
+    echo " * Using [ "$JJ" ] parallel threads"
+    echo " * Using [" $J2" ] simultaneous jobs"
     echo " * Building Hamlib Packages"
     echo ""
-    make JOBS=$J1 --jobs=$J2 $(echo ${mxe_hamlib_pkg_array[@]})
+    make JOBS="$JJ" --jobs="$J2" $(echo ${mxe_hamlib_pkg_array[@]})
     cd "$HOMEDIR"
     echo ""
 }
@@ -952,22 +951,14 @@ wsl_sys_clean() {
 # MXE remove junk and unused package files--------------------------WSL/NIX/MXE
 mxe_clean() {
     echo "-------------------------------------------"
-    echo " CLEANING MXE JUNK FILES"
+	echo -e ${C_Y}" CLEANING MXE JUNK FILES"${C_NC}
     echo "-------------------------------------------"
-    if [[ -d $MXED/mxe ]]; then
-        cd "$MXED/mxe"
-        echo ""
-        echo "* remove unused files, folders, and logs"
-        make clean-junk > /dev/null 2>&1
-        echo "* remove unused package files"
-        make clean-pks > /dev/null 2>&1
-        echo ""
-    else
-        echo ""
-        echo "* MXE is not installed"
-        echo "* Select option [1] from the MXE Setup Menu"
-        echo ""
-    fi
+    cd "$MXED"
+    echo "* remove unused files, folders, and logs"
+    make clean-junk > /dev/null 2>&1
+    echo "* remove unused package files"
+    make clean-pkg > /dev/null 2>&1
+    echo ""
     cd "$HOMEDIR"
 }
 
@@ -979,10 +970,9 @@ mxe_build_application() {
 
 }
 
-
 # simple pause function---------------------------------------------WSL/NIX/MXE
 read_pause() {
-    read -p "  Press [ Enter ] to continue..."
+    read -p "Press [ Enter ] to continue..."
 }
 
 
@@ -998,7 +988,7 @@ default_build_array=( 'build_header' 'git_check' 'get_version' \
 
 # MXE full setup array
 mxe_setup_array=( 'mxe_package_check' 'mxe_sys_install' 'clone_mxe' \
-'add_hamlib_json' 'mxe_build' 'mxe_build_hamlib' 'mxe_clean' 'read_pause'
+'add_hamlib_json' 'mxe_build_hamlib' 'mxe_build' 'mxe_clean' 'read_pause'
 )
 
 # MXE update packages array
