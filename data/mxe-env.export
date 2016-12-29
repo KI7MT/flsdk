@@ -1,6 +1,0 @@
-$HOMEDIR
-export PREFIX="$HOMEDIR/mxe/usr"
-export LINKCFG="--enable-static --disable-shared"
-export CROSSCFG="--host=i686-w64-mingw32.static"
-export PKGCFG="PKG_CONFIG=$PREFIX/bin/i686-w64-mingw32.static-pkg-config"
-export PATH=$TOP/mxe/usr/bin/:$PATH

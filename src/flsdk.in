@@ -800,11 +800,19 @@ build_summary() {
 
 # build the application--------------------------------------------------------
 build_application() {
-    BUILD_TYPE='Cross'
-    APP_SRC="$SRCD/$APP_NAME"
-    LINK_TYPE='Static'
-    for f in ${native_build_array[@]} ; do "$f" ; done
-    continue
+
+    case "$BUILD_TYPE" in
+        Native)
+            APP_SRC="$SRCD/$APP_NAME"
+            LINK_TYPE='Static'
+            for f in ${native_build_array[@]} ; do "$f" ; done
+            continue
+        ;;
+        Cross)
+            APP_SRC="$SRCD/$APP_NAME"
+            LINK_TYPE='Static'
+            for f in ${mxe_build_array[@]} ; do "$f" ; done
+    esac
 }
 
 
@@ -979,15 +987,6 @@ mxe_clean() {
     cd "$HOMEDIR"
 }
 
-# MXE set env variables-----------------------------------------------------MXE
-mxe_set_env_variables() {
-    $HOMEDIR
-    export PREFIX="$HOMEDIR/mxe/usr"
-    export CROSSCFG="--host=i686-w64-mingw32.static"
-    export PKGCFG="PKG_CONFIG=$PREFIX/bin/i686-w64-mingw32.static-pkg-config"
-    export PATH=$HOMEDIR/mxe/usr/bin/:$PATH
-}
-
 # MXE unset env variables---------------------------------------------------MXE
 mxe_unset_env_variables() {
     export "$ORIG_PATH"
@@ -998,27 +997,27 @@ mxe_unset_env_variables() {
 
 # default make invocation------------------------------------------------------
 mxe_run_cross_script() {
+
+    # set cross variabels 
+    # Credit: https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO/BuildWithMXE
+    export PREFIX="$HOMEDIR/mxe/usr"
+    export CROSSCFG="--host=i686-w64-mingw32.static"
+    export PKGCFG="PKG_CONFIG=$PREFIX/bin/i686-w64-mingw32.static-pkg-config"
+    export PATH=$HOMEDIR/mxe/usr/bin/:$PATH
+
     echo ''
     echo '-----------------------------------------------------'
-    echo -e ${C_Y}" BUILDING"${C_NC}
+    echo -e ${C_Y}" BUILDING ( $APP_NAME $BUILD_TYPE )"${C_NC}
     echo '-----------------------------------------------------'
     echo ''
     echo ''
-    . ./buildmxe.sh
-    echo ''
-}
+    . $SRCD/$APP_NAME/scripts/buildmxe.sh
 
-# MXE build applications----------------------------------------------------MXE
-mxe_build_application() {
-    BUILD_TYPE='Cross'
-    APP_SRC="$SRCD/$APP_NAME"
-    for f in ${mxe_build_array[@]} ; do "$f" ; done
-    BUILD_TYPE='Native'
-    continue
-}
-
-# build the application--------------------------------------------------------
-build_application() {
+    # reset the env variables
+    export PATH="$ORIG_PATH"
+    export PREFIX=""
+    export CROSSCFG=""
+    export PKGCFG=""
 
 }
 
@@ -1073,6 +1072,8 @@ EOF
 # linux native build menu------------------------------------------------------
 linux_native_build() {
 
+# TO-DO: - v0.0.6 - Combine native and mxe with a case switch
+
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
 "$RELMSG" --menu "$MENUMSG" 20 55 20 --file "$TMPD/APPMenu.tmp" 2>"${INPUT}"
 
@@ -1080,23 +1081,25 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
     LN_SELECT=$(<"${INPUT}")
 
     case "${LN_SELECT}" in
-        1) APP_NAME='comptty' ; build_application ;;
-        2) APP_NAME='comptext' ; build_application ;;
-        3) APP_NAME='fldigi' ; build_application ;;
-        4) APP_NAME='flamp' ; build_application ;;
-        5) APP_NAME='flmsg' ; build_application ;;
-        6) APP_NAME='flrig' ; build_application ;;
-        7) APP_NAME='flwkey' ; build_application ;;
-        8) APP_NAME='fllog' ; build_application ;;
-        9) APP_NAME='flnet' ; build_application ;;
-        10) APP_NAME='flwrap' ; build_application ;;
-        11) APP_NAME='linsim' ; build_application ;;
+        1) BUILD_TYPE='Native' ; APP_NAME='comptty' ; build_application ;;
+        2) BUILD_TYPE='Native' ; APP_NAME='comptext' ; build_application ;;
+        3) BUILD_TYPE='Native' ; APP_NAME='fldigi' ; build_application ;;
+        4) BUILD_TYPE='Native' ; APP_NAME='flamp' ; build_application ;;
+        5) BUILD_TYPE='Native' ; APP_NAME='flmsg' ; build_application ;;
+        6) BUILD_TYPE='Native' ; APP_NAME='flrig' ; build_application ;;
+        7) BUILD_TYPE='Native' ; APP_NAME='flwkey' ; build_application ;;
+        8) BUILD_TYPE='Native' ; APP_NAME='fllog' ; build_application ;;
+        9) BUILD_TYPE='Native' ; APP_NAME='flnet' ; build_application ;;
+        10) BUILD_TYPE='Native' ; APP_NAME='flwrap' ; build_application ;;
+        11) BUILD_TYPE='Native' ; APP_NAME='linsim' ; build_application ;;
         B) return 0 ;;
     esac
 }
 
 # cross build menu funciton----------------------------------------------------
 mxe_cross_build() {
+
+# TO-DO: - v0.0.6 - Combine native and mxe with a case switch
 
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
 "$MXEBLDMSG" --menu "$MENUMSG" 20 55 20 --file "$TMPD/APPMenu.tmp" 2>"${INPUT}"
@@ -1105,19 +1108,20 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
     LN_SELECT=$(<"${INPUT}")
 
     case "${LN_SELECT}" in
-        1) APP_NAME='comptty' ; mxe_build_application ;;
-        2) APP_NAME='comptext' ; mxe_build_application ;; 
-        3) APP_NAME='fldigi' ; mxe_build_application ;;
-        4) APP_NAME='flamp' ; mxe_build_application ;;
-        5) APP_NAME='flmsg' ; mxe_build_application ;;
-        6) APP_NAME='flrig' ; mxe_build_application ;;
-        7) APP_NAME='flwkey' ; mxe_build_application ;;
-        8) APP_NAME='fllog' ; mxe_build_application ;;
-        9) APP_NAME='flnet' ; mxe_build_application ;;
-        10) APP_NAME='flwrap' ; mxe_build_application ;;
-        11) APP_NAME='linsim' ; mxe_build_application ;;
+        1) BUILD_TYPE='Cross' ; APP_NAME='comptty' ; build_application ;;
+        2) BUILD_TYPE='Cross' ; APP_NAME='comptext' ; build_application ;; 
+        3) BUILD_TYPE='Cross' ; APP_NAME='fldigi' ; build_application ;;
+        4) BUILD_TYPE='Cross' ; APP_NAME='flamp' ; build_application ;;
+        5) BUILD_TYPE='Cross' ; APP_NAME='flmsg' ; build_application ;;
+        6) BUILD_TYPE='Cross' ; APP_NAME='flrig' ; build_application ;;
+        7) BUILD_TYPE='Cross' ; APP_NAME='flwkey' ; build_application ;;
+        8) BUILD_TYPE='Cross' ; APP_NAME='fllog' ; build_application ;;
+        9) BUILD_TYPE='Cross' ; APP_NAME='flnet' ; build_application ;;
+        10) BUILD_TYPE='Cross' ; APP_NAME='flwrap' ; build_application ;;
+        11) BUILD_TYPE='Cross' ; APP_NAME='linsim' ; build_application ;;
         B) return 0 ;;
     esac
+
 }
 
 # mxe setup--------------------------------------------------------------------
@@ -1178,10 +1182,9 @@ native_build_array=( 'build_header' 'git_check' 'get_version' \
 )
 
 # MXE Build Array
-mxe_build_array=( 'build_header' 'git_check' 'get_version' \
-'set_installd' 'common_version' 'mxe_set_env_variables' 'mxe_run_cross_script' \
-'copy_build_logs' 'install_marker' 'change_ownership' 'clean_build_tree' \
-'build_summary' 'mxe_unset_env_variables'
+mxe_build_array=( 'build_header' 'git_check' 'get_version' 'configure_header' \
+'set_installd' 'mxe_run_cross_script' 'common_version' 'copy_build_logs' \
+'install_marker' 'change_ownership' 'build_summary'
 )
 
 # MXE full Setup
@@ -1195,7 +1198,8 @@ mxe_update_array=( 'mxe_clone' 'mxe_add_hamlib_json' 'mxe_build' 'read_pause')
 
 # MXE Build Hamlib Only
 mxe_update_hamlib_array=( 'mxe_add_hamlib_json' 'mxe_generate_hamlibmk' \
-'mxe_update_hamlib' 'read_pause')
+'mxe_update_hamlib' 'read_pause'
+)
 
 
 ###############################################################################
