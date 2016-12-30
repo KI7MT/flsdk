@@ -1,3 +1,14 @@
+flsdk (0.0.5-rc0-1) unstable; urgency=medium
+
+  * New alpha version for testing
+  * Now supports MXE builds of all FLDIGI applications
+  * Added support for Windows WSL (Windows Susbsystem Linux)
+  * Updated version of FLDIGI version check script
+  * Added Sourceforge URL test script
+  * Added dynamic Hamlib.mk generation for development build testing
+  
+ -- Greg Beam <ki7mt@yahoo.com>  Fri, 29 Dec 2016 22:30:00 -0700
+
 flsdk (0.0.4-1) unstable; urgency=medium
 
   * New upstrewam release v0.0.4
