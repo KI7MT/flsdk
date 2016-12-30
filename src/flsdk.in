@@ -64,15 +64,16 @@ MXEMKRD="$HOMEDIR/mxe-mkrd"
 MXED="$HOMEDIR/mxe"
 SRCD="$HOMEDIR/src"
 TMPD="$HOMEDIR/tmp"
-WIN32="$HOMEDIR/win32"
 VERLOG="$TMPD/ver.tmp"
+WIN32="$HOMEDIR/win32"
+LINUX="$HOMEDIR/linux"
 
 # generl use variables
 CHK=${C_G}OK${C_NC}
 NONE=' - '
 
 # application list array
-app_array=('comptext' 'comptty' 'flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap' 'linsim')
+app_array=( 'comptext' 'comptty' 'flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap' 'linsim')
 
 # setup foreground colours
 C_R='\033[01;31m'   # red
@@ -91,7 +92,7 @@ do
         mkdir -p "/mnt/c/FLSDK/$a"
     else
         mkdir -p "$WIN32/$a"
-        mkdir -p "$HOMEDIR/$a"
+        mkdir -p "$LINUX/$a"
     fi
 done
 
@@ -123,6 +124,7 @@ mxe_sys_pkg_array=(
     'libxml-parser-perl'
     'm4'
     'make'
+    'nsis'
     'openssl'
     'p7zip-full'
     'patch'
@@ -600,7 +602,7 @@ configure_header() {
     cd "$APP_SRC"
 
     echo '* Running Autoreconf to generate configure and Makefile'
-    autoreconf -f -i
+    autoreconf -fi
     echo ''
 }
 
@@ -610,9 +612,9 @@ set_installd() {
     case "$BUILD_TYPE" in
         Native)
             if [[ $SEPARATE = "Yes" ]]; then
-                INSTALLD="$HOMEDIR/$APP_NAME/$BUILDV"
+                INSTALLD="$LINUX/$APP_NAME/$BUILDV"
             else
-                INSTALLD="$HOMEDIR/$APP_NAME/install"
+                INSTALLD="$LINUX/$APP_NAME/install"
             fi
         ;;
         Cross)
@@ -628,6 +630,8 @@ set_installd() {
 # default configure(s)---------------------------------------------------------
 native_configure() {
 # TO-DO: v0.0.6 - Add configuration option selection for each package
+# TO-DO: v0.0.6 - Verify Arm7 and Arm8 CCLAG options are the same
+# TO-DO: v0.0.6 - Check FLDIGI group recommendations for options by applicaitons
 
     case "$APP_NAME" in
         comptext|comptty|fldigi|flamp|fllog|flmsg|flnet|flrig|flwkey|flwrap|linsim)
@@ -711,7 +715,7 @@ common_version() {
 copy_build_logs() {
     echo ''
     echo '-----------------------------------------------------'
-    echo -e ${C_Y}" COPY LOG FILES ( $APP_NAME $BUILD_TYPE )"${C_NC}
+    echo -e ${C_Y}" COPY LOG FILES"${C_NC}
     echo '-----------------------------------------------------'
     echo ''
     echo "* Copied config.log, Makefile to: $INSTALLD"
@@ -754,7 +758,7 @@ change_ownership() {
     if [[ $BUILD_TYPE = "Native" ]]; then
         LOGNAME=$LOGNAME
         LOGGRP=$(groups $LOGNAME | cut -d ' ' -f 3)
-        chown -R "$LOGNAME":"$LOGGRP" "$HOMEDIR/$APP_NAME"
+        chown -R "$LOGNAME":"$LOGGRP" "$LINUX/$APP_NAME"
         echo "* Updated ownership to [ $LOGNAME ]"
     else
         echo "* No ownership change needed for MXE Cross builds"
@@ -785,15 +789,20 @@ build_summary() {
     echo -e ' Build Type ...: '${C_G}"$BUILD_TYPE"${C_NC}
     echo " Link Config ..: $LINK_TYPE"
     echo " Version ......: $APP_NAME-$RELEASE"
+    if [[ $BUILD_TYPE = "Cross" ]]; then
+        echo " Installer ....: $APP_NAME-$RELEASE"'_setup.exe'
+        echo " Location .....: $INSTALLD"
+    fi
     echo " Source .......: $APP_SRC"
-    echo " Install ......: $INSTALLD"
-    echo ''
     if [[ $BUILD_TYPE = "Native" ]]; then
+        echo " Install ......: $INSTALLD"
+        echo ''    
         echo " TO RUN $APP_NAME"
         echo " Type, ........: cd $INSTALLD/bin"
         echo " Type, ........: ./$APP_NAME"
         echo ''
     fi
+    echo ''
     cd "$HOMEDIR"
     read_pause
 }
@@ -907,9 +916,9 @@ mxe_add_hamlib_json() {
         sed -n '/hamlib/d' $HOMEDIR/mxe/docs/packages.json
     fi 
     echo "* Adding hamlib entry to packages.json"
-    echo "* Note: when hamlib.mk is added to mxe, this"
-    echo "        step will become obsolete"
-    sed -i '/guile/a \    \"hamlib": {"version": "3.1~rc1", "website": "http://n0nb.users.sourceforge.net/", "description": "Hamlib"},' $MXED/docs/packages.json
+    echo "* Note: when hamlib.mk is added to mxe,"
+    echo "        this step will become obsolete"
+    sed -i '/guile/a \    \"hamlib": {"version": "3.2~git", "website": "http://n0nb.users.sourceforge.net/", "description": "Hamlib"},' $MXED/docs/packages.json
     echo ""
 }
 
@@ -989,7 +998,7 @@ mxe_clean() {
 
 # MXE unset env variables---------------------------------------------------MXE
 mxe_unset_env_variables() {
-    export "$ORIG_PATH"
+    export PATH="$ORIG_PATH"
     export PREFIX=""
     export CROSSCFG=""
     export PKGCFG=""
@@ -1011,7 +1020,52 @@ mxe_run_cross_script() {
     echo '-----------------------------------------------------'
     echo ''
     echo ''
-    . $SRCD/$APP_NAME/scripts/buildmxe.sh
+    # these are taken directly from the FLDIGI build MXE scripts
+    # minor modification to copy location have been made
+    case $APP_NAME in
+        fldigi)
+            ./configure $PKGCFG $CROSSCFG \
+            --without-asciidoc \
+            --with-ptw32=$PREFIX/i686-w64-mingw32.static \
+            --with-libiconv-prefix=$PREFIX/iconv \
+            --enable-static \
+            --with-libintl-prefix=$PREFIX/gettext \
+            PTW32_LIBS="-lpthread -lpcreposix -lpcre -lregex" \
+            FLTK_CONFIG=$PREFIX/bin/i686-w64-mingw32.static-fltk-config
+
+            make
+            $PREFIX/bin/i686-w64-mingw32.static-strip src/fldigi.exe
+            $PREFIX/bin/i686-w64-mingw32.static-strip src/flarq.exe
+        ;;
+        flwrap)
+            ./configure $PKGCFG $CROSSCFG \
+            --with-ptw32=$PREFIX/i686-w64-mingw32.static \
+            --with-libiconv-prefix=$PREFIX/iconv \
+            --enable-static \
+            PTW32_LIBS="-lpthread -lpcreposix -lpcre -lregex" \
+            FLTK_CONFIG=$PREFIX/bin/i686-w64-mingw32.static-fltk-config 
+
+            make
+            "$PREFIX"/bin/i686-w64-mingw32.static-strip src/"$APP_NAME".exe
+        ;;
+        *)
+            ./configure $PKGCFG $CROSSCFG \
+            --with-ptw32=$PREFIX/i686-w64-mingw32.static \
+            --enable-static \
+            PTW32_LIBS="-lpthread -lpcreposix -lpcre -lregex" \
+            FLTK_CONFIG=$PREFIX/bin/i686-w64-mingw32.static-fltk-config 
+
+            make
+            "$PREFIX"/bin/i686-w64-mingw32.static-strip src/"$APP_NAME".exe
+        ;;
+    esac
+
+    # make the installers
+    make nsisinst
+    
+    # move instalers to install locations
+    mkdir -p "$WIN32/$APP_NAME"
+    mv src/*setup*.exe "$WIN32/$APP_NAME"
 
     # reset the env variables
     export PATH="$ORIG_PATH"
@@ -1184,7 +1238,7 @@ native_build_array=( 'build_header' 'git_check' 'get_version' \
 # MXE Build Array
 mxe_build_array=( 'build_header' 'git_check' 'get_version' 'configure_header' \
 'set_installd' 'mxe_run_cross_script' 'common_version' 'copy_build_logs' \
-'install_marker' 'change_ownership' 'build_summary'
+'install_marker' 'change_ownership' 'clean_build_tree' 'build_summary'
 )
 
 # MXE full Setup
