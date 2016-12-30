@@ -21,9 +21,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-----------------------------------------------------------------------------#
 
+# Main Feature Planned Updates
 # TO-DO: v0.0.6 - Add option menus / functions to build both Release & Alpha
 # TO-DO: v0.0.6 - Add M4 macro to test for sse, sse3, sse4 options
-# TO-DO: v0.0.6 - Add custom Git repository location option
+# TO-DO: v0.0.6 - Add custom Git repository location option .. origin/xyz
+# TO-DO: v0.0.6 - Add command line options using getopts
+# TO-DO: v0.0.6 - Add Add dynamic menu generation for Aplha testing builds
 
 # home and main options
 ORIG_PATH="$PATH"
@@ -44,7 +47,7 @@ WSL='/mnt/c/FLSDK'
 # system directories
 DOCS=@DOCDIR@
 
-# general use directories and variables
+# directories location variables
 LOGD="$HOMEDIR/logs"
 MKRD="$HOMEDIR/mkrd"
 MXEMKRD="$HOMEDIR/mxe-mkrd"
@@ -55,34 +58,32 @@ VERLOG="$TMPD/ver.tmp"
 WIN32="$HOMEDIR/win32"
 LINUX="$HOMEDIR/linux"
 
-# generl use variables
+# generl purpose variables
 CHK=${C_G}OK${C_NC}
 NONE=' - '
 
-# application list array
-app_array=( 'comptext' 'comptty' 'flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap' 'linsim')
-
 # setup foreground colours
-#TO-DO: v0.0.6 - Convert colors to tput for improved compatability
+# TO-DO: v0.0.6 - Convert colors to tput for improved compatability
 C_R='\033[01;31m'   # red
 C_G='\033[01;32m'   # green
 C_Y='\033[01;33m'   # yellow
 C_C='\033[01;36m'   # cyan
 C_NC='\033[01;37m'  # no color
 
-# make sure all directories exist
-# for Linux, mxe installers go to.......: $WIN32/<appname>
-# for Win-10 WSL, mxe installers go to..: C:\FLSDK\<app-name>
-mkdir -p "$HOMEDIR"/{src,tmp,logs,mkrd,mxe-mkrd}
-for a in "${app_array[@]}"
-do
-    if [[ $WIN10 == "Yes" ]]; then
-        mkdir -p "/mnt/c/FLSDK/$a"
-    else
-        mkdir -p "$WIN32/$a"
-        mkdir -p "$LINUX/$a"
-    fi
-done
+# application list array
+app_array=(
+    'comptext'
+    'comptty'
+    'flamp'
+    'fldigi'
+    'flmsg'
+    'fllog'
+    'flnet'
+    'flrig'
+    'flwkey'
+    'flwrap'
+    'linsim'
+)
 
 # system package list from MXE.cc and misc packages for flsdk
 # Note: The majority of these are installed on major distributions,
@@ -152,6 +153,20 @@ mxe_pkg_array=(
     'pthreads'
     'xz'
 )
+
+# make sure all directories exist
+# for Linux, mxe installers go to.......: $WIN32/<appname>
+# for Win-10 WSL, mxe installers go to..: C:\FLSDK\<app-name>
+mkdir -p "$HOMEDIR"/{src,tmp,logs,mkrd,mxe-mkrd}
+for a in "${app_array[@]}"
+do
+    if [[ $WIN10 == "Yes" ]]; then
+        mkdir -p "/mnt/c/FLSDK/$a"
+    else
+        mkdir -p "$WIN32/$a"
+        mkdir -p "$LINUX/$a"
+    fi
+done
 
 # set reasonable menu height & width.
 echo -e "\e[8;40;120t"
@@ -616,7 +631,7 @@ set_installd() {
 # default configure(s)---------------------------------------------------------
 native_configure() {
 # TO-DO: v0.0.6 - Add configuration option selection for each package
-# TO-DO: v0.0.6 - Verify Arm7 and Arm8 CCLAG options are the same
+# TO-DO: v0.0.6 - Verify Arm7 and Arm8 CFLAGS options are the same
 # TO-DO: v0.0.6 - Check FLDIGI group recommendations for options by applicaitons
 
     case "$APP_NAME" in
@@ -930,7 +945,7 @@ mxe_generate_hamlibmk() {
 
 # build Hamlib with MXE-----------------------------------------------------MXE
 mxe_update_hamlib() {
-# TO-DO: v0.0.5 - Add $MXED to configure ac, Makfile.in and flsdk.in. Add mxe.m4
+# TO-DO: v0.0.6 - Add mxe.m4 --with-enable=PATH
     cd "$MXED"
     echo "-------------------------------------------"
     echo -e ${C_Y}" UPDATING HAMLIB PACKAGE BUILD"${C_NC}
@@ -947,6 +962,7 @@ mxe_update_hamlib() {
 }
 
 # perform wsl package update------------------------------------------------MXE
+# TO-DO: v0.0.6 - Add check and case switch, do not update non-Ubuntu systems
 mxe_sys_update() {
     cd "$HOMEDIR"
     clear ||:
@@ -960,6 +976,7 @@ mxe_sys_update() {
 
 # perform WSL system cleanup------------------------------------------------MXE
 wsl_sys_clean() {
+# TO-DO: v0.0.6 - Add check and case switch, do not clean non-Ubuntu systems
 	cd "$HOMEDIR"
 	echo "-------------------------------------------"
 	echo -e ${C_Y}" WSL System Cleanup"${C_NC}
@@ -990,9 +1007,8 @@ mxe_unset_env_variables() {
     export PKGCFG=""
 }
 
-# default make invocation------------------------------------------------------
+# default make invocation---------------------------------------------------MXE
 mxe_run_cross_script() {
-
     # set cross variabels 
     # Credit: https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO/BuildWithMXE
     export PREFIX="$HOMEDIR/mxe/usr"
@@ -1069,9 +1085,8 @@ mxe_run_cross_script() {
 ###############################################################################
 # MENUS and ASSOCIATED FUNCTIONS
 ###############################################################################
-
-# TO-DO: v0.0.5 - Add Main Menu Help file for dialog
-# TO-DO: v0.0.5 - Add Linux Menu help file for dialog
+# TO-DO: v0.0.5 - Update Main Menu Help for dialog
+# TO-DO: v0.0.5 - Add Linux Native help for dialog
 # TO-DO: v0.0.5 - Add MXE Cross Build help for dialog
 # TO-DO: v0.0.5 - Add MXE Cross Setup help file for dialog
 
@@ -1116,8 +1131,7 @@ EOF
 
 # linux native build menu------------------------------------------------------
 linux_native_build() {
-
-# TO-DO: - v0.0.6 - Combine native and mxe with a case switch
+# TO-DO: v0.0.6 - Combine with mxe_cross_build() as case switch
 
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
 "$RELMSG" --menu "$MENUMSG" 20 55 20 --file "$TMPD/APPMenu.tmp" 2>"${INPUT}"
@@ -1143,8 +1157,7 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
 
 # cross build menu funciton----------------------------------------------------
 mxe_cross_build() {
-
-# TO-DO: - v0.0.6 - Combine native and mxe with a case switch
+# TO-DO: v0.0.6 - Combine with linux_native_build() as case switch
 
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
 "$MXEBLDMSG" --menu "$MENUMSG" 20 55 20 --file "$TMPD/APPMenu.tmp" 2>"${INPUT}"
