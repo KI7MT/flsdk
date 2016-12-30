@@ -1,0 +1,45 @@
+:doctype: manpage
+:man manual: FLSDK Test URL Manpage
+:man date: {date}
+:man version: Version @VERSION@
+
+= flsdk-test-url(1)
+
+== NAME
+flsdk-test-url - Script for checking FLDIGI version on sourceforge
+
+
+== SYNOPSIS
+flsdk-test-rul ['OPTION']
+
+
+== DESCRIPTION
+*flsdk-test-url* - Temporary Manpage
+
+
+== BUGS
+If you find a bug or suspect *@PROGRAM@* is not acting as you think it should,
+send an email with as much detail as possible to:
+<@BUGS@>
+
+
+== AUTHORS
+--------------------------------------------------------------------------------
+@AUTHORS@
+--------------------------------------------------------------------------------
+
+
+== COPYING
+@COPYRIGHT@
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
