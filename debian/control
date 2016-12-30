@@ -12,7 +12,9 @@ Build-Depends: debhelper (>= 9.2.0), libfile-fcntllock-perl,
         autotools-dev,
         coderay,
         dh-autoreconf,
-        python3-all (>=3.2)
+        python3-all (>=3.2),
+        xmlto,
+        xsltproc
 Homepage: https://github.com/KI7MT/flsdk
 Vcs-Git: git://git.code.sf.net/p/flsdk/code
 Vcs-Browser: https://git.code.sf.net/p/flsdk/code
@@ -22,12 +24,12 @@ Package: flsdk
 Architecture: any
 Depends: ${misc:Depends},
         dialog,
-        httping,
+        httping
         lsb-release,
         python3,
         python3-bs4,
         python3-requests,
-        sqlite
+        sqlite,
 Description: Build System for FLDIGI Applications
  FLSDK is a collection of custom written shell scripts designed to ease
  compiling FLDIGI applications and documentation from source code.
