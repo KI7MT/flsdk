@@ -44,21 +44,7 @@ WSL='/mnt/c/FLSDK'
 # system directories
 DOCS=@DOCDIR@
 
-# application install directories
-COMPTEXTI="$HOMEDIR/comptext"
-COMPTTYI="$HOMEDIR/comptty"
-FLAMPI="$HOMEDIR/flamp"
-FLDIGII="$HOMEDIR/fldigi"
-FLLOGI="$HOMEDIR/fllog"
-FLMSGI="$HOMEDIR/flmsg"
-FLNETI="$HOMEDIR/flmsg"
-FLRIGI="$HOMEDIR/flrig"
-FLWKEYI="$HOMEDIR/flwkey"
-FLWRAPI="$HOMEDIR/flwrap"
-LINSIMI="$HOMEDIR/linsim"
-
 # general use directories and variables
-# TO-DO: v0.0.5 - Add MXEMKRD to configure.ac and Makfile.in
 LOGD="$HOMEDIR/logs"
 MKRD="$HOMEDIR/mkrd"
 MXEMKRD="$HOMEDIR/mxe-mkrd"
@@ -77,6 +63,7 @@ NONE=' - '
 app_array=( 'comptext' 'comptty' 'flamp' 'fldigi' 'flmsg' 'fllog' 'flnet' 'flrig' 'flwkey' 'flwrap' 'linsim')
 
 # setup foreground colours
+#TO-DO: v0.0.6 - Convert colors to tput for improved compatability
 C_R='\033[01;31m'   # red
 C_G='\033[01;32m'   # green
 C_Y='\033[01;33m'   # yellow
@@ -276,7 +263,7 @@ sig_catch_cleanup() {
     dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
         unset_options
         wait
-        clear
+        clear ||:
 
         echo "Exit Status [ $EXIT_STATUS ]"
         echo "@PROGRAM@ Signal Catch Cleanup Complete"
@@ -301,7 +288,7 @@ root_chk() {
       else
        MSGCLIENT="whiptail"
     fi
-    clear
+    clear ||:
 
     if [ "$EUID" = "0" ]
     then
@@ -309,7 +296,7 @@ root_chk() {
     clean_exit
     exit
     fi
-    clear
+    clear ||:
 
     unset {TESTVAR,MSGCLIENT}
 }
@@ -323,7 +310,7 @@ dialog_chk() {
 
     elif [ "$INSTALLED" != "dialog" ]; then
        MSGCLIENT="whiptail"
-       clear
+       clear ||:
 
     "$MSGCLIENT" --clear --title "$DITITLE" --backtitle "$BACKTITLE" --msgbox "$DIMSG" 7 70
        touch "$LOGD"/install_log
@@ -333,7 +320,7 @@ dialog_chk() {
        wait
        cp "$CONFIG"/debian.rc ~/.dialogrc
        wait
-       clear
+       clear ||:
 
     dialog --title "$DISUCTITLE" --backtitle "$BACKTITLE" --msgbox "$DISUCMSG" 7 40
     sudo -k
@@ -357,7 +344,7 @@ clean_exit() {
         unset_options
         wait
         sleep 1
-        clear
+        clear ||:
         echo "Exit Status [ $EXIT_STATUS ]"
         echo "@PROGRAM@ Clean Exit Complete."
         echo ''
@@ -427,7 +414,6 @@ export DIALOGRC="$TMPD/.dialogrc"
 
 # version check header---------------------------------------------------------
 version_check() {
-# TO-DO: v0.0.5 - Add pkg 'httping' to debian control file and meta packages
     clear ||:
     echo '-----------------------------------------------------'
     echo -e ${C_G}"FLSDK Application Version Check"${C_NC}
@@ -493,7 +479,7 @@ read_pause() {
 
 # main header------------------------------------------------------------------
 build_header() {
-    clear
+    clear ||:
     echo ''
     echo '-----------------------------------------------------'
     echo -e ${C_Y}" STARTING BUILD for ( $APP_NAME $BUILD_TYPE )"${C_NC}
@@ -601,7 +587,6 @@ configure_header() {
     echo '-----------------------------------------------------'
     echo ''
     cd "$APP_SRC"
-
     echo '* Running Autoreconf to generate configure and Makefile'
     autoreconf -fi
     echo ''
@@ -649,7 +634,7 @@ native_configure() {
                 ;;
                 esac
         ;;
-    # TO-DO: v0.0.6 - Add some warning message here if the wrong applications is selected somehow
+# TO-DO: v0.0.6 - Add some warning message here if the wrong applications is selected somehow
         *)
         ;;
     esac
@@ -907,12 +892,12 @@ mxe_build() {
 
 # add hamlib entry to packages.json file------------------------------------MXE
 mxe_add_hamlib_json() {
+# TO-DO: v0.0.6 - When hamlib.mk reaches mxe.cc, remove this function
     echo "-------------------------------------------"
     echo -e ${C_Y}" UPDATING HAMLIB JSON ENTRY"${C_NC}
     echo "-------------------------------------------"
     echo ""
     # force removal of hamlib entry in json file
-    # TO-DO: v0.0.5 - When hamlib.mk reaches mxe.gi, remove this section
     if [[ -f $HOMEDIR/mxe/docs/packages.json ]]; then
         sed -n '/hamlib/d' $HOMEDIR/mxe/docs/packages.json
     fi 
@@ -964,7 +949,7 @@ mxe_update_hamlib() {
 # perform wsl package update------------------------------------------------MXE
 mxe_sys_update() {
     cd "$HOMEDIR"
-    clear
+    clear ||:
     echo "-------------------------------------------"
     echo -e ${C_Y}" WSL System Package Update and Upgrade"${C_NC}
     echo "-------------------------------------------"
@@ -1196,7 +1181,7 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
     case "${MS_SELECT}" in
     # Full MXE Install
     1)
-        clear
+        clear ||:
         for i in "${!mxe_setup_array[@]}"
         do
             ${mxe_setup_array[$i]}
@@ -1204,27 +1189,27 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
      ;; 
     # Update Ubuntu system Packages
     2)
-        clear
+        clear ||:
         mxe_sys_update
         read_pause
     ;; 
     # Update MXE Packages
     3)
-        clear
+        clear ||:
         for i in "${!mxe_update_array[@]}"
         do 
             ${mxe_update_array[$i]}
         done
     ;; 
     4)
-        clear
+        clear ||:
         for i in "${!mxe_update_hamlib_array[@]}"
         do
             ${mxe_update_hamlib_array[$i]}
         done
     ;; 
     5)
-        clear
+        clear ||:
         wsl_sys_clean
         echo ""
         mxe_clean
