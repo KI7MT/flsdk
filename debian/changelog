@@ -7,7 +7,7 @@ flsdk (0.0.5-rc0-1) unstable; urgency=medium
   * Added Sourceforge URL test script
   * Added dynamic Hamlib.mk generation for development build testing
   
- -- Greg Beam <ki7mt@yahoo.com>  Fri, 29 Dec 2016 22:30:00 -0700
+ -- Greg Beam <ki7mt@yahoo.com>  Fri, 30 Dec 2016 03:30:00 -0700
 
 flsdk (0.0.4-1) unstable; urgency=medium
 

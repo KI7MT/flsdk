@@ -1,3 +1,5 @@
+#!/usr/bin/evn python
+#
 # Name..........: @PROGRAM@ @VERSION@
 # Execution.....: As normal user type: python3 flsdk-hamlibmk
 # Copyright.....: @COPYRIGHT@
