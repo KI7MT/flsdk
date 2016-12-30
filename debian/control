@@ -1,10 +1,11 @@
 Source: flsdk
-Section: devel
 Priority: optional
+Standards-Version: 3.9.5
+Section: devel
 Maintainer: Debian Hamradio Maintainers <debian-hams@lists.debian.org>
 Uploaders: Greg Beam <ki7mt@yahoo.com>, Kamal Mostafa <kamal@whence.com>
-Standards-Version: 3.9.5
 Build-Depends: debhelper (>= 9.2.0),
+        python3-all (>=3.2),
         dh-autoreconf,
         libfile-fcntllock-perl,
         autotools-dev,
@@ -14,7 +15,6 @@ Build-Depends: debhelper (>= 9.2.0),
         asciidoctor,
         coderay,
         libxml2-utils,
-        python3,
         python3-requests,
         python3-bs4,
         xmlto,
@@ -22,11 +22,11 @@ Build-Depends: debhelper (>= 9.2.0),
 Homepage: https://github.com/KI7MT/flsdk
 Vcs-Git: git://git.code.sf.net/p/flsdk/code
 Vcs-Browser: https://git.code.sf.net/p/flsdk/code
+X-Python3-Version: >= 3.2
 
 Package: flsdk
 Architecture: any
 Depends: ${misc:Depends},
-        ${shlibs:Depends},
         python3,
         python3-requests,
         python3-bs4,

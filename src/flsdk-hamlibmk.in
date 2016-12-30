@@ -1,4 +1,4 @@
-#!/usr/bin/evn python
+#!@PYTHON3@
 #
 # Name..........: @PROGRAM@ @VERSION@
 # Execution.....: As normal user type: python3 flsdk-hamlibmk
