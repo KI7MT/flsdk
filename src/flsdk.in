@@ -39,6 +39,7 @@ DESC='@DESC@'
 HOST_OS=@HOST_OS@
 HOST_CPU=@HOST_CPU@
 WIN10=@WIN10@
+WSL='/mnt/c/FLSDK'
 
 # system directories
 DOCS=@DOCDIR@
@@ -104,11 +105,11 @@ mxe_sys_pkg_array=(
     'automake'
     'autopoint'
     'autotools-dev'
-    'bash'
     'bison'
     'bzip2'
     'dialog'
     'flex'
+    'gcc'
     'g++'
     'gettext'
     'git'
@@ -619,7 +620,7 @@ set_installd() {
         ;;
         Cross)
             if [[ $WIN10 = "Yes" ]]; then
-                INSTALLD="/mnt/c/FLSDK/$APP_NAME"
+                INSTALLD="$WSL/$APP_NAME"
             else
                 INSTALLD="$WIN32/$APP_NAME"
             fi
@@ -1064,9 +1065,14 @@ mxe_run_cross_script() {
     make nsisinst
     
     # move instalers to install locations
-    mkdir -p "$WIN32/$APP_NAME"
-    mv src/*setup*.exe "$WIN32/$APP_NAME"
-
+    if [[ $WIN10 = "Yes" ]]; then
+        mkdir -p "$WSL/$APP_NAME"
+        mv src/*setup*.exe "$WSL/$APP_NAME"
+    else
+        mkdir -p "$WIN32/$APP_NAME"
+        mv src/*setup*.exe "$WIN32/$APP_NAME"
+    fi
+    
     # reset the env variables
     export PATH="$ORIG_PATH"
     export PREFIX=""
