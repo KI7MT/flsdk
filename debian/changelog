@@ -1,3 +1,19 @@
+flsdk (0.0.5-rc0p2-1) unstable; urgency=medium
+
+  * Hot fix
+  * Hamlib was added to MXE and no longer requires develoment builds
+  * Bump version - 0.0.5-rc0p2-1
+
+ -- Greg Beam <ki7mt@yahoo.com>  Fri, 31 Dec 2016 02:30:00 -0700
+ 
+flsdk (0.0.5-rc0p1-1) unstable; urgency=medium
+
+  * Hot fix
+  * Add a missed commit which casued native linux builds to fail.
+  * Bump version - 0.0.5-rc0p1-1
+
+ -- Greg Beam <ki7mt@yahoo.com>  Fri, 30 Dec 2016 22:00:00 -0700
+
 flsdk (0.0.5-rc0-1) unstable; urgency=medium
 
   * New alpha version for testing
