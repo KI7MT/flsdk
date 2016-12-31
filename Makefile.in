@@ -23,12 +23,21 @@ BUGS		=	@BUGS@
 WEB			=	@WEB@
 
 # system informaiton
-DESC		=	@DESC@
+KERNEL		=	@KERNEL@
+NODENAME	=	@NODENAME@
+KRELEASE	=	@KRELEASE@
+KVERSION	=	@KVERSION@
+MACHINE	=	@MACHINE@
 HOST_OS		=	@HOST_OS@
 HOST_CPU	=	@HOST_CPU@
-WIN10		=	@WIN10@
 CPUS		=	@CPUS@
 JJJJ		=	@JJJJ@
+
+# distribution information
+DISTROSI		=	@DISTROSI@
+DISTROSD		=	@DISTROSD@
+DISTROSRI		=	@DISTROSR@
+DISTROSC		=	@DISTROSC@
 
 # general tools
 A2X			:=	@A2X@

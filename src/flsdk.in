@@ -28,26 +28,33 @@
 # TO-DO: v0.0.6 - Add command line options using getopts
 # TO-DO: v0.0.6 - Add Add dynamic menu generation for Aplha testing builds
 
-# home and main options
-ORIG_PATH="$PATH"
+# script options
 BUILD_TYPE="Native"
-HOMEDIR=~/flsdk
 SEPARATE=@SEPARATE@
 JJ=@JJJJ@
 J2='2'
 MXEURL="https://github.com/mxe/mxe.git"
 
-# system informaiton / selections
+# host and distribution information
 DESC='@DESC@'
 HOST_OS=@HOST_OS@
 HOST_CPU=@HOST_CPU@
-WIN10=$(uname -a | awk '{print $2}')
-WSL='/mnt/c/FLSDK'
+DISTROSI=@DISTROSI@
+DISTROSD=@DISTROSD@
+DISTROSR=@DISTROSR@
+DISTROSC=DISTROSC@
 
-# system directories
-DOCS=@DOCDIR@
+# uname information
+KERNEL=@KERNEL@
+NODENAME=@NODENAME@
+KRELEASE=@KRELEASE
+KVERSION=@KVERSION@
+MACHINE=@MACHINE@
+PROCESSOR=@PROCESSOR@
 
-# directories location variables
+# directories and paths variables
+ORIG_PATH="$PATH"
+HOMEDIR=~/flsdk
 LOGD="$HOMEDIR/logs"
 MKRD="$HOMEDIR/mkrd"
 MXEMKRD="$HOMEDIR/mxe-mkrd"
@@ -57,8 +64,12 @@ TMPD="$HOMEDIR/tmp"
 VERLOG="$TMPD/ver.tmp"
 WIN32="$HOMEDIR/win32"
 LINUX="$HOMEDIR/linux"
+WSL='/mnt/c/FLSDK'
 
-# generl purpose variables
+# system directories
+DOCS=@DOCDIR@
+
+# general purpose variables
 CHK=${C_G}OK${C_NC}
 NONE=' - '
 
@@ -85,7 +96,7 @@ app_array=(
     'linsim'
 )
 
-# flsdk-wsl meta package should take care of this, but jusr in case, check them
+# flsdk-wsl meta package should deal with most of this
 linux_sys_pkg_array=(
     'autoconf'
     'automake'
@@ -119,6 +130,10 @@ linux_sys_pkg_array=(
     'wget'
     'xz-utils'
 )
+# add libtool-bin if distro version is 15 or greater
+if (($(echo "$(lsb_release -sr) >= 15" | bc -l))); then
+    linux_sys_pkg_array+=('libtool-bin')
+fi
 
 # mxe build list, required to build FLDIGI applications
 mxe_pkg_array=(
@@ -144,7 +159,7 @@ mxe_pkg_array=(
 mkdir -p "$HOMEDIR"/{src,tmp,logs,mkrd,mxe-mkrd}
 for a in "${app_array[@]}"
 do
-    if [[ $WIN10 == "WIN-10" ]]; then
+    if [[ $NODENAME == "WIN-10" ]]; then
         mkdir -p "/mnt/c/FLSDK/$a"
     else
         mkdir -p "$WIN32/$a"
@@ -490,8 +505,8 @@ build_header() {
 
 # git check--------------------------------------------------------------------
 git_check() {
-    if [ -f "$APP_SRC/configure.ac" ]; then
-        if [ -f "$APP_SRC/Makefile" ]; then
+    if [[ -f $APP_SRC/configure.ac ]]; then
+        if [[ -f $APP_SRC/Makefile ]]; then
             cd "$APP_SRC"
             echo 'Cleaning Repository Tree'
             make clean &>/dev/null
@@ -605,7 +620,7 @@ set_installd() {
             fi
         ;;
         Cross)
-            if [[ $WIN10 = "WIN-10" ]]; then
+            if [[ $NODENAME = "WIN-10" ]]; then
                 INSTALLD="$WSL/$APP_NAME"
             else
                 INSTALLD="$WIN32/$APP_NAME"
@@ -1048,7 +1063,7 @@ mxe_run_cross_script() {
     make nsisinst
     
     # move instalers to install locations
-    if [[ $WIN10 = "WIN-10" ]]; then
+    if [[ $NODENAME = "WIN-10" ]]; then
         mkdir -p "$WSL/$APP_NAME"
         mv src/*setup*.exe "$WSL/$APP_NAME"
     else
@@ -1098,8 +1113,7 @@ cat << 'EOF' > "$TMPD"/MXESetup.tmp
 "1" "Full MXE System Setup" \
 "2" "Update System Packages" \
 "3" "Update MXE Packages" \
-"4" "Update MXE Hamlib Package" \
-"5" "System Clean Up" \
+"4" "System Clean Up" \
 "B" "Back"
 EOF
 
@@ -1207,13 +1221,6 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
     ;; 
     4)
         clear ||:
-        for i in "${!mxe_update_hamlib_array[@]}"
-        do
-            ${mxe_update_hamlib_array[$i]}
-        done
-    ;; 
-    5)
-        clear ||:
         wsl_sys_clean
         echo ""
         mxe_clean
@@ -1280,7 +1287,7 @@ INPUT="$TMPD"/SLECTION.$$
 
 while [ 0 ]; do
 
-case $WIN10 in
+case $NODENAME in
     WIN-10)
         dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
         "$WSLTITLE" --menu "$MENUMSG" 13 55 20 --file "$TMPD/WSLMenu.tmp" 2>"${INPUT}"
