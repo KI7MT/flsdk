@@ -88,7 +88,7 @@ app_array=(
 # system package list from MXE.cc and misc packages for flsdk
 # Note: The majority of these are installed on major distributions,
 #       however, Win-10 WSL needs this to ensure properly building
-mxe_sys_pkg_array=(
+linux_sys_pkg_array=(
     'autoconf'
     'automake'
     'autopoint'
@@ -842,7 +842,7 @@ mxe_package_check() {
     echo "-------------------------------------------"
     echo -e ${C_Y}" CHECKING PACKAGE INSTALL STATUS"${C_NC}
     echo "-------------------------------------------"
-    for p in "${mxe_sys_pkg_array[@]}"
+    for p in "${linux_sys_pkg_array[@]}"
     do
         echo " Checking : $p"
         status=$(apt-cache policy $p | grep "Installed:" | awk '{print $2}')
@@ -1258,9 +1258,8 @@ mxe_build_array=( 'build_header' 'git_check' 'get_version' 'configure_header' \
 )
 
 # MXE full Setup
-mxe_setup_array=( 'mxe_package_check' 'mxe_sys_install' 'mxe_clone' \
-'mxe_add_hamlib_json' 'mxe_generate_hamlibmk' 'mxe_build' 'mxe_clean' \
-'read_pause'
+mxe_setup_array=( 'mxe_package_check' 'mxe_sys_install' 'mxe_clone' 'mxe_build' \
+'mxe_clean' 'read_pause'
 )
 
 # MXE Update Only
