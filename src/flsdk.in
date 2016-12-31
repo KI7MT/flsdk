@@ -41,7 +41,7 @@ MXEURL="https://github.com/mxe/mxe.git"
 DESC='@DESC@'
 HOST_OS=@HOST_OS@
 HOST_CPU=@HOST_CPU@
-WIN10=@WIN10@
+WIN10=$(uname -a | awk '{print $2}')
 WSL='/mnt/c/FLSDK'
 
 # system directories
@@ -160,7 +160,7 @@ mxe_pkg_array=(
 mkdir -p "$HOMEDIR"/{src,tmp,logs,mkrd,mxe-mkrd}
 for a in "${app_array[@]}"
 do
-    if [[ $WIN10 == "Yes" ]]; then
+    if [[ $WIN10 == "WIN-10" ]]; then
         mkdir -p "/mnt/c/FLSDK/$a"
     else
         mkdir -p "$WIN32/$a"
@@ -208,7 +208,7 @@ MMTITLE=" @PROGRAM@ MAIN MENU"
 LNTITLE=" @PROGRAM@ LINUX MENU"
 WSLTITLE="  @PROGRAM@ WIN-10 WSL MENU"
 
-# Linux release menu message  ( linux_native_build() )
+# Linux release menu message  ( linux_build_selection() )
 RELMSG="   LINUX NATIVE BUILD SELECTION"
 
 # MXE build selection
@@ -621,7 +621,7 @@ set_installd() {
             fi
         ;;
         Cross)
-            if [[ $WIN10 = "Yes" ]]; then
+            if [[ $WIN10 = "WIN-10" ]]; then
                 INSTALLD="$WSL/$APP_NAME"
             else
                 INSTALLD="$WIN32/$APP_NAME"
@@ -1068,7 +1068,7 @@ mxe_run_cross_script() {
     make nsisinst
     
     # move instalers to install locations
-    if [[ $WIN10 = "Yes" ]]; then
+    if [[ $WIN10 = "WIN-10" ]]; then
         mkdir -p "$WSL/$APP_NAME"
         mv src/*setup*.exe "$WSL/$APP_NAME"
     else
@@ -1142,7 +1142,7 @@ cat << 'EOF' > "$TMPD/APPMenu.tmp"
 EOF
 
 # linux native build menu------------------------------------------------------
-linux_native_build() {
+linux_build_selection() {
 # TO-DO: v0.0.6 - Combine with mxe_build_selection() as case switch
 
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
@@ -1169,7 +1169,7 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
 
 # cross build menu funciton----------------------------------------------------
 mxe_build_selection() {
-# TO-DO: v0.0.6 - Combine with linux_native_build() as case switch
+# TO-DO: v0.0.6 - Combine with linux_build_selection() as case switch
 
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
 "$MXEBLDMSG" --menu "$MENUMSG" 20 55 20 --file "$TMPD/APPMenu.tmp" 2>"${INPUT}"
@@ -1303,7 +1303,7 @@ INPUT="$TMPD"/SLECTION.$$
 while [ 0 ]; do
 
 case $WIN10 in
-    Y*|y*)
+    WIN-10)
         dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
         "$WSLTITLE" --menu "$MENUMSG" 13 55 20 --file "$TMPD/WSLMenu.tmp" 2>"${INPUT}"
 
