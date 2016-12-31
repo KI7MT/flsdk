@@ -205,6 +205,8 @@ EXITWSDTMSG="\n      Performing Shutdown Cleanup Routine"
 
 # main menu lang
 MMTITLE=" @PROGRAM@ MAIN MENU"
+LNTITLE=" @PROGRAM@ LINUX MENU"
+WSLTITLE="  @PROGRAM@ WIN-10 WSL MENU"
 
 # Linux release menu message  ( linux_native_build() )
 RELMSG="   LINUX NATIVE BUILD SELECTION"
@@ -1101,6 +1103,16 @@ cat << 'EOF' > "$TMPD"/LinuxMenu.tmp
 "E" "Exit"
 EOF
 
+# Windows-10 (WSL) Menu
+touch "$TMPD/WSLMenu.tmp"
+cat << 'EOF' > "$TMPD"/WSLMenu.tmp 
+"1" "MXE Setup Menu" \
+"2" "MXE Cross Build Selection" \
+"3" "Version Check" \
+"H" "Help" \
+"E" "Exit"
+EOF
+
 # MXE Setup Utilities Menu
 touch "$TMPD/MXESetup.tmp"
 cat << 'EOF' > "$TMPD"/MXESetup.tmp
@@ -1131,7 +1143,7 @@ EOF
 
 # linux native build menu------------------------------------------------------
 linux_native_build() {
-# TO-DO: v0.0.6 - Combine with mxe_cross_build() as case switch
+# TO-DO: v0.0.6 - Combine with mxe_build_selection() as case switch
 
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
 "$RELMSG" --menu "$MENUMSG" 20 55 20 --file "$TMPD/APPMenu.tmp" 2>"${INPUT}"
@@ -1156,7 +1168,7 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
 }
 
 # cross build menu funciton----------------------------------------------------
-mxe_cross_build() {
+mxe_build_selection() {
 # TO-DO: v0.0.6 - Combine with linux_native_build() as case switch
 
 dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
@@ -1285,22 +1297,41 @@ HELP="$DOCS/main_menu_help.txt"
 # MAIN MENU--------------------------------------------------------------------
 
 # set the menu selection variable, prevents set -o ( unset variable ) error
+# set the main menu based on Win-10 WSL or Native Linux
 INPUT="$TMPD"/SLECTION.$$
 
 while [ 0 ]; do
 
-dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
-"$MMTITLE" --menu "$MENUMSG" 14 55 20 --file "$TMPD/LinuxMenu.tmp" 2>"${INPUT}"
+case $WIN10 in
+    Y*|y*)
+        dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
+        "$WSLTITLE" --menu "$MENUMSG" 13 55 20 --file "$TMPD/WSLMenu.tmp" 2>"${INPUT}"
 
-MSELECT=$(<"${INPUT}")
+        MSELECT=$(<"${INPUT}")
 
-case "$MSELECT" in
-    1) linux_native_build ; continue ;;
-    2) mxe_cross_build ; continue ;; 
-    3) mxe_setup ; continue ;;
-    4) version_check ; continue ;;
-    H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
-    E) clean_exit ;;
+        case "$MSELECT" in
+            1) mxe_setup ; continue ;;
+            2) mxe_build_selection ; continue ;;
+            3) version_check ; continue ;;
+            H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
+            E) clean_exit ;;
+        esac
+    ;;
+    *)
+        dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
+        "$LNTITLE" --menu "$MENUMSG" 14 55 20 --file "$TMPD/LinuxMenu.tmp" 2>"${INPUT}"
+
+        MSELECT=$(<"${INPUT}")
+
+        case "$MSELECT" in
+            1) linux_build_selection; continue ;;
+            2) mxe_build_selection ; continue ;; 
+            3) mxe_setup ; continue ;;
+            4) version_check ; continue ;;
+            H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
+            E) clean_exit ;;
+        esac
+    ;;
 esac
 
 done
