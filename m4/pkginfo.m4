@@ -7,7 +7,7 @@ if test -f ${PKGINFO} ; then rm -f ${PKGINFO} ; fi
 touch ${PKGINFO}
 
 echo " Package ..........: ${PROGRAM} ${VERSION}" >> "$PKGINFO"
-echo " Distribution .....: ${DISTRODESC} ${HOST_CPU}" >> "$PKGINFO"
+echo " Distribution .....: ${DISTROSD} ${HOST_CPU}" >> "$PKGINFO"
 echo " License ..........: ${LICENSE}" >> "$PKGINFO"
 echo " Copyright ........: ${COPYRIGHT}" >> "$PKGINFO"
 echo " Project Website ..: ${WEB}" >> "$PKGINFO"

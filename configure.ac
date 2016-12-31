@@ -142,11 +142,6 @@ AC_BUILD_PARALLEL
 AC_BUILD_PKGINFO
 
 # -----------------------------------------------------------------------------
-# check Windows 10 WSL system
-# -----------------------------------------------------------------------------
-AC_BUILD_WIN10
-
-# -----------------------------------------------------------------------------
 # check enable docs
 # -----------------------------------------------------------------------------
 AC_BUILD_DOCS
@@ -184,7 +179,7 @@ echo ''
 echo " Package ...................: ${PROGRAM} ${VERSION}"
 echo " Install prefix ............: ${PREFIX}"
 echo " OS ........................: ${HOST_OS}"
-echo " Distribution ..............: ${DISTRODESC} ${HOST_CPU}"
+echo " Distribution ..............: ${DISTROSD} ${HOST_CPU}"
 echo " Python2 version ...........: $PYTHON"
 echo " Python3 version ...........: $PYTHON3"
 echo " Enable Folder Separation ..: ${SEPARATE}"
