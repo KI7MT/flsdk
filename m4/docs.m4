@@ -16,7 +16,7 @@ else
 fi
 
 # if Windows 10, dont build documentation no matter what
-if test "x$ac_cv_win10" = "xyes"; then
+if test "$NODENAME" = "WIN-10"; then
     BDOC=No
     status_message="Override: Win-10 detected, No Documentation Builds"
 fi

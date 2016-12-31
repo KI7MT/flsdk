@@ -16,7 +16,7 @@ else
 fi
 
 # if Windows 10, do not build manpages no matter what
-if test "x$ac_cv_win10" = "xyes"; then
+if test "$NODENAME" = "WIN-10"; then
     MANP=No
     status_message="Override: Win-10 detected, No Manpage Builds"
 fi
