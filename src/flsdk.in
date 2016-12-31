@@ -742,14 +742,10 @@ change_ownership() {
     echo -e ${C_Y}" VERIFY OWNERSHIP"${C_NC}
     echo '-----------------------------------------------------'
     echo ''
-    if [[ $BUILD_TYPE = "Native" ]]; then
-        LOGNAME=$LOGNAME
-        LOGGRP=$(groups $LOGNAME | cut -d ' ' -f 3)
-        chown -R "$LOGNAME":"$LOGGRP" "$LINUX/$APP_NAME"
-        echo "* Updated ownership to [ $LOGNAME ]"
-    else
-        echo "* No ownership change needed for MXE Cross builds"
-    fi
+    LOGNAME=$LOGNAME
+    LOGGRP=$(groups $LOGNAME | cut -d ' ' -f 3)
+    chown -R "$LOGNAME":"$LOGGRP" "$LINUX/$APP_NAME"
+    echo "* Updated ownership to [ $LOGNAME ]"
 }
 
 # clean the build tree---------------------------------------------------------
@@ -1059,13 +1055,12 @@ mxe_run_cross_script() {
         mkdir -p "$WIN32/$APP_NAME"
         mv src/*setup*.exe "$WIN32/$APP_NAME"
     fi
-    
+
     # reset the env variables
     export PATH="$ORIG_PATH"
     export PREFIX=""
     export CROSSCFG=""
     export PKGCFG=""
-
 }
 
 ###############################################################################
@@ -1238,7 +1233,7 @@ native_build_array=( 'build_header' 'git_check' 'get_version' \
 # MXE Build Array
 mxe_build_array=( 'build_header' 'git_check' 'get_version' 'configure_header' \
 'set_installd' 'mxe_run_cross_script' 'common_version' 'copy_build_logs' \
-'install_marker' 'change_ownership' 'clean_build_tree' 'build_summary'
+'install_marker' 'clean_build_tree' 'build_summary'
 )
 
 # MXE full Setup
