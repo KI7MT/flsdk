@@ -176,17 +176,18 @@ echo "-------------------------------------------------------------------------"
 echo " Configuration Summary"
 echo "-------------------------------------------------------------------------"
 echo ''
-echo " Package ...................: ${PROGRAM} ${VERSION}"
-echo " Install prefix ............: ${PREFIX}"
-echo " OS ........................: ${HOST_OS}"
-echo " Distribution ..............: ${DISTROSD} ${HOST_CPU}"
-echo " Python2 version ...........: $PYTHON"
-echo " Python3 version ...........: $PYTHON3"
-echo " Enable Folder Separation ..: ${SEPARATE}"
-echo " With Manpages .............: ${MANP}"
-echo " With HTML Docs ............: ${BDOC}"
-echo " CPU Cores .................: ${CPUS}"
+echo " Package ............: ${PROGRAM} ${VERSION}"
+echo " Install prefix .....: ${PREFIX}"
+echo " OS .................: ${HOST_OS}"
+echo " Distribution .......: ${DISTROSD} ${HOST_CPU}"
+echo " Nodename ...........: ${NODENAME}"
+echo " Python2 version ....: $PYTHON"
+echo " Python3 version ....: $PYTHON3"
+echo " Folder Separation ..: ${SEPARATE}"
+echo " With Manpages ......: ${MANP}"
+echo " With HTML Docs .....: ${BDOC}"
+echo " CPU Cores ..........: ${CPUS}"
 echo ''
-echo ' To build, type ............: make'
+echo ' To build, type .....: make'
 echo ''
 

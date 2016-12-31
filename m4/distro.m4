@@ -25,6 +25,7 @@ AC_SUBST([KERNEL], [${kernel}])
 AC_SUBST([NODENAME], [${nodename}])
 AC_SUBST([KRELEASE], [${distrosr}])
 AC_SUBST([KVERSION], [${distrosc}])
+AC_SUBST([PROCESSOR], [${processor}])
 AC_MSG_NOTICE([System Information : $KERNEL $NODENAME $PROCESSOR])
 
 ])
