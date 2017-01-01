@@ -957,6 +957,7 @@ mxe_update_hamlib() {
     echo " * Updating Hamlib"
     echo ""
     make update-package-hamlib
+	make JOBS="$JJ" --jobs="$J2" hamlib
     cd "$HOMEDIR"
     echo ""
 }
