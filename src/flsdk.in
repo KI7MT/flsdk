@@ -1103,8 +1103,8 @@ EOF
 # Windows-10 (WSL) Menu
 touch "$TMPD/WSLMenu.tmp"
 cat << 'EOF' > "$TMPD"/WSLMenu.tmp 
-"1" "MXE Setup Menu" \
-"2" "MXE Cross Build Selection" \
+"1" "MXE Cross Build Selection" \
+"2" "MXE Setup Menu" \
 "3" "Version Check" \
 "H" "Help" \
 "E" "Exit"
@@ -1298,8 +1298,8 @@ case $NODENAME in
         MSELECT=$(<"${INPUT}")
 
         case "$MSELECT" in
-            1) mxe_setup ; continue ;;
-            2) mxe_build_selection ; continue ;;
+            1) mxe_build_selection ; continue ;;
+            2) mxe_setup ; continue ;;
             3) version_check ; continue ;;
             H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
             E) clean_exit ;;
