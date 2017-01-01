@@ -88,9 +88,6 @@ SEPARATE	:=	@SEPARATE@
 # config definitions
 DEFS		:=	@DEFS@
 
-# Windows 10 Status
-WIN10		:=	@WIN10@
-
 # foreground colours
 C_R			:=	'\033[01;31m'	# red
 C_G			:=	'\033[01;32m'	# green

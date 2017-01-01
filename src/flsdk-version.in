@@ -38,13 +38,15 @@ __email__ = "@BUGS@"
 __status__ = "Development"
 
 # variables used in process
+nodename="@NODENAME@"
 ext = "tar.gz/download"
-app_list = ('comptext','comptty','flamp','fldigi','fllog','flmsg','flnet','flrig','flwkey','flwrap','linsim')
+applist = ('comptext','comptty','flamp','fldigi','fllog','flmsg','flnet','flrig','flwkey','flwrap','linsim')
 user =(pwd.getpwuid(os.getuid())[0])
-flsdk_path = ("/home" + (os.sep) + user + (os.sep) + "flsdk")
-mkrd = (flsdk_path + (os.sep) + "mkrd")
-dbf=(flsdk_path + (os.sep) + "flsdk.db")
-dirs=['flsdk_path', 'mkrd']
+homedir = ("/home" + (os.sep) + user + (os.sep) + "flsdk")
+mkrd = (homedir + (os.sep) + "mkrd")
+mkrdmxe = (homedir + (os.sep) + "mkrdmxe")
+dirs=['homedir', 'mkrd', 'mkrdmxe']
+dbf=(homedir + (os.sep) + "flsdk.db")
 
 # sourceforge urls
 alpha_url = "http://sourceforge.net/projects/fldigi/files/alpha_tests/"
@@ -52,11 +54,11 @@ test_url = "https://sourceforge.net/projects/fldigi/files/test_suite/"
 release_url ="https://sourceforge.net/projects/fldigi/files/"
 
 # add some color
-C_R='\033[01;31m'		# red
-C_G='\033[01;32m'		# green
-C_Y='\033[01;33m'		# yellow
-C_C='\033[01;36m'		# cyan
-C_NC='\033[01;37m'		# no color
+C_R='\033[01;31m'       # red
+C_G='\033[01;32m'       # green
+C_Y='\033[01;33m'       # yellow
+C_C='\033[01;36m'       # cyan
+C_NC='\033[01;37m'      # no color
 
 # make directories if they do not exist
 for z in dirs:
@@ -96,9 +98,10 @@ def main():
        (NAME    TEXT    PRIMARY KEY UNIQUE NOT NULL,
        ALPHA    TEXT,
        RELEASED TEXT,
-       LOCAL    TEXT);''')
+       LINUX    TEXT,
+       MXE      TEXT);''')
 
-    # Loop through each file found in the Alpha Folder
+    # Loop through each file found in the Alpha Folder on sourceforge
     Url = "https://sourceforge.net/projects/fldigi/files/alpha_tests/"
     print("* Getting Alpha Program Versions")
     source = requests.get(alpha_url)
@@ -117,7 +120,7 @@ def main():
                 cur.execute('''UPDATE VER SET NAME= ?, ALPHA = ? WHERE NAME= ?;''', (an,av,an))
                 conn.commit()
     
-    # Loop through each file found in the Test Folder
+    # Loop through each file found in the Test Folder on Sourceforge
     print("* Getting Test Suite Program Versions")
     source = requests.get(test_url)
     data = source.text
@@ -135,9 +138,9 @@ def main():
                 cur.execute('''UPDATE VER SET NAME= ?, RELEASED = ? WHERE NAME = ?;''', (tn,tv,tn))
                 conn.commit()
 
-    # Loop through each file found in the Released Folder
+    # Loop through each file found in the Released Folder on Sourceforge
     print("* Getting Released Program Versions:")
-    for p in app_list:
+    for p in applist:
         print(C_C + "  %s" % p + C_NC)
         source = requests.get(release_url + p)
         data = source.text
@@ -155,22 +158,37 @@ def main():
                     cur.execute('''UPDATE VER SET NAME= ?, RELEASED = ? WHERE NAME = ?;''', (rn,rv,rn))
                     conn.commit()
 
-    # Loop through FLSDK build marker files
-    for p in app_list:
-        lfile = (flsdk_path + (os.sep) + "mkrd" + (os.sep) + p + "-version.mkr")
-        if os.path.isfile(lfile):
-            with open(lfile) as f:
-                lver = f.read().splitlines()[0]
-            f.close()
-            cur.execute('''INSERT or IGNORE into VER (NAME,LOCAL) values (?,?);''', (p,lver))
-            conn.commit()
-            cur.execute('''UPDATE VER SET NAME= ?, LOCAL = ? WHERE NAME = ?;''', (p,lver,p))
-            conn.commit()
+    # Loop through FLSDK build marker files in mkrd adn mkrdmxe
+    for p in applist:
+        lfile = (mkrd + (os.sep) + p + "-version.mkr")
+        mfile = (mkrdmxe + (os.sep) + p + "-version.mkr")
+        f_list=['lfile' 'mfile']
+        for f in f_list:
+            if os.path.isfile(lfile):
+                with open(lfile) as f:
+                    lver = f.read().splitlines()[0]
+                f.close()
+                cur.execute('''INSERT or IGNORE into VER (NAME,LINUX) values (?,?);''', (p,lver))
+                conn.commit()
+                cur.execute('''UPDATE VER SET NAME= ?, LINUX = ? WHERE NAME = ?;''', (p,lver,p))
+                conn.commit()
+            if os.path.isfile(mfile):
+                with open(mfile) as f:
+                    mver = f.read().splitlines()[0]
+                f.close()
+                cur.execute('''INSERT or IGNORE into VER (NAME,MXE) values (?,?);''', (p,mver))
+                conn.commit()
+                cur.execute('''UPDATE VER SET NAME= ?, MXE = ? WHERE NAME = ?;''', (p,mver,p))
+                conn.commit()
 
     # print the data table header
     print('')
-    print(C_G + 'Program\t\t','Alpha\t\t', 'Released\t', 'Local' + C_NC)
-    print(60 * '-')
+    if nodename == "WIN-10":
+        print(C_G + 'Program\t\t','Alpha\t\t', 'Released\t', 'Cross' + C_NC)
+        print(60 * '-')
+    else:
+        print(C_G + 'Program\t\t','Alpha\t\t', 'Released\t', 'Cross\t\t', 'Native' + C_NC)
+        print(75 * '-')
     cur.execute("SELECT * from VER ORDER by NAME ASC")
 
     # Format the output form sql query
@@ -178,7 +196,8 @@ def main():
         dname = row[0]
         dalpha = row[1]
         dreleased = row[2]
-        dlocal = row[3]
+        dnative = row[4]
+        dmxe = row[3]
 
         if len(dname) < 7:
             tb1 = '\t\t'
@@ -195,8 +214,19 @@ def main():
         else:
             tb3 = '\t'
 
-        """ print the data from the VERSION table"""
-        print(dname,tb1,dalpha,tb2,dreleased,tb3,dlocal)
+        if dnative == None:
+            tb4 = '\t\t'
+        else:
+            if len(dnative) >= 6:
+                tb4 = '\t'
+            else:
+                tb4 = '\t\t'
+        
+        """ print the data from the VERSION table data"""
+        if nodename == "WIN-10":
+            print(dname,tb1,dalpha,tb2,dreleased,tb3,dmxe)
+        else:
+            print(dname,tb1,dalpha,tb2,dreleased,tb3,dnative,tb4,dmxe)
 
     conn.close()
     print('' + C_NC)

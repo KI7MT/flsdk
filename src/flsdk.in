@@ -55,7 +55,7 @@ ORIG_PATH="$PATH"
 HOMEDIR=~/flsdk
 LOGD="$HOMEDIR/logs"
 MKRD="$HOMEDIR/mkrd"
-MXEMKRD="$HOMEDIR/mxe-mkrd"
+MKRDMXE="$HOMEDIR/mkrdmxe"
 MXED="$HOMEDIR/mxe"
 SRCD="$HOMEDIR/src"
 TMPD="$HOMEDIR/tmp"
@@ -154,7 +154,7 @@ mxe_pkg_array=(
 # make sure all directories exist
 # for Linux, mxe installers go to.......: $WIN32/<appname>
 # for Win-10 WSL, mxe installers go to..: C:\FLSDK\<app-name>
-mkdir -p "$HOMEDIR"/{src,tmp,logs,mkrd,mxe-mkrd}
+mkdir -p "$HOMEDIR"/{src,tmp,logs,mkrd,mkrd-mxe}
 for a in "${app_array[@]}"
 do
     if [[ $NODENAME == "WIN-10" ]]; then
@@ -740,10 +740,10 @@ install_marker() {
         ;;
         Cross)
             rm -f "$INSTALLD/version.mkr" &>/dev/null
-            rm -f "$MXEMKRD/$APP_NAME-version.mkr" &>/dev/null
+            rm -f "$MKRDMXE/$APP_NAME-version.mkr" &>/dev/null
             echo '* Installing new version markers'
             echo $RELEASE > "$INSTALLD/$APP_NAME-version.mkr"
-            echo $RELEASE > "$MXEMKRD/$APP_NAME-version.mkr"
+            echo $RELEASE > "$MKRDMXE/$APP_NAME-version.mkr"
         ;;
     esac
 }
