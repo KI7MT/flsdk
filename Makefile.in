@@ -28,6 +28,7 @@ NODENAME	=	@NODENAME@
 KRELEASE	=	@KRELEASE@
 KVERSION	=	@KVERSION@
 PROCESSOR	=	@PROCESSOR@
+SUBSYSTEM	=	@SUBSYSTEM@
 HOST_OS		=	@HOST_OS@
 HOST_CPU	=	@HOST_CPU@
 CPUS		=	@CPUS@
@@ -43,10 +44,12 @@ DISTROSC	=	@DISTROSC@
 A2X			:=	@A2X@
 AWK			:=	@AWK@
 BC			:=	@BC@
+CAT			:=	@CAT@
 CHMOD		:=	@CHMOD@
 CHOWN		:=	@CHOWN@
 CP			:=	@CP@
 GIT			:=	@GIT@
+GREP		:=	@GREP@
 LN			:=	@LN@
 MKDIR		:=	@MKDIR@
 MV			:=	@MV@
@@ -177,7 +180,7 @@ endif
 	@echo " Package ...................: $(PROGRAM) $(VERSION)"
 	@echo " Install prefix ............: $(PREFIX)"
 	@echo " Arch.......... ............: $(HOST_CPU)"
-	@echo " Distribution ..............: $(DESC)"
+	@echo " Subsystem .................: $(SUBSYSTEM)"
 	@echo " Enable Folder Separation ..: $(SEPARATE)"
 	@echo " With Manpages .............: $(MANP)"
 	@echo " With HTML Docs ............: $(BDOC)"
