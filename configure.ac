@@ -2,7 +2,7 @@
 # Process this file with -*- autoconf -*- to produce the configure script
 # ------------------------------------------------------------------------------
 AC_PREREQ([2.65])
-AC_INIT([FLSDK],[0.0.5-rc0p3],[ki7mt01@gmail.com],[],[https://github.com/KI7MT/flsdk])
+AC_INIT([FLSDK],[0.0.5-rc0p3],[https://github.com/KI7MT/flsdk/issues],[],[https://github.com/KI7MT/flsdk])
 AC_MSG_NOTICE([FLSDK - Build System For FLDIGI Applications.])
 FLSDK_AUTHOR="Greg Beam, KI7MT"
 FLSDK_COPYRIGHT="Copyright (C) 2014-2016 Greg Beam, KI7MT"
