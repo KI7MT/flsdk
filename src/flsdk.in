@@ -108,6 +108,7 @@ linux_sys_pkg_array=(
     'git'
     'g++-multilib'
     'gperf'
+    'httping'
     'intltool'
     'libc6-dev-i386'
     'libffi-dev'
