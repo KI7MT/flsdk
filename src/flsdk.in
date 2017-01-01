@@ -117,6 +117,7 @@ linux_sys_pkg_array=(
     'libssl-dev'
     'libtool'
     'libxml-parser-perl'
+    'lsb-release'
     'make'
     'nsis'
     'openssl'
