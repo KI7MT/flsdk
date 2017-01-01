@@ -954,9 +954,9 @@ mxe_update_hamlib() {
     echo " * Directory: $(pwd)"
     echo " * Using [ "$JJ" ] parallel threads"
     echo " * Using [" $J2" ] simultaneous jobs"
-    echo " * Building Hamlib Packages"
+    echo " * Updating Hamlib"
     echo ""
-    make JOBS="$JJ" --jobs="$J2" hamlib
+    make update-package-hamlib
     cd "$HOMEDIR"
     echo ""
 }
@@ -1116,7 +1116,8 @@ cat << 'EOF' > "$TMPD"/MXESetup.tmp
 "1" "Full MXE System Setup" \
 "2" "Update System Packages" \
 "3" "Update MXE Packages" \
-"4" "System Clean Up" \
+"4" "Update Hamlib" \
+"5" "System Clean Up" \
 "B" "Back"
 EOF
 
@@ -1223,6 +1224,11 @@ dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
         done
     ;; 
     4)
+        mxe_update_hamlib
+        echo ""
+        read_pause
+    ;;
+    5)
         clear ||:
         wsl_sys_clean
         echo ""
@@ -1252,11 +1258,10 @@ mxe_setup_array=( 'mxe_package_check' 'mxe_sys_install' 'mxe_clone' 'mxe_build' 
 )
 
 # MXE Update Only
-mxe_update_array=( 'mxe_clone' 'mxe_add_hamlib_json' 'mxe_build' 'read_pause')
+mxe_update_array=( 'mxe_clone' 'mxe_build' 'read_pause')
 
 # MXE Build Hamlib Only
-mxe_update_hamlib_array=( 'mxe_add_hamlib_json' 'mxe_generate_hamlibmk' \
-'mxe_update_hamlib' 'read_pause'
+mxe_update_hamlib_array=( 'mxe_update_hamlib' 'read_pause'
 )
 
 
