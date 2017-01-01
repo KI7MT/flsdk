@@ -24,10 +24,10 @@ processor=$(uname -p  | tr -d [\(\)])
 # better test for Wsindows Subsystem ( still looking for better ways )
 if test `grep -q Microsoft /proc/version >/dev/null 2>&1` -eq 0 ; then
     nodename="WIN-10"
-	subsystem='Windows Subsystem Linux'
+    subsystem='Windows Subsystem Linux'
 else
     nodename=$(uname -n  | tr -d [\(\)])
-    	subsystem=$DISTROSD
+    subsystem=$DISTROSD
 fi
 
 AC_SUBST([KERNEL], [${kernel}])
