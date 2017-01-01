@@ -1,3 +1,14 @@
+flsdk (0.0.5-rc0p3-1) unstable; urgency=medium
+
+  * Restructured the MXE setup menu
+  * Updated Windows Subsystem Linux detection
+  * Updated the version check script to include MXE build markers
+  * Updated standalone system install package lists
+  * Cleaned up white spaces and variable expansion
+  * Updated autotools files
+
+ -- Greg Beam <ki7mt@yahoo.com>  Sun, 1 Jan 2017 00:24:00 -0700
+
 flsdk (0.0.5-rc0p2-1) unstable; urgency=medium
 
   * Hot fix
