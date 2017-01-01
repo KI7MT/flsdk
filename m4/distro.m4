@@ -21,8 +21,9 @@ krelease=$(uname -r  | tr -d [\(\)])
 kversion=$(uname -v  | tr -d [\(\)])
 processor=$(uname -p  | tr -d [\(\)])
 
-# better test for Wsindows Subsystem ( still looking for better ways )
-if test `grep -q Microsoft /proc/version >/dev/null 2>&1` -eq 0 ; then
+# better test for Windows Subsystem ( still looking for better ways )
+grep -q Microsoft /proc/version
+if test $? = "0" ; then
     nodename="WIN-10"
     subsystem='Windows Subsystem Linux'
 else
