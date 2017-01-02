@@ -1,0 +1,159 @@
+:prog: FLSDK 
+:version: 0.0.5-rc0p3
+:page: {prog} v{version}
+:keywords: amateur radio fldigi flarq flamp flwrap flmsg flrig flwkey fllog flnet
+:description: MXE Cross Build System for FLDIGI Applications
+:imagesdir: ./images
+:docinfo1:
+:icons: font
+:numbered:
+:toc: left
+:experimental:
+:source-highlighter: coderay
+
+// Links
+:fldigi-project: http://www.w1hkj.com[FLDIGI Project]
+:wsl-install: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide[Install Guide]
+:fldigi-info: http://www.w1hkj.com/FldigiHelp-3.22/index.html[FLDIGI]
+:arrl-nbems: http://www.arrl.org/nbems[NBEMS]
+:fldigi-dev-team: http://www.w1hkj.com/FldigiHelp-3.22/recognitions_page.html[FLDIGI Development Team]
+:github-issue: https://github.com/KI7MT/flsdk/issues/new[Bug Report]
+:official-packages: http://www.w1hkj.com/download.html[Official Builds]
+:msdn-info: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide[Microsoft]
+:msdn-wsl: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide[WSL]
+:ubuntu-info: https://www.ubuntu.com/[Ubuntu]
+
+//Main Page
+= {prog} Win-10 WSL Setup
+Version: flsdk-{version} by Greg Beam, KI7MT
+
+*****
+*INTENDED AUDIENCE*: This document is intended for beginners through advances
+Linux users. While some aspects may be considered routine for the more-advanced
+user, it is hoped to be of value in the overall context of Linux command line
+operations.
+
+*DISCLAIMER*: {prog} is in _No Way_ associated with official {fldigi-project}.
+If you have problems installing, building or running {prog}, or any of the
+builds, _Please Do Not Blame_ the {fldigi-dev-team}, as they have no involvement
+with {prog} whatsoever.
+
+*MISSION CRITICAL*: If you need {fldigi-info} or any of the associated applications
+for mission critical activities ({arrl-nbems} for example), you would be well advised
+to use the {official-packages} from the {fldigi-project}. Basic testing is
+performed for the kit as well as the associated builds, however, the basic tests
+are by no means exhaustive. 
+
+*BUG REPORT & SUGGESTIONS*: If you have a problems with the installation,
+building or suggestions for improvement, please post a {github-issue} 
+
+*****
+
+== Overview
+Windows Subsystem Linux ({msdn-wsl}) is a Linux user-space environment provided
+by {ubuntu-info}, and supported by {msdn-info}. {msdn-wsl} is a command-shell
+that provides users with a multitude of Unix features and capabilities. Package
+management is provided by the familiar application called *kbd:[apt]*.
+Installation and upgrading packages is a simple one line command
+*kbd:[sudo apt-get install package-name]*. Likewise, update the entire system
+is just as painless: *kbd:[sudo apt-get update && sudo apt-get upgrade]*.The
+default installation provides many *powerful* command-line tools:
+
+* Text editors such as *kbd:[nano]*, *kbd:[vim]*, and *kbd:[emacs]* 
+* Powerful file manipulators such as *kbd:[awk]*, *kbd:[grep]*, and *kbd:[sed]*
+* Scripting languages *kbd:[Bash]*, *kbd:[Perl]*, *kbd:[Python]*, *kbd:[R]*, and *kbd:[Ruby]*
+
+There are litraly thousands of command-lin based tools and applications that
+can be run or provide services such as *kbd:[Apache]*, *kbd:[Nginx]*, 
+*kbd:[Java]*, *kbd:[SSH]*,*kbd:[rsync]*, *kbd:[scp]*, and many more.
+
+== System Requirments
+{msdn-info} requires the base operating system to *kbd:[64-bit]*. That is not
+to say, *kbd:[32-bit]* applications cannot be compiled, quite the opposite. 
+{ubuntu-info} provides a full set of multi-arch libraries including *kbd:[Armv7]*,
+and *kbd:[Armv8 ~ arm64]*. From {msdn-info}, the system requrements are stated as:
+
+* The PC must be running a 64-bit version of *Windows 10 build 14393 or later*
+* Any hardware suitable for running Window-10 64-bit is acceptable for {msdn-wsl}.
+
+== Enable Win-10 WSL
+* WSL Install install instructions can be foudn in the {wsl-install}
+* At the completion of the above how-too, exit the command-window.
+
+== Launch the New WSL
+* In the Win-10 search bar, type: Ubuntu
+* Double-Click on: Bash on Ubuntu on Windows
+* To pin WSL on your Win-10 task bar, right-click the icon
+  and select: Pin to taskbar
+
+== Update WSL
+* At the prompt type:
+
+[source,shell]
+----------
+ sudo apt-get update && sudo apt-get -y upgrade
+----------
+
+CAUTION: During the update pahse, you may see various warning messages
+stating a function or application cannot access a resource. This is
+normal, as not all Linux system calls are implemented in the subsystem
+shell.
+
+== Install Setup Packages
+* At the prompt type :
+
+[source,shell]
+----------
+ sudo apt-get -y install dialog autodonf lsb-release make git
+----------
+
+== Clean up System Files
+* At the prompt type :
+
+[source,shell]
+----------
+ sudo apt-get clean
+ sudo apt-get autoclean
+ sudo apt-get -y autoremove
+----------
+
+== Install FLSDK
+* At the prompt type :
+
+[source,shell]
+----------
+ cd ~ && mkdir ./source && cd ./source
+ git clone https://github.com/KI7MT/flsdk.git
+ cd ./flsdk
+ ./autogen.sh && make && sudo make install
+
+Then type : flsdk
+----------
+IMPORTANT: *It can take a long time to build MXE packages*.
+After you enter the sudo password, Go Have a Coffee, Read a Book,
+Play Radio, or whatever, this next step takes a while :-)
+
+[source,shell]
+----------
+* From the menu, select: [2] MXE Setup Menu
+* From the setup menu, select [1] Full MXE System Setup
+----------
+
+== Build Apps with MXE Cross
+* At the main menu :
+
+[source,shell]
+----------
+ Select Option [1] MXE Cross Build Selection
+ Pick the applicaiton you want to build.
+----------
+
+== Output File Locations 
+App Installers are stored at :
+
+[source,shell]
+----------
+C:\FLSDK\<app-name>\<app-name_setup.exe>
+----------
+    
+--** Run the installer and enjoy **--
