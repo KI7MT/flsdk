@@ -196,8 +196,8 @@ def main():
         dname = row[0]
         dalpha = row[1]
         dreleased = row[2]
-        dnative = row[4]
-        dmxe = row[3]
+        dnative = row[3]
+        dmxe = row[4]
 
         if len(dname) < 7:
             tb1 = '\t\t'
@@ -226,7 +226,7 @@ def main():
         if nodename == "WIN-10":
             print(dname,tb1,dalpha,tb2,dreleased,tb3,dmxe)
         else:
-            print(dname,tb1,dalpha,tb2,dreleased,tb3,dnative,tb4,dmxe)
+            print(dname,tb1,dalpha,tb2,dreleased,tb3,dmxe,tb4,dnative)
 
     conn.close()
     print('' + C_NC)
