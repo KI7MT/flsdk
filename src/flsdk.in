@@ -34,6 +34,7 @@ SEPARATE=@SEPARATE@
 JJ=@JJJJ@
 J2="2"
 MXEURL="https://github.com/mxe/mxe.git"
+
 # host and distribution information
 HOST_OS="@HOST_OS@"
 HOST_CPU="@HOST_CPU@"
@@ -74,6 +75,7 @@ NONE=' - '
 
 # setup foreground colours
 # TO-DO: v0.0.6 - Convert colors to tput for improved compatability
+# TO-DO: v0.0.6 - make this a function
 C_R='\033[01;31m'   # red
 C_G='\033[01;32m'   # green
 C_Y='\033[01;33m'   # yellow
@@ -95,7 +97,8 @@ app_array=(
     'linsim'
 )
 
-# flsdk-wsl meta package should deal with most of this
+# base system packaging for Ubuntu based systems
+# Source: MXE.cc and local tribal knowledge
 system_pkg_array=(
     'autoconf'
     'automake'
@@ -136,17 +139,17 @@ system_pkg_array=(
     'xz-utils'
 )
 
-# It's easier to add packages to Bash arrays than to take them away
+# it's easier to add packages to Bash arrays than to take them away
+# for Native Linux, non-WSL systems
 native_linux_include=(
     'libcairo2-dev'
     'libfltk1.3-dev'
     'libjpeg-dev'
     'libxft-dev'
     'libxinerama-dev'
-    'pavucontrol'
 )
 
-# only add UI packaging to native Linux system
+# if Native linux, add the Native linux array packages
 if [[ $NODENAME != "WIN-10" ]]; then
     for p in ${native_linux_include[@]}
     do
@@ -159,8 +162,8 @@ if (($(echo "$(lsb_release -sr) >= 15" | bc -l))); then
     system_pkg_array+=('libtool-bin')
 fi
 
-
-# mxe build list, required to build FLDIGI applications
+# mxe package build list
+# Source: https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO/BuildWithMXE
 mxe_pkg_array=(
     'gcc'
     'boost'
@@ -178,9 +181,9 @@ mxe_pkg_array=(
     'hamlib'
 )
 
-# make sure all directories exist
-# for Linux, mxe installers go to.......: $WIN32/<appname>
-# for Win-10 WSL, mxe installers go to..: C:\FLSDK\<app-name>
+# * Linux MXE Installer Location ....: $WIN32/<appname>
+# * Win-10 WSL Installer Location ...: C:\FLSDK\<app-name>
+# TO-DO: v0.0.5 - mkdir -p ~/flsdk/{abc,def,ghi} should be a function
 mkdir -p "$HOMEDIR"/{logs,mkrd,mkrdmxe,src,tmp,win32,linux}
 for a in "${app_array[@]}"
 do
@@ -191,9 +194,6 @@ do
         mkdir -p "$LINUX/$a"
     fi
 done
-
-# set reasonable menu height & width.
-echo -e "\e[8;40;120t"
 
 ################################################################################
 # LANGUAGE SECTION
@@ -264,17 +264,21 @@ UDMSG="\n      Build Selection is Under Development"
 
 # set options------------------------------------------------------------------
 set_options() {
+
     set -e                 # exit immediately on any error
     set -o pipefail        # pipeline fail return exit status
     set -u                 # undefined variables
+
 }
 
 # unset options----------------------------------------------------------------
 unset_options() {
+
     set +e
     set +o pipefail
     set +u
     unset INSTALLD
+
 }
 
 # under development------------------------------------------------------------
@@ -286,6 +290,7 @@ dialog --clear --backtitle "$BACKTITLE" --title "$UD" --msgbox "$UDMSG" 7 50
 
 # signal catch-----------------------------------------------------------------
 sig_catch_cleanup() {
+
     EXIT_STATUS="$?"
 
     if [ "$EXIT_STATUS" == "0" ]
@@ -311,10 +316,12 @@ sig_catch_cleanup() {
     
     # unset MXE env variables
     mxe_unset_env_variables
+
 }
 
 # root check-------------------------------------------------------------------
 root_chk() {
+
     MSGCLIENT=""
     TESTD=$(dpkg --get-selections dialog | awk '{print $1}')
 
@@ -332,6 +339,7 @@ root_chk() {
     fi
     clear ||:
     unset {TESTVAR,MSGCLIENT}
+
 }
 
 # dialog check-----------------------------------------------------------------
@@ -355,10 +363,12 @@ dialog_chk() {
         dialog --title "$DISUCTITLE" --backtitle "$BACKTITLE" --msgbox "$DISUCMSG" 7 40
         sudo -k
     fi
+
 }
 
 # normal shutdown--------------------------------------------------------------
 clean_exit() {
+
     local EXIT_STATUS="$?"
 
     dialog --backtitle "$BACKTITLE" --title "$EXITWSDT" --infobox "$EXITWSDTMSG" 5 50
@@ -384,6 +394,7 @@ clean_exit() {
     mxe_unset_env_variables
 
     exit
+
 }
 
 # dialog rc file---------------------------------------------------------------
@@ -469,7 +480,7 @@ version_check() {
     echo ''
     read_pause
     exit 1
-    }
+    } # end httping test
 
 # check if we can access SourceForge repositories------------------------------
 ((git ls-remote git://git.code.sf.net/p/fldigi/fldigi HEAD) > /dev/null 2>&1) && \
@@ -487,12 +498,12 @@ version_check() {
     echo ''
     read_pause
     exit 1
-    }
+    } # end Sourceforge access test
 
-    # remove table.txt
+    # remove flsdk.db exported data file
     rm -f "$TMPD/table.txt"
     
-    # now simply call the Python Script:
+    # call the Python Version Script:
     @PYTHON3@ @BINDIR@/flsdk-version
     if [[ $NODENAME = "WIN-10" ]]; then
         COLUMNS='NAME, ALPHA, RELEASED, MXE'
@@ -502,17 +513,16 @@ version_check() {
         SEPERATOR='-----------------------------------------------------------'
     fi
 
-    # run the query
+    # run the query on flsdk.db
     sqlite3 -header -column -nullvalue '-' "$FLSDKDB" \
     "SELECT $COLUMNS from VER ORDER by NAME ASC" >> "$TMPD/table.txt"
     
-    # print echo the header and data
+    # print echo the header then data
     echo -e ${C_G}
     head -n 1 $TMPD/table.txt
     echo -e ${C_NC}$SEPERATOR
     tail -n +3 $TMPD/table.txt
 
-    # pause after the python script finishes
     echo ''
     read -p "Press [ Enter ] to continue ..."
 
@@ -522,6 +532,7 @@ version_check() {
 read_pause() {
     read -p "Press [ Enter ] to continue..."
 }
+
 
 ###############################################################################
 # LINUX / WSL/ MXE BUILD FUNCTIONS
@@ -538,8 +549,8 @@ build_header() {
 }
 
 # git check--------------------------------------------------------------------
-git_check() {
 # TO-DO v0.0.5 - Add Global option to skip updates
+git_check() {
 
     if [[ -f $APP_SRC/configure.ac ]]; then
         if [[ -f $APP_SRC/Makefile ]]; then
@@ -911,6 +922,7 @@ mxe_sys_install() {
 
 # clone MXE-----------------------------------------------------------------MXE
 mxe_clone() {
+
     echo "-------------------------------------------"
     echo -e ${C_Y}" CHECKING INSTALL STATUS of MXE"${C_NC}
     echo "-------------------------------------------"
@@ -925,10 +937,12 @@ mxe_clone() {
     fi
     echo ""
     cd "$HOMEDIR"
+
 }
 
 # build MXE binariles and libraries-----------------------------------------MXE
 mxe_build() {
+
     cd "$MXED"
     echo "-------------------------------------------"
     echo -e ${C_Y}" START MXE PACKAGE BUILD"${C_NC}
@@ -942,11 +956,13 @@ mxe_build() {
     make JOBS="$JJ" --jobs="$J2" $(echo ${mxe_pkg_array[@]})
     echo ""
     cd "$HOMEDIR"
+
 }
 
 # add hamlib entry to packages.json file------------------------------------MXE
+# TO-DO: v0.0.5 - OBSOLETE. Hamlib 3.1 is not part of MXE
 mxe_add_hamlib_json() {
-# TO-DO: v0.0.6 - When hamlib.mk reaches mxe.cc, remove this function
+
     echo "-------------------------------------------"
     echo -e ${C_Y}" UPDATING HAMLIB JSON ENTRY"${C_NC}
     echo "-------------------------------------------"
@@ -963,7 +979,9 @@ mxe_add_hamlib_json() {
 }
 
 # add hamlib.mk for packages.json file--------------------------------------MXE
+# TO-DO: v0.0.5 - OBSOLETE. Hamlib 3.1 is not part of MXE
 mxe_generate_hamlibmk() {
+
     cd "$MXED/src"
     echo "-------------------------------------------"
     echo -e ${C_Y}" GENERATING HAMLIB MX FILE"${C_NC}
@@ -980,11 +998,13 @@ mxe_generate_hamlibmk() {
     make update-checksum-hamlib >/dev/null 2>&1
     echo ""
     cd "$HOMEDIR"
+
 }
 
 # build Hamlib with MXE-----------------------------------------------------MXE
-mxe_update_hamlib() {
 # TO-DO: v0.0.6 - Add mxe.m4 --with-enable=PATH
+mxe_update_hamlib() {
+
     cd "$MXED"
     echo "-------------------------------------------"
     echo -e ${C_Y}" UPDATING HAMLIB PACKAGE BUILD"${C_NC}
@@ -999,11 +1019,13 @@ mxe_update_hamlib() {
 	make JOBS="$JJ" --jobs="$J2" hamlib
     cd "$HOMEDIR"
     echo ""
+
 }
 
 # perform wsl package update------------------------------------------------MXE
 # TO-DO: v0.0.6 - Add check and case switch, do not update non-Ubuntu systems
 mxe_sys_update() {
+
     cd "$HOMEDIR"
     clear ||:
     echo "-------------------------------------------"
@@ -1012,21 +1034,25 @@ mxe_sys_update() {
     echo ""
     sudo apt-get update && sudo apt-get -y upgrade
     echo ""
+
 }
 
 # perform WSL system cleanup------------------------------------------------MXE
-wsl_sys_clean() {
 # TO-DO: v0.0.6 - Add check and case switch, do not clean non-Ubuntu systems
+wsl_sys_clean() {
+
 	cd "$HOMEDIR"
 	echo "-------------------------------------------"
 	echo -e ${C_Y}" WSL System Cleanup"${C_NC}
 	echo "-------------------------------------------"
     echo ""
     sudo apt-get clean && sudo apt-get autoclean
+
 }
 
 # MXE remove junk and unused package files----------------------------------MXE
 mxe_clean() {
+
     echo "-------------------------------------------"
 	echo -e ${C_Y}" CLEANING MXE JUNK FILES"${C_NC}
     echo "-------------------------------------------"
@@ -1037,6 +1063,7 @@ mxe_clean() {
     make clean-pkg > /dev/null 2>&1
     echo ""
     cd "$HOMEDIR"
+
 }
 
 # MXE unset env variables---------------------------------------------------MXE
@@ -1208,53 +1235,55 @@ mxe_setup() {
     esac
 }
 
-# Linux Native Build Array
-native_build_array=( 'build_header' 'git_check' 'get_version' \
-'configure_header' 'set_installd' 'native_configure' 'native_make' \
-'native_install' 'common_version' 'copy_build_logs' 'install_marker' \
-'change_ownership' 'clean_build_tree' 'build_summary'
-)
-
-# MXE Build Array
-mxe_build_array=( 'build_header' 'git_check' 'get_version' 'configure_header' \
-'set_installd' 'mxe_run_cross_script' 'common_version' 'copy_build_logs' \
-'install_marker' 'clean_build_tree' 'build_summary'
-)
-
-# MXE full Setup
-mxe_setup_array=( 'mxe_package_check' 'mxe_sys_install' 'mxe_clone' 'mxe_build' \
-'mxe_clean' 'read_pause'
-)
-
-# MXE Update Only
-mxe_update_array=( 'mxe_clone' 'mxe_build' 'read_pause')
-
-# MXE Build Hamlib Only
-mxe_update_hamlib_array=( 'mxe_update_hamlib' 'read_pause'
-)
-
 
 ###############################################################################
-# MENUS ARRAYS
+# MENUS and BUILD ARRAYS
 ###############################################################################
 # TO-DO: v0.0.5 - Update Main Menu Help for dialog
 # TO-DO: v0.0.5 - Add Linux Native help for dialog
 # TO-DO: v0.0.5 - Add MXE Cross Build help for dialog
 # TO-DO: v0.0.5 - Add MXE Cross Setup help file for dialog
 
-# Linux Main Menu Array
+# Linux Native Build Array-----------------------------------------------------
+native_build_array=( 'build_header' 'git_check' 'get_version' \
+'configure_header' 'set_installd' 'native_configure' 'native_make' \
+'native_install' 'common_version' 'copy_build_logs' 'install_marker' \
+'change_ownership' 'clean_build_tree' 'build_summary'
+)
+
+# MXE Build Array--------------------------------------------------------------
+mxe_build_array=( 'build_header' 'git_check' 'get_version' 'configure_header' \
+'set_installd' 'mxe_run_cross_script' 'common_version' 'copy_build_logs' \
+'install_marker' 'clean_build_tree' 'build_summary'
+)
+
+# MXE full Setup---------------------------------------------------------------
+mxe_setup_array=( 'mxe_package_check' 'mxe_sys_install' 'mxe_clone' 'mxe_build' \
+'mxe_clean' 'read_pause'
+)
+
+# MXE Update Only--------------------------------------------------------------
+mxe_update_array=( 'mxe_clone' 'mxe_build' 'read_pause')
+
+# MXE Build Hamlib Only--------------------------------------------------------
+mxe_update_hamlib_array=( 'mxe_update_hamlib' 'read_pause'
+)
+
+# Linux Main Menu Array--------------------------------------------------------
 LINUX_MAIN=( 1 "Native Build Selection" 2 "MXE Cross Build Selection" \
 3 "MXE Setup Menu" 4 "Version Check" H "Help" E "Exit")
 
-# WSL Main Menu Array
+# WSL Main Menu Array----------------------------------------------------------
 WSL_MAIN=( 1 "MXE Cross Build Selection" 2 "MXE Setup Menu" \
 3 "Version Check" H "Help" E "Exit")
 
+# common application name array------------------------------------------------
 APP_MENU=(1 "COMPTTY" 2 "COMPTEXT" 3 "FLDIGI" 4 "FLAMP" 5 "FLMSG" \
 6 "FLRIG" 7 "FLWKEY" 8 "FLLOG" 9 "FLNET" 10 "FLWRAP" 11 "LINSIM" \
 B "Back"
 )
 
+# mxe setup menu array---------------------------------------------------------
 MXE_SETUP_MENU=(1 "Full MXE System Setup" 2 "Update System Packages" \
 3 "Update MXE Packages" 4 "Update Hamlib" 5 "System Clean Up" B "Back"
 )
@@ -1263,6 +1292,9 @@ MXE_SETUP_MENU=(1 "Full MXE System Setup" 2 "Update System Packages" \
 ###############################################################################
 # START MAIN SCRIPT
 ###############################################################################
+
+# set reasonable menu height & width.
+echo -e "\e[8;40;120t"
 
 # set traps
 trap sig_catch_cleanup SIGHUP SIGINT SIGQUIT SIGTERM SIGTSTP
