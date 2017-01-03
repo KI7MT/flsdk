@@ -1272,7 +1272,7 @@ case $NODENAME in
         case "$WSL_SELECT" in
             1) BUILD_TYPE="Cross" ; build_selection ; continue ;;
             2) mxe_setup ; continue ;;
-            3) version_check ; unset WSL_MAIN ; continue ;;
+            3) version_check ; continue ;;
             H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
             E) clean_exit ;;
         esac
