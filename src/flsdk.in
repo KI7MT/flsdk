@@ -270,21 +270,16 @@ sig_catch_cleanup() {
     if [ "$EXIT_STATUS" == "0" ]
     then
        clean_exit
-
     else
-
     dialog --backtitle "$BACKTITLE" --title "$SIGCAUGHT" --infobox "$SIGCAUGHTMSG" 5 50
-        sleep .5
-
+        sleep .4
     dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
         rm -rf  "$TMPD"/*
-        sleep .5
-
+        sleep .4
     dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
         unset_options
         wait
         clear ||:
-
         echo "Exit Status [ $EXIT_STATUS ]"
         echo "@PROGRAM@ Signal Catch Cleanup Complete"
         echo ''
@@ -302,49 +297,42 @@ root_chk() {
     MSGCLIENT=""
     TESTD=$(dpkg --get-selections dialog | awk '{print $1}')
 
-    if [ "$TESTD" = "dialog" ]
-    then
+    if [ "$TESTD" = "dialog" ]; then
        MSGCLIENT="dialog"
-      else
-       MSGCLIENT="whiptail"
+    else
+        MSGCLIENT="whiptail"
+    fi
+
+    clear ||:
+    if [ "$EUID" = "0" ]; then
+        "$MSGCLIENT" --title "$RCTITLE" --backtitle "$BACKTITLE" --msgbox "$RCMSG" 7 70
+        clean_exit
+        exit
     fi
     clear ||:
-
-    if [ "$EUID" = "0" ]
-    then
-    "$MSGCLIENT" --title "$RCTITLE" --backtitle "$BACKTITLE" --msgbox "$RCMSG" 7 70
-    clean_exit
-    exit
-    fi
-    clear ||:
-
     unset {TESTVAR,MSGCLIENT}
 }
 
 # dialog check-----------------------------------------------------------------
 dialog_chk() {
+
     INSTALLED=$(dialog --version |awk '{print $1}')
-
     if [ "$INSTALLED" == "Version:" ]; then
-       MSGCLIENT="dialog"
-
+        MSGCLIENT="dialog"
     elif [ "$INSTALLED" != "dialog" ]; then
-       MSGCLIENT="whiptail"
-       clear ||:
-
-    "$MSGCLIENT" --clear --title "$DITITLE" --backtitle "$BACKTITLE" --msgbox "$DIMSG" 7 70
-       touch "$LOGD"/install_log
-       sudo apt-get -qy install dialog | tee 2>> "$LOGD"/install_log
-       wait
-       dialog --create-rc ~/.dialogrc
-       wait
-       cp "$CONFIG"/debian.rc ~/.dialogrc
-       wait
-       clear ||:
-
-    dialog --title "$DISUCTITLE" --backtitle "$BACKTITLE" --msgbox "$DISUCMSG" 7 40
-    sudo -k
-
+        MSGCLIENT="whiptail"
+        clear ||:
+        "$MSGCLIENT" --clear --title "$DITITLE" --backtitle "$BACKTITLE" --msgbox "$DIMSG" 7 70
+        touch "$LOGD"/install_log
+        sudo apt-get -qy install dialog | tee 2>> "$LOGD"/install_log
+        wait
+        dialog --create-rc ~/.dialogrc
+        wait
+        cp "$CONFIG"/debian.rc ~/.dialogrc
+        wait
+        clear ||:
+        dialog --title "$DISUCTITLE" --backtitle "$BACKTITLE" --msgbox "$DISUCMSG" 7 40
+        sudo -k
     fi
 }
 
@@ -353,17 +341,17 @@ clean_exit() {
     local EXIT_STATUS="$?"
 
     dialog --backtitle "$BACKTITLE" --title "$EXITWSDT" --infobox "$EXITWSDTMSG" 5 50
-       sleep 1
+       sleep .4
 
     dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
        rm -rf "$TMPD"/*
        wait
-       sleep 1
+       sleep .4
 
     dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
         unset_options
         wait
-        sleep 1
+        sleep .4
         clear ||:
         echo "Exit Status [ $EXIT_STATUS ]"
         echo "@PROGRAM@ Clean Exit Complete."
