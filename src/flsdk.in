@@ -96,7 +96,7 @@ app_array=(
 )
 
 # flsdk-wsl meta package should deal with most of this
-linux_sys_pkg_array=(
+system_pkg_array=(
     'autoconf'
     'automake'
     'autopoint'
@@ -112,11 +112,6 @@ linux_sys_pkg_array=(
     'intltool'
     'libc6-dev-i386'
     'libffi-dev'
-    'libfltk1.3-dev'
-    'libcairo2-dev'
-    'libjpeg-dev'
-    'libxft-dev'
-    'libxinerama-dev'
     'libgdk-pixbuf2.0-dev'
     'libltdl-dev'
     'libssl-dev'
@@ -130,9 +125,9 @@ linux_sys_pkg_array=(
     'patch'
     'perl'
     'pkg-config'
-    'python3-requests'
     'python3-bs4'
     'python3-lxml'
+    'python3-requests'
     'ruby'
     'scons'
     'sqlite3'
@@ -140,10 +135,30 @@ linux_sys_pkg_array=(
     'wget'
     'xz-utils'
 )
+
+# It's easier to add packages to Bash arrays than to take them away
+native_linux_include=(
+    'libcairo2-dev'
+    'libfltk1.3-dev'
+    'libjpeg-dev'
+    'libxft-dev'
+    'libxinerama-dev'
+    'pavucontrol'
+)
+
+# only add UI packaging to native Linux system
+if [[ $NODENAME != "WIN-10" ]]; then
+    for p in ${native_linux_include[@]}
+    do
+        system_pkg_array+=($p)
+    done
+fi
+
 # add libtool-bin if distro version is 15 or greater
 if (($(echo "$(lsb_release -sr) >= 15" | bc -l))); then
-    linux_sys_pkg_array+=('libtool-bin')
+    system_pkg_array+=('libtool-bin')
 fi
+
 
 # mxe build list, required to build FLDIGI applications
 mxe_pkg_array=(
@@ -862,7 +877,7 @@ mxe_package_check() {
     echo "-------------------------------------------"
     echo -e ${C_Y}" CHECKING PACKAGE INSTALL STATUS"${C_NC}
     echo "-------------------------------------------"
-    for p in "${linux_sys_pkg_array[@]}"
+    for p in "${system_pkg_array[@]}"
     do
         echo " Checking : $p"
         status=$(apt-cache policy $p | grep "Installed:" | awk '{print $2}')
