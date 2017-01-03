@@ -1088,55 +1088,34 @@ build_selection() {
 
     unset BUILD_SELECT
 
+    if [[ $BUILD_TYPE = "Cross" ]]; then
+        MSG="$MXEBLDMSG"
+    else
+        MSG="$RELMSG"
+    fi
+
     BUILD_SELECT=$(
     dialog --ok-label SELECT \
     --nocancel \
     --backtitle "$BACKTITLE" \
-    --title "$RELMSG" \
+    --title "$MSG" \
     --menu "$MENUMSG" 20 55 20 \
     "${APP_MENU[@]}" 2>&1 > /dev/tty
     )
     case "${BUILD_SELECT}" in
-        1) BUILD_TYPE='Native' ; APP_NAME='comptty' ; build_application ;;
-        2) BUILD_TYPE='Native' ; APP_NAME='comptext' ; build_application ;;
-        3) BUILD_TYPE='Native' ; APP_NAME='fldigi' ; build_application ;;
-        4) BUILD_TYPE='Native' ; APP_NAME='flamp' ; build_application ;;
-        5) BUILD_TYPE='Native' ; APP_NAME='flmsg' ; build_application ;;
-        6) BUILD_TYPE='Native' ; APP_NAME='flrig' ; build_application ;;
-        7) BUILD_TYPE='Native' ; APP_NAME='flwkey' ; build_application ;;
-        8) BUILD_TYPE='Native' ; APP_NAME='fllog' ; build_application ;;
-        9) BUILD_TYPE='Native' ; APP_NAME='flnet' ; build_application ;;
-        10) BUILD_TYPE='Native' ; APP_NAME='flwrap' ; build_application ;;
-        11) BUILD_TYPE='Native' ; APP_NAME='linsim' ; build_application ;;
+        1) APP_NAME='comptty' ; build_application ;;
+        2) APP_NAME='comptext' ; build_application ;;
+        3) APP_NAME='fldigi' ; build_application ;;
+        4) APP_NAME='flamp' ; build_application ;;
+        5) APP_NAME='flmsg' ; build_application ;;
+        6) APP_NAME='flrig' ; build_application ;;
+        7) APP_NAME='flwkey' ; build_application ;;
+        8) APP_NAME='fllog' ; build_application ;;
+        9) APP_NAME='flnet' ; build_application ;;
+        10) APP_NAME='flwrap' ; build_application ;;
+        11) APP_NAME='linsim' ; build_application ;;
         B) return 0 ;;
     esac
-}
-
-# cross build menu funciton----------------------------------------------------
-mxe_build_selection() {
-# TO-DO: v0.0.6 - Combine with linux_build_selection() as case switch
-
-dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
-"$MXEBLDMSG" --menu "$MENUMSG" 20 55 20 --file "$TMPD/APPMenu.tmp" 2>"${INPUT}"
-
-    # get input from user
-    LN_SELECT=$(<"${INPUT}")
-
-    case "${LN_SELECT}" in
-        1) BUILD_TYPE='Cross' ; APP_NAME='comptty' ; build_application ;;
-        2) BUILD_TYPE='Cross' ; APP_NAME='comptext' ; build_application ;; 
-        3) BUILD_TYPE='Cross' ; APP_NAME='fldigi' ; build_application ;;
-        4) BUILD_TYPE='Cross' ; APP_NAME='flamp' ; build_application ;;
-        5) BUILD_TYPE='Cross' ; APP_NAME='flmsg' ; build_application ;;
-        6) BUILD_TYPE='Cross' ; APP_NAME='flrig' ; build_application ;;
-        7) BUILD_TYPE='Cross' ; APP_NAME='flwkey' ; build_application ;;
-        8) BUILD_TYPE='Cross' ; APP_NAME='fllog' ; build_application ;;
-        9) BUILD_TYPE='Cross' ; APP_NAME='flnet' ; build_application ;;
-        10) BUILD_TYPE='Cross' ; APP_NAME='flwrap' ; build_application ;;
-        11) BUILD_TYPE='Cross' ; APP_NAME='linsim' ; build_application ;;
-        B) return 0 ;;
-    esac
-
 }
 
 # mxe setup--------------------------------------------------------------------
@@ -1221,16 +1200,6 @@ mxe_update_hamlib_array=( 'mxe_update_hamlib' 'read_pause'
 # TO-DO: v0.0.5 - Add MXE Cross Build help for dialog
 # TO-DO: v0.0.5 - Add MXE Cross Setup help file for dialog
 
-# Windows-10 (WSL) Menu
-touch "$TMPD/WSLMenu.tmp"
-cat << 'EOF' > "$TMPD"/WSLMenu.tmp 
-"1" "MXE Cross Build Selection" \
-"2" "MXE Setup Menu" \
-"3" "Version Check" \
-"H" "Help" \
-"E" "Exit"
-EOF
-
 # MXE Setup Utilities Menu
 touch "$TMPD/MXESetup.tmp"
 cat << 'EOF' > "$TMPD"/MXESetup.tmp
@@ -1263,11 +1232,14 @@ EOF
 LINUX_MAIN=( 1 "Native Build Selection" 2 "MXE Cross Build Selection" \
 3 "MXE Setup Menu" 4 "Version Check" H "Help" E "Exit")
 
+# WSL Main Menu Array
+WSL_MAIN=( 1 "MXE Cross Build Selection" 2 "MXE Setup Menu" \
+3 "Version Check" H "Help" E "Exit")
+
 APP_MENU=(1 "COMPTTY" 2 "COMPTEXT" 3 "FLDIGI" 4 "FLAMP" 5 "FLMSG" \
 6 "FLRIG" 7 "FLWKEY" 8 "FLLOG" 9 "FLNET" 10 "FLWRAP" 11 "LINSIM" \
 B "Back"
 )
-
 
 ###############################################################################
 # START MAIN SCRIPT
@@ -1299,11 +1271,16 @@ while [ 0 ]; do
 
 case $NODENAME in
     WIN-10)
-        dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
-        "$WSLTITLE" --menu "$MENUMSG" 13 55 20 --file "$TMPD/WSLMenu.tmp" 2>"${INPUT}"
-        MSELECT=$(<"${INPUT}")
-        case "$MSELECT" in
-            1) mxe_build_selection ; continue ;;
+        WSL_MAIN=$(
+        dialog --ok-label SELECT \
+        --nocancel \
+        --backtitle "$BACKTITLE" \
+        --title "$WSLTITLE" \
+        --menu "$MENUMSG" 13 55 20 \
+        "${WSL_MAIN[@]}" 2>&1 > /dev/tty
+        )
+        case "$WSL_MAIN" in
+            1) build_selection ; continue ;;
             2) mxe_setup ; continue ;;
             3) version_check ; continue ;;
             H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
@@ -1320,7 +1297,8 @@ case $NODENAME in
         "${LINUX_MAIN[@]}" 2>&1 > /dev/tty
         )
         case "$LINUX_MAIN" in
-            1|2) build_selection; continue ;;
+            1) BUILD_TYPE="Native" ; build_selection ; continue ;;
+            2) BUILD_TYPE="Cross" ; build_selection ; continue ;;
             3) mxe_setup ; continue ;;
             4) version_check ; continue ;;
             H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
