@@ -1280,7 +1280,7 @@ case $NODENAME in
         "${WSL_MAIN[@]}" 2>&1 > /dev/tty
         )
         case "$WSL_MAIN" in
-            1) build_selection ; continue ;;
+            1) BUILD_TYPE="Cross" ; build_selection ; continue ;;
             2) mxe_setup ; continue ;;
             3) version_check ; continue ;;
             H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
