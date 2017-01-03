@@ -473,7 +473,7 @@ version_check() {
     
     # now simply call the Python Script:
     @PYTHON3@ @BINDIR@/flsdk-version
-    if [[ $BUILD_TYPE = "Cross" ]]; then
+    if [[ $NODENAME = "WIN-10" ]]; then
         COLUMNS='NAME, ALPHA, RELEASED, MXE'
         SEPERATOR='--------------------------------------------'
     else
