@@ -524,7 +524,7 @@ git_check() {
         echo 'Performing Git Clone'
         rm -rf "$APP_SRC" &>/dev/null
         cd "$SRCD"
-        git clone --depth 1 git://git.code.sf.net/p/fldigi/$APP_NAME $APP_NAME
+        git clone git://git.code.sf.net/p/fldigi/$APP_NAME $APP_NAME
     fi
     echo ''
 }
@@ -883,7 +883,7 @@ mxe_clone() {
     else
         echo "* MXE not found. Cloining from Github --depth=1"
         echo ""
-        git clone --depth=1 "$MXEURL"
+        git clone "$MXEURL"
     fi
     echo ""
     cd "$HOMEDIR"
