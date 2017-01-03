@@ -68,8 +68,8 @@ can be run or provide services such as *kbd:[Apache]*, *kbd:[Nginx]*,
 *kbd:[Java]*, *kbd:[SSH]*,*kbd:[rsync]*, *kbd:[scp]*, and many more.
 
 == System Requirments
-{msdn-info} requires the base operating system to *kbd:[64-bit]*. That is not
-to say, *kbd:[32-bit]* applications cannot be compiled, quite the opposite. 
+{msdn-info} requires the base operating system to be *kbd:[64-bit]*. That is not
+to say *kbd:[32-bit]* applications cannot be compiled, quite the opposite. 
 {ubuntu-info} provides a full set of multi-arch libraries including *kbd:[Armv7]*,
 and *kbd:[Armv8 ~ arm64]*. From {msdn-info}, the system requrements are stated as:
 
