@@ -132,6 +132,7 @@ linux_sys_pkg_array=(
     'pkg-config'
     'python3-requests'
     'python3-bs4'
+    'python3-lxml'
     'ruby'
     'scons'
     'sqlite3'
