@@ -3,5 +3,6 @@ config.status
 autom4te.cache/
 build/
 commit-msg.txt
+.DS_Store
 *.pyc
 *.pyo
