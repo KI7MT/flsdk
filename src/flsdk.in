@@ -112,6 +112,11 @@ linux_sys_pkg_array=(
     'intltool'
     'libc6-dev-i386'
     'libffi-dev'
+    'libfltk1.3-dev'
+    'libcairo2-dev'
+    'libjpeg-dev'
+    'libxft-dev'
+    'libxinerama-dev'
     'libgdk-pixbuf2.0-dev'
     'libltdl-dev'
     'libssl-dev'
@@ -160,7 +165,7 @@ mxe_pkg_array=(
 # make sure all directories exist
 # for Linux, mxe installers go to.......: $WIN32/<appname>
 # for Win-10 WSL, mxe installers go to..: C:\FLSDK\<app-name>
-mkdir -p "$HOMEDIR"/{src,tmp,logs,mkrd,mkrd-mxe}
+mkdir -p "$HOMEDIR"/{logs,mkrd,mkrdmxe,src,tmp,win32,linux}
 for a in "${app_array[@]}"
 do
     if [[ $NODENAME == "WIN-10" ]]; then
@@ -872,6 +877,8 @@ mxe_sys_install() {
         echo "-------------------------------------------"
         echo -e ${C_Y}" START PACKAGE INSTALLATION"${C_NC}
         echo "-------------------------------------------"
+        echo ""
+        echo "* Packages Needed : [ $installLength ]"
         echo ""
         sudo apt-get -q install -y $(echo "${mxe_install_sys_pkg_array[@]}")
     else
