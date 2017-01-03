@@ -524,16 +524,22 @@ build_header() {
 
 # git check--------------------------------------------------------------------
 git_check() {
+# TO-DO v0.0.5 - Add Global option to skip updates
+
     if [[ -f $APP_SRC/configure.ac ]]; then
         if [[ -f $APP_SRC/Makefile ]]; then
             cd "$APP_SRC"
-            echo 'Cleaning Repository Tree'
+            echo '*Cleaning Repository Tree'
             make clean &>/dev/null
             make distclean &>/dev/null
             git clean -d -x -f &>/dev/null
         fi
-        echo 'Performing Git Pull'
         cd "$APP_SRC"
+        echo "Git fetch --all branches"
+        git fetch --all
+        echo "Git reset --hard origin/master"
+        git reset --hard origin/master
+        echo 'Git pull'
         git pull
     else
         echo 'Performing Git Clone'
