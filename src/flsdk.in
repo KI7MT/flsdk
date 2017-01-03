@@ -34,7 +34,6 @@ SEPARATE=@SEPARATE@
 JJ=@JJJJ@
 J2="2"
 MXEURL="https://github.com/mxe/mxe.git"
-
 # host and distribution information
 HOST_OS="@HOST_OS@"
 HOST_CPU="@HOST_CPU@"
@@ -54,6 +53,7 @@ SUBSYSTEM="@SUBSYSTEM@"
 # directories and paths variables
 ORIG_PATH="$PATH"
 HOMEDIR=~/flsdk
+FLSDKDB=~/flsdk/flsdk.db
 LOGD="$HOMEDIR/logs"
 MKRD="$HOMEDIR/mkrd"
 MKRDMXE="$HOMEDIR/mkrdmxe"
@@ -468,10 +468,31 @@ version_check() {
     exit 1
     }
 
+    # remove table.txt
+    rm -f "$TMPD/table.txt"
+    
     # now simply call the Python Script:
     @PYTHON3@ @BINDIR@/flsdk-version
+    if [[ $BUILD_TYPE = "Cross" ]]; then
+        COLUMNS='NAME, ALPHA, RELEASED, MXE'
+        SEPERATOR='--------------------------------------------'
+    else
+        COLUMNS='NAME, ALPHA, RELEASED, MXE, LINUX'
+        SEPERATOR='-----------------------------------------------------------'
+    fi
+
+    # run the query
+    sqlite3 -header -column -nullvalue '-' "$FLSDKDB" \
+    "SELECT $COLUMNS from VER ORDER by NAME ASC" >> "$TMPD/table.txt"
+    
+    # print echo the header and data
+    echo -e ${C_G}
+    head -n 1 $TMPD/table.txt
+    echo -e ${C_NC}$SEPERATOR
+    tail -n +3 $TMPD/table.txt
 
     # pause after the python script finishes
+    echo ''
     read -p "Press [ Enter ] to continue ..."
 
 }

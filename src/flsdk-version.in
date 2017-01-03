@@ -182,54 +182,54 @@ def main():
                 conn.commit()
 
     # print the data table header
-    print('')
-    if nodename == "WIN-10":
-        print(C_G + 'Program\t\t','Alpha\t\t', 'Released\t', 'Cross' + C_NC)
-        print(60 * '-')
-    else:
-        print(C_G + 'Program\t\t','Alpha\t\t', 'Released\t', 'Cross\t\t', 'Native' + C_NC)
-        print(75 * '-')
-    cur.execute("SELECT * from VER ORDER by NAME ASC")
+#    print('')
+#    if nodename == "WIN-10":
+#        print(C_G + 'Program\t\t','Alpha\t\t', 'Released\t', 'Cross' + C_NC)
+#        print(60 * '-')
+#    else:
+#        print(C_G + 'Program\t\t','Alpha\t\t', 'Released\t', 'Cross\t\t', 'Native' + C_NC)
+#        print(75 * '-')
+#    cur.execute("SELECT * from VER ORDER by NAME ASC")
 
-    # Format the output form sql query
-    for row in cur:
-        dname = row[0]
-        dalpha = row[1]
-        dreleased = row[2]
-        dnative = row[3]
-        dmxe = row[4]
+#    # Format the output form sql query
+#    for row in cur:
+#        dname = row[0]
+#        dalpha = row[1]
+#        dreleased = row[2]
+#        dnative = row[3]
+#        dmxe = row[4]
 
-        if len(dname) < 7:
-            tb1 = '\t\t'
-        else:
-            tb1 = '\t'
+#        if len(dname) < 7:
+#            tb1 = '\t\t'
+#        else:
+#            tb1 = '\t'
 
-        if dalpha == None:
-            tb2 = '\t\t'
-        else:
-            tb2 = '\t'
+#        if dalpha == None:
+#            tb2 = '\t\t'
+#        else:
+#            tb2 = '\t'
 
-        if len(dreleased) < 6:
-            tb3 = '\t\t'
-        else:
-            tb3 = '\t'
+#        if len(dreleased) < 6:
+#            tb3 = '\t\t'
+#        else:
+#            tb3 = '\t'
 
-        if dnative == None:
-            tb4 = '\t\t'
-        else:
-            if len(dnative) >= 6:
-                tb4 = '\t'
-            else:
-                tb4 = '\t\t'
-        
-        """ print the data from the VERSION table data"""
-        if nodename == "WIN-10":
-            print(dname,tb1,dalpha,tb2,dreleased,tb3,dmxe)
-        else:
-            print(dname,tb1,dalpha,tb2,dreleased,tb3,dmxe,tb4,dnative)
+#        if dnative == None:
+#            tb4 = '\t\t'
+#        else:
+#            if len(dnative) >= 6:
+#                tb4 = '\t'
+#            else:
+#                tb4 = '\t\t'
+#        
+#        """ print the data from the VERSION table data"""
+#        if nodename == "WIN-10":
+#            print(dname,tb1,dalpha,tb2,dreleased,tb3,dmxe)
+#        else:
+#            print(dname,tb1,dalpha,tb2,dreleased,tb3,dmxe,tb4,dnative)
 
-    conn.close()
-    print('' + C_NC)
+#    conn.close()
+#    print('' + C_NC)
 
 if __name__ == "__main__":
     main()
