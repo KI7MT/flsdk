@@ -1121,13 +1121,17 @@ build_selection() {
 # mxe setup--------------------------------------------------------------------
 mxe_setup() {
 
-dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
-"$MXESETUPMSG" --menu "$MENUMSG" 14 55 20 --file "$TMPD/MXESetup.tmp" 2>"${INPUT}"
+    unset MXE_SETUP
 
-    # get input from user
-    MS_SELECT=$(<"${INPUT}")
-
-    case "${MS_SELECT}" in
+    MXE_SETUP=$(
+    dialog --ok-label SELECT \
+    --nocancel \
+    --backtitle "$BACKTITLE" \
+    --title "$MXESETUPMSG" \
+    --menu "$MENUMSG" 14 55 20 \
+    "${MXE_SETUP_MENU[@]}" 2>&1 > /dev/tty
+    )
+    case "${MXE_SETUP}" in
     # Full MXE Install
     1)
         clear ||:
@@ -1193,40 +1197,12 @@ mxe_update_hamlib_array=( 'mxe_update_hamlib' 'read_pause'
 
 
 ###############################################################################
-# MENUS and ASSOCIATED ARRAYS
+# MENUS ARRAYS
 ###############################################################################
 # TO-DO: v0.0.5 - Update Main Menu Help for dialog
 # TO-DO: v0.0.5 - Add Linux Native help for dialog
 # TO-DO: v0.0.5 - Add MXE Cross Build help for dialog
 # TO-DO: v0.0.5 - Add MXE Cross Setup help file for dialog
-
-# MXE Setup Utilities Menu
-touch "$TMPD/MXESetup.tmp"
-cat << 'EOF' > "$TMPD"/MXESetup.tmp
-"1" "Full MXE System Setup" \
-"2" "Update System Packages" \
-"3" "Update MXE Packages" \
-"4" "Update Hamlib" \
-"5" "System Clean Up" \
-"B" "Back"
-EOF
-
-# application build selection menu
-touch "$TMPD/APPMenu.tmp"
-cat << 'EOF' > "$TMPD/APPMenu.tmp"
-"1" "COMPTTY .... (Git Repo)" \
-"2" "COMPTEXT ... (Git Repo)" \
-"3" "FLDIGI ..... (Git Repo)" \
-"4" "FLAMP ...... (Git Repo)" \
-"5" "FLMSG ...... (Git Repo)" \
-"6" "FLRIG ...... (Git Repo)" \
-"7" "FLWKEY ..... (Git Repo)" \
-"8" "FLLOG ...... (Git Repo)" \
-"9" "FLNET ...... (Git Repo)" \
-"10" "FLWRAP ..... (Git Repo)" \
-"11" "LINSIM ..... (Git Repo)" \
-"B" "Back"
-EOF
 
 # Linux Main Menu Array
 LINUX_MAIN=( 1 "Native Build Selection" 2 "MXE Cross Build Selection" \
@@ -1240,6 +1216,11 @@ APP_MENU=(1 "COMPTTY" 2 "COMPTEXT" 3 "FLDIGI" 4 "FLAMP" 5 "FLMSG" \
 6 "FLRIG" 7 "FLWKEY" 8 "FLLOG" 9 "FLNET" 10 "FLWRAP" 11 "LINSIM" \
 B "Back"
 )
+
+MXE_SETUP_MENU=(1 "Full MXE System Setup" 2 "Update System Packages" \
+3 "Update MXE Packages" 4 "Update Hamlib" 5 "System Clean Up" B "Back"
+)
+
 
 ###############################################################################
 # START MAIN SCRIPT
