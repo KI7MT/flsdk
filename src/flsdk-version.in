@@ -106,7 +106,7 @@ def main():
     print("* Getting Alpha Program Versions")
     source = requests.get(alpha_url)
     data = source.text
-    soup = BeautifulSoup(data)
+    soup = BeautifulSoup(data, "lxml")
 
     for line in soup.findAll('a'):
         if line.has_attr('href'):
@@ -124,7 +124,7 @@ def main():
     print("* Getting Test Suite Program Versions")
     source = requests.get(test_url)
     data = source.text
-    soup = BeautifulSoup(data)
+    soup = BeautifulSoup(data, "lxml")
 
     for line in soup.findAll('a'):
         if line.has_attr('href'):
@@ -144,7 +144,7 @@ def main():
         print(C_C + "  %s" % p + C_NC)
         source = requests.get(release_url + p)
         data = source.text
-        soup = BeautifulSoup(data)
+        soup = BeautifulSoup(data, "lxml")
 
         for line in soup.findAll('a'):
             if line.has_attr('href'):
