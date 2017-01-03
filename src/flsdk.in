@@ -1083,74 +1083,20 @@ mxe_run_cross_script() {
     export PKGCFG=""
 }
 
-###############################################################################
-# MENUS and ASSOCIATED FUNCTIONS
-###############################################################################
-# TO-DO: v0.0.5 - Update Main Menu Help for dialog
-# TO-DO: v0.0.5 - Add Linux Native help for dialog
-# TO-DO: v0.0.5 - Add MXE Cross Build help for dialog
-# TO-DO: v0.0.5 - Add MXE Cross Setup help file for dialog
-
-# linux native main menu
-touch "$TMPD/LinuxMenu.tmp"
-cat << 'EOF' > "$TMPD"/LinuxMenu.tmp 
-"1" "Linux Native Build Selection" \
-"2" "MXE Cross Build Selection" \
-"3" "MXE Setup Menu" \
-"4" "Version Check" \
-"H" "Help" \
-"E" "Exit"
-EOF
-
-# Windows-10 (WSL) Menu
-touch "$TMPD/WSLMenu.tmp"
-cat << 'EOF' > "$TMPD"/WSLMenu.tmp 
-"1" "MXE Cross Build Selection" \
-"2" "MXE Setup Menu" \
-"3" "Version Check" \
-"H" "Help" \
-"E" "Exit"
-EOF
-
-# MXE Setup Utilities Menu
-touch "$TMPD/MXESetup.tmp"
-cat << 'EOF' > "$TMPD"/MXESetup.tmp
-"1" "Full MXE System Setup" \
-"2" "Update System Packages" \
-"3" "Update MXE Packages" \
-"4" "Update Hamlib" \
-"5" "System Clean Up" \
-"B" "Back"
-EOF
-
-# application build selection menu
-touch "$TMPD/APPMenu.tmp"
-cat << 'EOF' > "$TMPD/APPMenu.tmp"
-"1" "COMPTTY .... (Git Repo)" \
-"2" "COMPTEXT ... (Git Repo)" \
-"3" "FLDIGI ..... (Git Repo)" \
-"4" "FLAMP ...... (Git Repo)" \
-"5" "FLMSG ...... (Git Repo)" \
-"6" "FLRIG ...... (Git Repo)" \
-"7" "FLWKEY ..... (Git Repo)" \
-"8" "FLLOG ...... (Git Repo)" \
-"9" "FLNET ...... (Git Repo)" \
-"10" "FLWRAP ..... (Git Repo)" \
-"11" "LINSIM ..... (Git Repo)" \
-"B" "Back"
-EOF
-
 # linux native build menu------------------------------------------------------
-linux_build_selection() {
-# TO-DO: v0.0.6 - Combine with mxe_build_selection() as case switch
+build_selection() {
 
-dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
-"$RELMSG" --menu "$MENUMSG" 20 55 20 --file "$TMPD/APPMenu.tmp" 2>"${INPUT}"
+    unset BUILD_SELECT
 
-    # get input from user
-    LN_SELECT=$(<"${INPUT}")
-
-    case "${LN_SELECT}" in
+    BUILD_SELECT=$(
+    dialog --ok-label SELECT \
+    --nocancel \
+    --backtitle "$BACKTITLE" \
+    --title "$RELMSG" \
+    --menu "$MENUMSG" 20 55 20 \
+    "${APP_MENU[@]}" 2>&1 > /dev/tty
+    )
+    case "${BUILD_SELECT}" in
         1) BUILD_TYPE='Native' ; APP_NAME='comptty' ; build_application ;;
         2) BUILD_TYPE='Native' ; APP_NAME='comptext' ; build_application ;;
         3) BUILD_TYPE='Native' ; APP_NAME='fldigi' ; build_application ;;
@@ -1268,6 +1214,62 @@ mxe_update_hamlib_array=( 'mxe_update_hamlib' 'read_pause'
 
 
 ###############################################################################
+# MENUS and ASSOCIATED ARRAYS
+###############################################################################
+# TO-DO: v0.0.5 - Update Main Menu Help for dialog
+# TO-DO: v0.0.5 - Add Linux Native help for dialog
+# TO-DO: v0.0.5 - Add MXE Cross Build help for dialog
+# TO-DO: v0.0.5 - Add MXE Cross Setup help file for dialog
+
+# Windows-10 (WSL) Menu
+touch "$TMPD/WSLMenu.tmp"
+cat << 'EOF' > "$TMPD"/WSLMenu.tmp 
+"1" "MXE Cross Build Selection" \
+"2" "MXE Setup Menu" \
+"3" "Version Check" \
+"H" "Help" \
+"E" "Exit"
+EOF
+
+# MXE Setup Utilities Menu
+touch "$TMPD/MXESetup.tmp"
+cat << 'EOF' > "$TMPD"/MXESetup.tmp
+"1" "Full MXE System Setup" \
+"2" "Update System Packages" \
+"3" "Update MXE Packages" \
+"4" "Update Hamlib" \
+"5" "System Clean Up" \
+"B" "Back"
+EOF
+
+# application build selection menu
+touch "$TMPD/APPMenu.tmp"
+cat << 'EOF' > "$TMPD/APPMenu.tmp"
+"1" "COMPTTY .... (Git Repo)" \
+"2" "COMPTEXT ... (Git Repo)" \
+"3" "FLDIGI ..... (Git Repo)" \
+"4" "FLAMP ...... (Git Repo)" \
+"5" "FLMSG ...... (Git Repo)" \
+"6" "FLRIG ...... (Git Repo)" \
+"7" "FLWKEY ..... (Git Repo)" \
+"8" "FLLOG ...... (Git Repo)" \
+"9" "FLNET ...... (Git Repo)" \
+"10" "FLWRAP ..... (Git Repo)" \
+"11" "LINSIM ..... (Git Repo)" \
+"B" "Back"
+EOF
+
+# Linux Main Menu Array
+LINUX_MAIN=( 1 "Native Build Selection" 2 "MXE Cross Build Selection" \
+3 "MXE Setup Menu" 4 "Version Check" H "Help" E "Exit")
+
+APP_MENU=(1 "COMPTTY" 2 "COMPTEXT" 3 "FLDIGI" 4 "FLAMP" 5 "FLMSG" \
+6 "FLRIG" 7 "FLWKEY" 8 "FLLOG" 9 "FLNET" 10 "FLWRAP" 11 "LINSIM" \
+B "Back"
+)
+
+
+###############################################################################
 # START MAIN SCRIPT
 ###############################################################################
 
@@ -1293,17 +1295,13 @@ HELP="$DOCS/main_menu_help.txt"
 
 # set the menu selection variable, prevents set -o ( unset variable ) error
 # set the main menu based on Win-10 WSL or Native Linux
-INPUT="$TMPD"/SLECTION.$$
-
 while [ 0 ]; do
 
 case $NODENAME in
     WIN-10)
         dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
         "$WSLTITLE" --menu "$MENUMSG" 13 55 20 --file "$TMPD/WSLMenu.tmp" 2>"${INPUT}"
-
         MSELECT=$(<"${INPUT}")
-
         case "$MSELECT" in
             1) mxe_build_selection ; continue ;;
             2) mxe_setup ; continue ;;
@@ -1313,14 +1311,16 @@ case $NODENAME in
         esac
     ;;
     *)
-        dialog --clear --ok-label SELECT --nocancel --backtitle "$BACKTITLE" --title \
-        "$LNTITLE" --menu "$MENUMSG" 14 55 20 --file "$TMPD/LinuxMenu.tmp" 2>"${INPUT}"
-
-        MSELECT=$(<"${INPUT}")
-
-        case "$MSELECT" in
-            1) linux_build_selection; continue ;;
-            2) mxe_build_selection ; continue ;; 
+        LINUX_MAIN=$(
+        dialog --ok-label SELECT \
+        --nocancel \
+        --backtitle "$BACKTITLE" \
+        --title "$LNTITLE" \
+        --menu "$MENUMSG" 15 55 20 \
+        "${LINUX_MAIN[@]}" 2>&1 > /dev/tty
+        )
+        case "$LINUX_MAIN" in
+            1|2) build_selection; continue ;;
             3) mxe_setup ; continue ;;
             4) version_check ; continue ;;
             H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
