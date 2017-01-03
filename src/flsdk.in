@@ -277,7 +277,7 @@ sig_catch_cleanup() {
         sleep .5
 
     dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
-        rm -r  "$TMPD"/*
+        rm -rf  "$TMPD"/*
         sleep .5
 
     dialog --backtitle "$BACKTITLE" --title "$RESETOPT" --infobox "$RESETOPTMSG" 5 50
@@ -356,7 +356,7 @@ clean_exit() {
        sleep 1
 
     dialog --backtitle "$BACKTITLE" --title "$CLEANTMP" --infobox "$CLEANTMPMSG" 5 50
-       rm -r "$TMPD"/*
+       rm -rf "$TMPD"/*
        wait
        sleep 1
 
