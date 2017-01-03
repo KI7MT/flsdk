@@ -1111,7 +1111,7 @@ build_selection() {
     --menu "$MENUMSG" 20 55 20 \
     "${APP_MENU[@]}" 2>&1 > /dev/tty
     )
-    case "${BUILD_SELECT}" in
+    case "$BUILD_SELECT" in
         1) APP_NAME='comptty' ; build_application ;;
         2) APP_NAME='comptext' ; build_application ;;
         3) APP_NAME='fldigi' ; build_application ;;
@@ -1261,7 +1261,7 @@ while [ 0 ]; do
 
 case $NODENAME in
     WIN-10)
-        WSL_MAIN=$(
+        WSL_SELECT=$(
         dialog --ok-label SELECT \
         --nocancel \
         --backtitle "$BACKTITLE" \
@@ -1269,16 +1269,16 @@ case $NODENAME in
         --menu "$MENUMSG" 13 55 20 \
         "${WSL_MAIN[@]}" 2>&1 > /dev/tty
         )
-        case "$WSL_MAIN" in
+        case "$WSL_SELECT" in
             1) BUILD_TYPE="Cross" ; build_selection ; continue ;;
             2) mxe_setup ; continue ;;
-            3) version_check ; continue ;;
+            3) version_check ; unset WSL_MAIN ; continue ;;
             H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
             E) clean_exit ;;
         esac
     ;;
     *)
-        LINUX_MAIN=$(
+        LINUX_SELECT=$(
         dialog --ok-label SELECT \
         --nocancel \
         --backtitle "$BACKTITLE" \
@@ -1286,7 +1286,7 @@ case $NODENAME in
         --menu "$MENUMSG" 15 55 20 \
         "${LINUX_MAIN[@]}" 2>&1 > /dev/tty
         )
-        case "$LINUX_MAIN" in
+        case "$LINUX_SELECT" in
             1) BUILD_TYPE="Native" ; build_selection ; continue ;;
             2) BUILD_TYPE="Cross" ; build_selection ; continue ;;
             3) mxe_setup ; continue ;;
