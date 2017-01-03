@@ -22,6 +22,7 @@
 :msdn-info: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide[Microsoft]
 :msdn-wsl: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide[WSL]
 :ubuntu-info: https://www.ubuntu.com/[Ubuntu]
+:origin-master: https://github.com/KI7MT/flsdk.git[origin/master]
 
 //Main Page
 = {prog} Win-10 WSL Setup
@@ -117,7 +118,7 @@ shell.
  sudo apt-get -y autoremove
 ----------
 
-== Install FLSDK
+== Install FLSDK from Git
 * At the prompt type :
 
 [source,shell]
@@ -139,6 +140,48 @@ Play Radio, or whatever, this next step takes a while :-)
 * From the setup menu, select [1] Full MXE System Setup
 ----------
 
+== Updating FLSDK from Git
+During development cycles, many updates will be posted to the {origin-master}
+branch. If you make changes to your local checkout, be sure to create a branch
+first:
+
+.Local Checkout Moodifications
+[source,shell]
+----------
+cd ~/source/flsdk
+git checkout -b name-of-your-branch
+
+* Make your changes in <name-of-your-branch>
+* Do not edit the master branch
+
+----------
+
+* In order to pull the latest {prog} updates, perform the following:
+
+.Update from Git Master Branch
+[source,shell]
+----------
+cd ~/source/flsdk
+git checkout master
+make clean
+git pull origin master
+----------
+
+* If there were no errors during the update process, rebuild / reinstall {prog}:
+
+[source,shell]
+----------
+cd ~/source/flsdk
+./autogen.sh && make && sudo make install
+----------
+
+* After the build completes, re-reun {prog}:
+
+[source,shell]
+----------
+Type: flsdk
+----------
+
 == Build Apps with MXE Cross
 * At the main menu :
 
@@ -157,3 +200,6 @@ C:\FLSDK\<app-name>\<app-name_setup.exe>
 ----------
     
 --** Run the installer and enjoy **--
+
+
+
