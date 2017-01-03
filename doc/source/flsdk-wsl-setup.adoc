@@ -78,7 +78,7 @@ and *kbd:[Armv8 ~ arm64]*. From {msdn-info}, the system requrements are stated a
 * Any hardware suitable for running Window-10 64-bit is acceptable for {msdn-wsl}.
 
 == Enable Win-10 WSL
-* WSL Install install instructions can be foudn in the {wsl-install}
+* WSL Install instructions can be foudn in the {wsl-install}
 * At the completion of the above how-too, exit the command-window.
 
 == Launch the New WSL
