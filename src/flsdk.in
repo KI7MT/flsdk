@@ -938,8 +938,8 @@ LINUX_MAIN=( 1 "Native Build Selection" 2 "MXE Cross Build Selection" \
 3 "Version Check" 4 "Setup Menu" H "Help" E "Exit")
 
 # WSL Main Menu Array----------------------------------------------------------
-WSL_MAIN=( 1 "MXE Cross Build Selection" 2 "MXE Setup Menu" \
-3 "Version Check" H "Help" E "Exit")
+WSL_MAIN=( 1 "MXE Cross Build Selection" 2 "Version check" \
+3 "Setup Menu" H "Help" E "Exit")
 
 # common application name array------------------------------------------------
 APP_MENU=(1 "COMPTTY" 2 "COMPTEXT" 3 "FLDIGI" 4 "FLAMP" 5 "FLMSG" \
