@@ -136,8 +136,8 @@ Play Radio, or whatever, this next step takes a while :-)
 
 [source,shell]
 ----------
-* From the menu, select: [2] MXE Setup Menu
-* From the setup menu, select [1] Full MXE System Setup
+* From the menu, select: [3] Setup Menu
+* From the setup menu, select [1] Full Setup
 ----------
 
 == Updating FLSDK from Git
