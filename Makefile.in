@@ -159,6 +159,7 @@ install-binaries:
 	@install -m 755 src/flsdk-version $(DESTDIR)$(BINDIR)
 	@install -m 755 src/flsdk-hamlibmk $(DESTDIR)$(BINDIR)
 	@install -m 755 src/flsdk-test-url $(DESTDIR)$(BINDIR)
+	@install -m 755 src/flsdk-setup $(DESTDIR)$(BINDIR)
 	@install -m 644 $(MENUSRC)/* $(DESTDIR)$(DOCDIR)
 	@install -m 644 $(DATASRC)/flsdk.desktop $(DESTDIR)$(DTDIR)
 	@install -m 644 $(DATASRC)/flsdk.xpm $(DESTDIR)$(ICOND)
@@ -215,7 +216,7 @@ uninstall:
 .PHONY: clean
 clean:
 	${RM} -f src/flsdk src/flsdk-version src/flsdk-test-url src/flsdk-hamlibmk \
-	config.log config.status configure.scan configure Makefile \
+	src/flsdk-setup config.log config.status configure.scan configure Makefile \
 	data/flsdk.desktop $(PKGINFO) $(DOCSRC)/flsdk*.html $(MANSRC)/{*.1,*.1.txt}
 	${RM} -rf ./autom4*
 

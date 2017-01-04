@@ -97,90 +97,6 @@ app_array=(
     'linsim'
 )
 
-# base system packaging for Ubuntu based systems
-# Source: MXE.cc and local tribal knowledge
-system_pkg_array=(
-    'autoconf'
-    'automake'
-    'autopoint'
-    'bison'
-    'bzip2'
-    'flex'
-    'g++'
-    'gettext'
-    'git'
-    'g++-multilib'
-    'gperf'
-    'httping'
-    'intltool'
-    'libc6-dev-i386'
-    'libffi-dev'
-    'libgdk-pixbuf2.0-dev'
-    'libltdl-dev'
-    'libssl-dev'
-    'libtool'
-    'libxml-parser-perl'
-    'lsb-release'
-    'make'
-    'nsis'
-    'openssl'
-    'p7zip-full'
-    'patch'
-    'perl'
-    'pkg-config'
-    'python3-bs4'
-    'python3-lxml'
-    'python3-requests'
-    'ruby'
-    'scons'
-    'sqlite3'
-    'unzip'
-    'wget'
-    'xz-utils'
-)
-
-# it's easier to add packages to Bash arrays than to take them away
-# for Native Linux, non-WSL systems
-native_linux_include=(
-    'libcairo2-dev'
-    'libfltk1.3-dev'
-    'libjpeg-dev'
-    'libxft-dev'
-    'libxinerama-dev'
-)
-
-# if Native linux, add the Native linux array packages
-if [[ $NODENAME != "WIN-10" ]]; then
-    for p in ${native_linux_include[@]}
-    do
-        system_pkg_array+=($p)
-    done
-fi
-
-# add libtool-bin if distro version is 15 or greater
-if (($(echo "$(lsb_release -sr) >= 15" | bc -l))); then
-    system_pkg_array+=('libtool-bin')
-fi
-
-# mxe package build list
-# Source: https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO/BuildWithMXE
-mxe_pkg_array=(
-    'gcc'
-    'boost'
-    'gdb'
-    'gettext'
-    'glib'
-    'gnutls'
-    'jpeg'    
-    'libpng'
-    'libsamplerate'
-    'libsndfile'
-    'portaudio'
-    'pthreads'
-    'fltk'
-    'hamlib'
-)
-
 # * Linux MXE Installer Location ....: $WIN32/<appname>
 # * Win-10 WSL Installer Location ...: C:\FLSDK\<app-name>
 # TO-DO: v0.0.5 - mkdir -p ~/flsdk/{abc,def,ghi} should be a function
@@ -195,9 +111,9 @@ do
     fi
 done
 
-################################################################################
+###############################################################################
 # LANGUAGE SECTION
-################################################################################
+###############################################################################
 
 # backtitle lang
 BACKTITLE="@PROGRAM@ @VERSION@"
@@ -878,194 +794,6 @@ build_application() {
 # MXE SPECIFIC FUNCTIONS
 ###############################################################################
 
-# check if packages are already installed-----------------------------------MXE
-mxe_package_check() {
-
-    # reset installation array
-    mxe_install_sys_pkg_array=()
-
-    cd "$HOMEDIR"
-    echo "-------------------------------------------"
-    echo -e ${C_Y}" CHECKING PACKAGE INSTALL STATUS"${C_NC}
-    echo "-------------------------------------------"
-    for p in "${system_pkg_array[@]}"
-    do
-        echo " Checking : $p"
-        status=$(apt-cache policy $p | grep "Installed:" | awk '{print $2}')
-
-        # if the policy check fails, add package to the install array
-        if [[ $status = "(none)" ]]; then
-        mxe_install_sys_pkg_array+=($p)
-        fi
-    done
-    echo ""
-}
-
-# install packages found in mxe_install_sys_pkg_array()---------------------MXE
-mxe_sys_install() {
-
-    installLength=${#mxe_install_sys_pkg_array[@]}
-
-    if [[ $installLength -gt 0 ]]; then
-        echo "-------------------------------------------"
-        echo -e ${C_Y}" START PACKAGE INSTALLATION"${C_NC}
-        echo "-------------------------------------------"
-        echo ""
-        echo "* Packages Needed : [ $installLength ]"
-        echo ""
-        sudo apt-get -q install -y $(echo "${mxe_install_sys_pkg_array[@]}")
-    else
-        echo "* Nothing to be done, no packages needed"
-    fi
-    echo ""
-}
-
-# clone MXE-----------------------------------------------------------------MXE
-mxe_clone() {
-
-    echo "-------------------------------------------"
-    echo -e ${C_Y}" CHECKING INSTALL STATUS of MXE"${C_NC}
-    echo "-------------------------------------------"
-    cd "$HOMEDIR"
-    echo ""
-    if [[ -d $MXED/.git ]]; then
-        echo "* MXE checkout exists"
-    else
-        echo "* MXE not found. Cloining from Github --depth=1"
-        echo ""
-        git clone "$MXEURL"
-    fi
-    echo ""
-    cd "$HOMEDIR"
-
-}
-
-# build MXE binariles and libraries-----------------------------------------MXE
-mxe_build() {
-
-    cd "$MXED"
-    echo "-------------------------------------------"
-    echo -e ${C_Y}" START MXE PACKAGE BUILD"${C_NC}
-    echo "-------------------------------------------"
-    echo ""
-    echo "* Directory: $(pwd)"
-    echo "* Using [ "$JJ" ] parallel threads"
-    echo "* Using [ "$J2" ] simultaneous jobs"
-    echo "* Building MXE packages"
-    echo ""
-    make JOBS="$JJ" --jobs="$J2" $(echo ${mxe_pkg_array[@]})
-    echo ""
-    cd "$HOMEDIR"
-
-}
-
-# add hamlib entry to packages.json file------------------------------------MXE
-# TO-DO: v0.0.5 - OBSOLETE. Hamlib 3.1 is not part of MXE
-mxe_add_hamlib_json() {
-
-    echo "-------------------------------------------"
-    echo -e ${C_Y}" UPDATING HAMLIB JSON ENTRY"${C_NC}
-    echo "-------------------------------------------"
-    echo ""
-    # force removal of hamlib entry in json file
-    if [[ -f $HOMEDIR/mxe/docs/packages.json ]]; then
-        sed -n '/hamlib/d' $HOMEDIR/mxe/docs/packages.json
-    fi 
-    echo "* Adding hamlib entry to packages.json"
-    echo "* Note: when hamlib.mk is added to mxe,"
-    echo "        this step will become obsolete"
-    sed -i '/guile/a \    \"hamlib": {"version": "3.2~git", "website": "http://n0nb.users.sourceforge.net/", "description": "Hamlib"},' $MXED/docs/packages.json
-    echo ""
-}
-
-# add hamlib.mk for packages.json file--------------------------------------MXE
-# TO-DO: v0.0.5 - OBSOLETE. Hamlib 3.1 is not part of MXE
-mxe_generate_hamlibmk() {
-
-    cd "$MXED/src"
-    echo "-------------------------------------------"
-    echo -e ${C_Y}" GENERATING HAMLIB MX FILE"${C_NC}
-    echo "-------------------------------------------"
-    echo ""
-    echo "*  Generating hamlib.mk file"
-    # call the Python Script:
-    @PYTHON3@ @BINDIR@/flsdk-hamlibmk
-    
-    # after updating or changing the .mk file, a hash update must 
-    # pe performed
-    echo "*  Updating hash for hamlib archive file"
-    cd "$MXED"
-    make update-checksum-hamlib >/dev/null 2>&1
-    echo ""
-    cd "$HOMEDIR"
-
-}
-
-# build Hamlib with MXE-----------------------------------------------------MXE
-# TO-DO: v0.0.6 - Add mxe.m4 --with-enable=PATH
-mxe_update_hamlib() {
-
-    cd "$MXED"
-    echo "-------------------------------------------"
-    echo -e ${C_Y}" UPDATING HAMLIB PACKAGE BUILD"${C_NC}
-    echo "-------------------------------------------"
-    echo ""
-    echo " * Directory: $(pwd)"
-    echo " * Using [ "$JJ" ] parallel threads"
-    echo " * Using [" $J2" ] simultaneous jobs"
-    echo " * Updating Hamlib"
-    echo ""
-    make update-package-hamlib
-	make JOBS="$JJ" --jobs="$J2" hamlib
-    cd "$HOMEDIR"
-    echo ""
-
-}
-
-# perform wsl package update------------------------------------------------MXE
-# TO-DO: v0.0.6 - Add check and case switch, do not update non-Ubuntu systems
-mxe_sys_update() {
-
-    cd "$HOMEDIR"
-    clear ||:
-    echo "-------------------------------------------"
-    echo -e ${C_Y}" WSL System Package Update and Upgrade"${C_NC}
-    echo "-------------------------------------------"
-    echo ""
-    sudo apt-get update && sudo apt-get -y upgrade
-    echo ""
-
-}
-
-# perform WSL system cleanup------------------------------------------------MXE
-# TO-DO: v0.0.6 - Add check and case switch, do not clean non-Ubuntu systems
-wsl_sys_clean() {
-
-	cd "$HOMEDIR"
-	echo "-------------------------------------------"
-	echo -e ${C_Y}" WSL System Cleanup"${C_NC}
-	echo "-------------------------------------------"
-    echo ""
-    sudo apt-get clean && sudo apt-get autoclean
-
-}
-
-# MXE remove junk and unused package files----------------------------------MXE
-mxe_clean() {
-
-    echo "-------------------------------------------"
-	echo -e ${C_Y}" CLEANING MXE JUNK FILES"${C_NC}
-    echo "-------------------------------------------"
-    cd "$MXED"
-    echo "* remove unused files, folders, and logs"
-    make clean-junk > /dev/null 2>&1
-    echo "* remove unused package files"
-    make clean-pkg > /dev/null 2>&1
-    echo ""
-    cd "$HOMEDIR"
-
-}
-
 # MXE unset env variables---------------------------------------------------MXE
 mxe_unset_env_variables() {
     export PATH="$ORIG_PATH"
@@ -1183,58 +911,6 @@ build_selection() {
     esac
 }
 
-# mxe setup--------------------------------------------------------------------
-mxe_setup() {
-
-    unset MXE_SETUP
-
-    MXE_SETUP=$(
-    dialog --ok-label SELECT \
-    --nocancel \
-    --backtitle "$BACKTITLE" \
-    --title "$MXESETUPMSG" \
-    --menu "$MENUMSG" 14 55 20 \
-    "${MXE_SETUP_MENU[@]}" 2>&1 > /dev/tty
-    )
-    case "${MXE_SETUP}" in
-    # Full MXE Install
-    1)
-        clear ||:
-        for i in "${!mxe_setup_array[@]}"
-        do
-            ${mxe_setup_array[$i]}
-        done 
-     ;; 
-    # Update Ubuntu system Packages
-    2)
-        clear ||:
-        mxe_sys_update
-        read_pause
-    ;; 
-    # Update MXE Packages
-    3)
-        clear ||:
-        for i in "${!mxe_update_array[@]}"
-        do 
-            ${mxe_update_array[$i]}
-        done
-    ;; 
-    4)
-        mxe_update_hamlib
-        echo ""
-        read_pause
-    ;;
-    5)
-        clear ||:
-        wsl_sys_clean
-        echo ""
-        mxe_clean
-        read_pause
-    ;; 
-    B) return 0 ;;
-    esac
-}
-
 
 ###############################################################################
 # MENUS and BUILD ARRAYS
@@ -1257,18 +933,6 @@ mxe_build_array=( 'build_header' 'git_check' 'get_version' 'configure_header' \
 'install_marker' 'clean_build_tree' 'build_summary'
 )
 
-# MXE full Setup---------------------------------------------------------------
-mxe_setup_array=( 'mxe_package_check' 'mxe_sys_install' 'mxe_clone' 'mxe_build' \
-'mxe_clean' 'read_pause'
-)
-
-# MXE Update Only--------------------------------------------------------------
-mxe_update_array=( 'mxe_clone' 'mxe_build' 'read_pause')
-
-# MXE Build Hamlib Only--------------------------------------------------------
-mxe_update_hamlib_array=( 'mxe_update_hamlib' 'read_pause'
-)
-
 # Linux Main Menu Array--------------------------------------------------------
 LINUX_MAIN=( 1 "Native Build Selection" 2 "MXE Cross Build Selection" \
 3 "MXE Setup Menu" 4 "Version Check" H "Help" E "Exit")
@@ -1282,12 +946,6 @@ APP_MENU=(1 "COMPTTY" 2 "COMPTEXT" 3 "FLDIGI" 4 "FLAMP" 5 "FLMSG" \
 6 "FLRIG" 7 "FLWKEY" 8 "FLLOG" 9 "FLNET" 10 "FLWRAP" 11 "LINSIM" \
 B "Back"
 )
-
-# mxe setup menu array---------------------------------------------------------
-MXE_SETUP_MENU=(1 "Full MXE System Setup" 2 "Update System Packages" \
-3 "Update MXE Packages" 4 "Update Hamlib" 5 "System Clean Up" B "Back"
-)
-
 
 ###############################################################################
 # START MAIN SCRIPT
@@ -1332,7 +990,7 @@ case $NODENAME in
         )
         case "$WSL_SELECT" in
             1) BUILD_TYPE="Cross" ; build_selection ; continue ;;
-            2) mxe_setup ; continue ;;
+            2) flsdk-setup ; continue ;;
             3) version_check ; continue ;;
             H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
             E) clean_exit ;;
@@ -1350,7 +1008,7 @@ case $NODENAME in
         case "$LINUX_SELECT" in
             1) BUILD_TYPE="Native" ; build_selection ; continue ;;
             2) BUILD_TYPE="Cross" ; build_selection ; continue ;;
-            3) mxe_setup ; continue ;;
+            3) flsdk-setup ; continue ;;
             4) version_check ; continue ;;
             H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
             E) clean_exit ;;
