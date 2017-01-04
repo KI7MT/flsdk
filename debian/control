@@ -11,7 +11,7 @@ Build-Depends: debhelper (>= 9.2.0),
     autoconf,
     automake,
     autotools-dev,
-    lsv-release,
+    lsb-release,
     coderay,
     lsb-release,
     dh-autoreconf,
@@ -31,6 +31,7 @@ Depends: ${misc:Depends},
     python3,
     python3-bs4,
     python3-requests,
+    python3-lxml,
     sqlite3
 Description: Build System for FLDIGI Applications
  FLSDK is a collection of custom written shell scripts designed to ease

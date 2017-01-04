@@ -1,0 +1,516 @@
+#!/usr/bin/env bash
+#
+# Name..........: @PROGRAM@ @VERSION@
+# Execution.....: As normal user type: flsdk-setup
+# Copyright.....: @COPYRIGHT@
+# License.......: @LICENSE@
+# Contributors..: @AUTHORS@
+# Comment.......: Part of the @PROGRAM@ Linux Project
+#
+# @PROGRAM@ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation either version 3 of the License, or
+# (at your option) any later version. 
+#
+# @PROGRAM@ is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#-----------------------------------------------------------------------------#
+
+# TO-DO: v0.0.6 - Convert package lists into sqlite data base tables
+
+# directories and paths variables
+ORIG_PATH="$PATH"
+HOMEDIR=~/flsdk
+FLSDKDB=~/flsdk/flsdk.db
+LOGD="$HOMEDIR/logs"
+MKRD="$HOMEDIR/mkrd"
+MKRDMXE="$HOMEDIR/mkrdmxe"
+MXED="$HOMEDIR/mxe"
+SRCD="$HOMEDIR/src"
+TMPD="$HOMEDIR/tmp"
+VERLOG="$TMPD/ver.tmp"
+WIN32="$HOMEDIR/win32"
+LINUX="$HOMEDIR/linux"
+WSL="/mnt/c/FLSDK"
+
+# host and distribution information
+HOST_OS="@HOST_OS@"
+HOST_CPU="@HOST_CPU@"
+DISTROSI="@DISTROSI@"
+DISTROSD="@DISTROSD@"
+DISTROSR="@DISTROSR@"
+DISTROSC="@DISTROSC@"
+
+# uname information
+KERNEL="@KERNEL@"
+NODENAME="@NODENAME@"
+KRELEASE="@KRELEASE@"
+KVERSION="@KVERSION@"
+PROCESSOR="@PROCESSOR@"
+SUBSYSTEM="@SUBSYSTEM@"
+
+# process operators
+JJ=@JJJJ@
+J2="2"
+MXEURL="https://github.com/mxe/mxe.git"
+VER="@VERSION@"
+
+# exit on any error
+set -e
+
+###############################################################################
+# LANGUAGE SECTION
+###############################################################################
+
+# backtitle
+BACKTITLE="@PROGRAM@ @VERSION@"
+
+# menu Title
+FLSDKSETUPMSG=" FLSDK SETUP MENU"
+
+# menu message (navigation message)
+SETUPMSG="          Key the letter then hit [ENTER]\n\
+    Arrow Up/Dwn or '+' or '-' Keys to Navigate\n\n"
+
+# under development
+UD=" UNDER DEVELOPMENT"
+UDMSG="\n     This Function is Under Development"
+
+
+###############################################################################
+# SYSTEM PACKAGE LIST ARRAYS
+###############################################################################
+
+# UBUNTU bas packaging---------------------------------------------------------
+# Source: MXE.cc, and FLSDK requirments
+system_pkg_array=(
+    'autoconf'
+    'automake'
+    'autopoint'
+    'bison'
+    'bzip2'
+    'dialog'
+    'flex'
+    'g++'
+    'gettext'
+    'git'
+    'g++-multilib'
+    'gperf'
+    'httping'
+    'intltool'
+    'libc6-dev-i386'
+    'libffi-dev'
+    'libgdk-pixbuf2.0-dev'
+    'libltdl-dev'
+    'libssl-dev'
+    'libtool'
+    'libxml-parser-perl'
+    'lsb-release'
+    'make'
+    'nsis'
+    'openssl'
+    'p7zip-full'
+    'patch'
+    'perl'
+    'pkg-config'
+    'python3-bs4'
+    'python3-lxml'
+    'python3-requests'
+    'ruby'
+    'scons'
+    'sqlite3'
+    'unzip'
+    'wget'
+    'xz-utils'
+)
+
+# NATIVE INCLUDE---------------------------------------------------------------
+# Source: FLDIGI requirments for UI based systems.
+native_linux_include=(
+    'libcairo2-dev'
+    'libfltk1.3-dev'
+    'libjpeg-dev'
+    'libxft-dev'
+    'libxinerama-dev'
+)
+
+# MXE package build list-------------------------------------------------------
+# Source: https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO/BuildWithMXE
+mxe_pkg_array=(
+    'gcc'
+    'boost'
+    'gdb'
+    'gettext'
+    'glib'
+    'gnutls'
+    'jpeg'    
+    'libpng'
+    'libsamplerate'
+    'libsndfile'
+    'portaudio'
+    'pthreads'
+    'fltk'
+    'hamlib'
+)
+
+###############################################################################
+# SYSTEM FUNCTIONS
+###############################################################################
+
+# under development------------------------------------------------------------
+under_development() {
+
+dialog --clear --backtitle "$BACKTITLE" --title "$UD" --msgbox "$UDMSG" 7 50
+
+}
+
+# setup header------------------------------------------------full setup header
+full_setup_header() {
+
+    clear ||:
+    echo '-----------------------------------------------------'
+    echo -e ${C_Y}" FLSDK - FULL SYSTEM SETUP"${C_NC}
+    echo '-----------------------------------------------------'
+    echo ''
+
+}
+
+# check if packages are already installed---------------------sys package check
+sys_package_check() {
+
+    # reset installation array
+    sys_install_pkg_array=()
+ 
+    # if Native linux, add the Native linux array packages
+    echo "* Checking native Linux package needs"
+    if [[ $NODENAME != "WIN-10" ]]; then
+        for p in ${native_linux_include[@]}
+        do
+            system_pkg_array+=($p)
+        done
+    fi
+ 
+    echo '* Processing Dependency Lists'
+    echo ''
+    sleep 1
+    for p in "${system_pkg_array[@]}"
+    do
+        echo " Checking : $p"
+        status=$(apt-cache policy $p | grep "Installed:" | awk '{print $2}')
+
+        # if the policy check fails, add package to the install array
+        if [[ $status = "(none)" ]]; then
+        sys_install_pkg_array+=($p)
+        fi
+    done
+    echo ""
+}
+
+# hack to add libtool-bin to distros >= 15 for Ununtu-----------add libtool-nin
+sys_setup_add_libtool_bin() {
+
+    echo "* Setting up main package array"
+    # add libtool-bin if distro version is 15 or greater
+    if (($(echo "$(lsb_release -sr) >= 15" | bc -l))); then
+        sys_install_pkg_array+=('libtool-bin')
+    fi
+
+}
+
+# system update------------------------------------------------------sys update
+sys_update() {
+
+    cd "$HOMEDIR"
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" UPDATE PACKAGE LISTS"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    sudo apt-get update
+
+}
+
+# install packages---------------------------------------------install packages
+sys_setup_install_pkgs() {
+
+    installLength=${#sys_install_pkg_array[@]}
+
+    if [[ $installLength -gt 0 ]]; then
+        echo ''
+        echo "-------------------------------------------"
+        echo -e ${C_Y}" START PACKAGE INSTALLATION"${C_NC}
+        echo "-------------------------------------------"
+        echo ""
+        echo "* Packages Needed : [ $installLength ]"
+        echo ""
+        sudo apt-get -q install -y $(echo "${sys_install_pkg_array[@]}")
+    else
+        echo ''
+        echo "* Nothing to be done, no packages needed"
+    fi
+    echo ""
+}
+
+# system cleanup-------------------------------------------------sys auto clean
+sys_auto_clean() {
+
+    cd "$HOMEDIR"
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" SYSTEM CLEANUP"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    sudo apt-get clean && sudo apt-get autoclean && sudo apt-get -y autoremove
+    echo ''
+
+}
+
+# system upgrade----------------------------------------------------sys upgrade
+sys_upgrade() {
+
+    cd "$HOMEDIR"
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" SYSTEM UPDATE & UPGRADE"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    sudo apt-get update && sudo apt-get -y upgrade
+
+}
+
+###############################################################################
+# MXE FUNCTIONS
+###############################################################################
+
+# clone MXE-----------------------------------------------------------clone mxe
+mxe_setup_clone() {
+
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" CLONING MXE"${C_NC}
+    echo "-------------------------------------------"
+    cd "$HOMEDIR"
+    echo ""
+    if [[ -d $MXED/.git ]]; then
+        echo "* MXE checkout exists"
+    else
+        echo "* MXE not found. Cloining from Github --depth=1"
+        echo ""
+        git clone "$MXEURL"
+    fi
+    echo ""
+    cd "$HOMEDIR"
+
+}
+
+# build MXE binariles and libraries------------------------------mxe build pkgs
+mxe_setup_build_pkgs() {
+
+    cd "$MXED"
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" MXE PACKAGE BUILD"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    echo "* Directory: $(pwd)"
+    echo "* Using [ "$JJ" ] parallel threads"
+    echo "* Using [ "$J2" ] simultaneous jobs"
+    echo "* Building MXE packages"
+    echo ""
+    make JOBS="$JJ" --jobs="$J2" $(echo ${mxe_pkg_array[@]})
+    echo ""
+    cd "$HOMEDIR"
+
+}
+
+# perform wsl package update-----------------------------------------mxe update
+mxe_update() {
+
+    cd "$HOMEDIR"
+    clear ||:
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" WSL System Package Update and Upgrade"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    sudo apt-get update && sudo apt-get -y upgrade
+    echo ""
+
+}
+
+# remove junk and unused package files--------------------------------mxe clean
+mxe_clean() {
+
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" CLEANING MXE JUNK FILES"${C_NC}
+    echo "-------------------------------------------"
+    cd "$MXED"
+    echo "* remove unused files, folders, and logs"
+    make clean-junk > /dev/null 2>&1
+    echo "* remove unused package files"
+    make clean-pkg > /dev/null 2>&1
+    echo ""
+    cd "$HOMEDIR"
+
+}
+
+# build Hamlib with MXE---------------------------------------mxe build hamlimb
+# TO-DO: v0.0.6 - Add mxe.m4 --with-enable=PATH
+mxe_update_hamlib() {
+
+    cd "$MXED"
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" UPDATING HAMLIB PACKAGE BUILD"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    echo " * Directory: $(pwd)"
+    echo " * Using [ "$JJ" ] parallel threads"
+    echo " * Using [" $J2" ] simultaneous jobs"
+    echo " * Updating Hamlib"
+    echo ""
+    make update-package-hamlib
+	make JOBS="$JJ" --jobs="$J2" hamlib
+    cd "$HOMEDIR"
+    echo ""
+
+}
+
+# OBSOLETE add hamlib entry to packages.json file---------------------------MXE
+# TO-DO: v0.0.5 - OBSOLETE. Hamlib 3.1 is not part of MXE
+mxe_add_hamlib_json() {
+
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" UPDATING HAMLIB JSON ENTRY"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    # force removal of hamlib entry in json file
+    if [[ -f $HOMEDIR/mxe/docs/packages.json ]]; then
+        sed -n '/hamlib/d' $HOMEDIR/mxe/docs/packages.json
+    fi 
+    echo "* Adding hamlib entry to packages.json"
+    echo "* Note: when hamlib.mk is added to mxe,"
+    echo "        this step will become obsolete"
+    sed -i '/guile/a \    \"hamlib": {"version": "3.2~git", "website": "http://n0nb.users.sourceforge.net/", "description": "Hamlib"},' $MXED/docs/packages.json
+    echo ""
+}
+
+# OBSOLETE add hamlib.mk for packages.json file-----------------------------MXE
+# TO-DO: v0.0.5 - OBSOLETE. Hamlib 3.1 is not part of MXE
+mxe_generate_hamlibmk() {
+
+    cd "$MXED/src"
+    echo "-------------------------------------------"
+    echo -e ${C_Y}" GENERATING HAMLIB MX FILE"${C_NC}
+    echo "-------------------------------------------"
+    echo ""
+    echo "*  Generating hamlib.mk file"
+    # call the Python Script:
+    @PYTHON3@ @BINDIR@/flsdk-hamlibmk
+    
+    # after updating or changing the .mk file, a hash update must 
+    # pe performed
+    echo "*  Updating hash for hamlib archive file"
+    cd "$MXED"
+    make update-checksum-hamlib >/dev/null 2>&1
+    echo ""
+    cd "$HOMEDIR"
+
+}
+
+# finish install summary-------------------------------------------------------
+install_summary() {
+    echo ''
+    echo '-----------------------------------------------------'
+    echo -e ${C_G}" INSTALL SUMMARY"${C_NC}
+    echo '-----------------------------------------------------'
+    echo ''
+    echo " Setup Version ......: $VER"
+    echo " Subsystem ..........: $SUBSYSTEM"
+    echo ''
+    echo ' Actions Performed'
+    echo '  - System Package Check'
+    echo '  - System Catelog Update'
+    echo '  - Installed Package Dependencies'
+    echo '  - Setup MXE Environment'
+    echo '  - Updated Hamlib to v3.1'
+    echo '  - Full system clean up'
+    echo '  - Mxe Clean up'
+    echo ''
+    cd "$HOMEDIR"
+
+}
+
+###############################################################################
+# FLSDK SETUP START
+###############################################################################
+
+# simple pause function--------------------------------------------------------
+read_pause() {
+    read -p "Press [ Enter ] to continue..."
+}
+
+# full system install array----------------------------------------------------
+full_setup_array=('full_setup_header' 'sys_package_check' \
+'sys_setup_add_libtool_bin' 'sys_update' 'sys_setup_install_pkgs' \
+'mxe_setup_clone' 'mxe_setup_build_pkgs' 'mxe_update_hamlib' 'sys_auto_clean' \
+'mxe_clean' 'install_summary' 'read_pause')
+
+# system clean array ----------------------------------------------------------
+system_clean_array=()
+
+# system update array----------------------------------------------------------
+system_update_array=()
+
+# mxe update array-------------------------------------------------------------
+mxe_update_array=()
+
+# hamlib update array----------------------------------------------------------
+hamlib_update_array=()
+
+# mxe update array-------------------------------------------------------------
+mxe_update_array=( 'mxe_clone' 'mxe_build' 'read_pause')
+
+
+# MXE Build Hamlib Only--------------------------------------------------------
+mxe_update_hamlib_array=( 'mxe_update_hamlib' 'read_pause')
+
+
+# mxe setup menu array---------------------------------------------------------
+SETUP_MAIN_MENU=( 1 'Full Setup' 2 'System Clean' 3 'System Update' \
+4 'MXE Update' 5 'Hamlib Update' B 'Back'
+)
+
+# ensure previous selection is reset
+unset SETUP_SELECT
+
+# setup the menu
+SETUP_SELECT=$(
+dialog --ok-label SELECT \
+--nocancel \
+--backtitle "$BACKTITLE" \
+--title "$FLSDKSETUPMSG" \
+--menu "$SETUPMSG" 14 55 20 \
+"${SETUP_MAIN_MENU[@]}" 2>&1 > /dev/tty
+)
+case "${SETUP_SELECT}" in
+    1) # Full System Setup
+        for i in "${!full_setup_array[@]}" ; do ${full_setup_array[$i]} ; done
+    ;;
+    2) # System Clean
+        #clear ||:
+        #sys_clean ; read_pause ;;
+        under_development ;;
+    3) # System Update
+        #clear ||:
+        #sys_update ; reas_pause ;; 
+        under_development ;;
+    4) # MXE Update
+        #clear ||:
+        #mxe_update_hamlib ; read_pause ;;
+        under_development ;;
+    5) # Hamlib Update
+        #clear ||:
+        under_development
+     ;; 
+    B) exit 0
+    ;;
+esac

@@ -81,6 +81,7 @@ A2X			:=	@A2X@
 ASCIIDOCTOR	:=	@ASCIIDOCTOR@
 MANLIST		:=	$(wildcard man/*.1.txt)
 INSMAN		:=	$(wildcard man/*.1)
+DOCLIST		:=	$(wildcard doc/source/*.adoc)
 
 # package information
 PKGINFO		:=	@PKGINFO@
@@ -108,10 +109,11 @@ ifeq ($(BDOC),Yes)
 	@echo -e $(C_Y)"Building Documentation"$(C_NC)
 	@echo '---------------------------------------------'
 	@echo ''
-	@echo " Building $(PROGRAM) User Guide..."
-	@cd $(DOCSRC); \
-	$(ASCIIDOCTOR) -b html -a data-uri -a toc=left -o flsdk.html $(DOCSRC)/flsdk-main.adoc
-	@echo " Finished"  
+	@echo " Building $(PROGRAM) Docs..."
+	@for f in $(DOCLIST) ; do \
+	echo "  * $$f" ; \
+	$(ASCIIDOCTOR) -a data-uri -a toc=left $$f ; \
+	done
 	@echo ''
 endif
 
@@ -124,7 +126,7 @@ ifeq ($(MANP),Yes)
 	@echo ''
 	@echo " Building $(PROGRAM) Manpages..."
 	@for f in $(MANLIST) ; do \
-	echo " $$f" ; \
+	echo "  * $$f" ; \
 	$(A2X) --doctype manpage --format manpage --no-xmllint $$f ; \
 	done
 endif
@@ -156,9 +158,10 @@ install-binaries:
 	@$(MKDIR) -p $(DESTDIR)$(SHARE)
 	@echo '* Installing Scripts'
 	@install -m 755 src/flsdk $(DESTDIR)$(BINDIR)
-	@install -m 755 src/flsdk-version $(DESTDIR)$(BINDIR)
 	@install -m 755 src/flsdk-hamlibmk $(DESTDIR)$(BINDIR)
+	@install -m 755 src/flsdk-setup $(DESTDIR)$(BINDIR)
 	@install -m 755 src/flsdk-test-url $(DESTDIR)$(BINDIR)
+	@install -m 755 src/flsdk-version $(DESTDIR)$(BINDIR)
 	@install -m 644 $(MENUSRC)/* $(DESTDIR)$(DOCDIR)
 	@install -m 644 $(DATASRC)/flsdk.desktop $(DESTDIR)$(DTDIR)
 	@install -m 644 $(DATASRC)/flsdk.xpm $(DESTDIR)$(ICOND)
@@ -215,7 +218,7 @@ uninstall:
 .PHONY: clean
 clean:
 	${RM} -f src/flsdk src/flsdk-version src/flsdk-test-url src/flsdk-hamlibmk \
-	config.log config.status configure.scan configure Makefile \
+	src/flsdk-setup config.log config.status configure.scan configure Makefile \
 	data/flsdk.desktop $(PKGINFO) $(DOCSRC)/flsdk*.html $(MANSRC)/{*.1,*.1.txt}
 	${RM} -rf ./autom4*
 

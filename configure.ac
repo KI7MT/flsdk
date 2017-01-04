@@ -2,7 +2,7 @@
 # Process this file with -*- autoconf -*- to produce the configure script
 # ------------------------------------------------------------------------------
 AC_PREREQ([2.65])
-AC_INIT([FLSDK],[0.0.5-rc0p4],[https://github.com/KI7MT/flsdk/issues],[],[https://github.com/KI7MT/flsdk])
+AC_INIT([FLSDK],[0.0.5-rc0p5],[https://github.com/KI7MT/flsdk/issues],[],[https://github.com/KI7MT/flsdk])
 AC_MSG_NOTICE([FLSDK - Build System For FLDIGI Applications.])
 FLSDK_AUTHOR="Greg Beam, KI7MT"
 FLSDK_COPYRIGHT="Copyright (C) 2014-2016 Greg Beam, KI7MT"
@@ -161,11 +161,13 @@ AC_BUILD_MANPAGES
 AC_CONFIG_FILES([
 Makefile
 src/flsdk
-src/flsdk-version
-src/flsdk-test-url
 src/flsdk-hamlibmk
+src/flsdk-setup
+src/flsdk-test-url
+src/flsdk-version
 man/flsdk.1.txt
 man/flsdk-hamlibmk.1.txt
+man/flsdk-setup.1.txt
 man/flsdk-test-url.1.txt
 man/flsdk-version.1.txt
 data/flsdk.desktop
