@@ -471,7 +471,7 @@ git_check() {
     if [[ -f $APP_SRC/configure.ac ]]; then
         if [[ -f $APP_SRC/Makefile ]]; then
             cd "$APP_SRC"
-            echo '*Cleaning Repository Tree'
+            echo 'Cleaning Repository Tree'
             make clean &>/dev/null
             make distclean &>/dev/null
             git clean -d -x -f &>/dev/null
@@ -935,7 +935,7 @@ mxe_build_array=( 'build_header' 'git_check' 'get_version' 'configure_header' \
 
 # Linux Main Menu Array--------------------------------------------------------
 LINUX_MAIN=( 1 "Native Build Selection" 2 "MXE Cross Build Selection" \
-3 "MXE Setup Menu" 4 "Version Check" H "Help" E "Exit")
+3 "Version Check" 4 "Setup Menu" H "Help" E "Exit")
 
 # WSL Main Menu Array----------------------------------------------------------
 WSL_MAIN=( 1 "MXE Cross Build Selection" 2 "MXE Setup Menu" \
@@ -990,8 +990,8 @@ case $NODENAME in
         )
         case "$WSL_SELECT" in
             1) BUILD_TYPE="Cross" ; build_selection ; continue ;;
-            2) flsdk-setup ; continue ;;
-            3) version_check ; continue ;;
+            2) version_check ; continue ;;
+            3) flsdk-setup ; continue ;;
             H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
             E) clean_exit ;;
         esac
@@ -1008,8 +1008,8 @@ case $NODENAME in
         case "$LINUX_SELECT" in
             1) BUILD_TYPE="Native" ; build_selection ; continue ;;
             2) BUILD_TYPE="Cross" ; build_selection ; continue ;;
-            3) flsdk-setup ; continue ;;
-            4) version_check ; continue ;;
+            3) version_check ; continue ;;
+            4) flsdk-setup ; continue ;;
             H) dialog --exit-label DONE --backtitle "$BACKTITLE" --title "$HTITLE" --textbox "$HELP" 20 80 ; continue ;;
             E) clean_exit ;;
         esac
