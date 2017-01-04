@@ -161,12 +161,13 @@ AC_BUILD_MANPAGES
 AC_CONFIG_FILES([
 Makefile
 src/flsdk
-src/flsdk-version
-src/flsdk-test-url
 src/flsdk-hamlibmk
 src/flsdk-setup
+src/flsdk-test-url
+src/flsdk-version
 man/flsdk.1.txt
 man/flsdk-hamlibmk.1.txt
+man/flsdk-setup.1.txt
 man/flsdk-test-url.1.txt
 man/flsdk-version.1.txt
 data/flsdk.desktop
