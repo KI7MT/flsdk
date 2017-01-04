@@ -81,6 +81,7 @@ A2X			:=	@A2X@
 ASCIIDOCTOR	:=	@ASCIIDOCTOR@
 MANLIST		:=	$(wildcard man/*.1.txt)
 INSMAN		:=	$(wildcard man/*.1)
+DOCLIST		:=	$(wildcard doc/source/*.adoc)
 
 # package information
 PKGINFO		:=	@PKGINFO@
@@ -108,10 +109,11 @@ ifeq ($(BDOC),Yes)
 	@echo -e $(C_Y)"Building Documentation"$(C_NC)
 	@echo '---------------------------------------------'
 	@echo ''
-	@echo " Building $(PROGRAM) User Guide..."
-	@cd $(DOCSRC); \
-	$(ASCIIDOCTOR) -b html -a data-uri -a toc=left -o flsdk.html $(DOCSRC)/flsdk-main.adoc
-	@echo " Finished"  
+	@echo " Building $(PROGRAM) Docs..."
+	@for f in $(DOCLIST) ; do \
+	echo "  * $$f" ; \
+	$(ASCIIDOCTOR) -a data-uri -a toc=left $$f ; \
+	done
 	@echo ''
 endif
 
@@ -124,7 +126,7 @@ ifeq ($(MANP),Yes)
 	@echo ''
 	@echo " Building $(PROGRAM) Manpages..."
 	@for f in $(MANLIST) ; do \
-	echo " $$f" ; \
+	echo "  * $$f" ; \
 	$(A2X) --doctype manpage --format manpage --no-xmllint $$f ; \
 	done
 endif

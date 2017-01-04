@@ -7,4 +7,5 @@ src/menu/* usr/share/flsdk/menu/
 data/flsdk.xpm usr/share/pixmaps/
 data/flsdk.desktop usr/share/applications/
 doc/source/flsdk.html usr/share/doc/flsdk/
+doc/source/flsdk-setup.html usr/share/doc/flsdk/
 pkg-info.txt usr/share/doc/flsdk/
