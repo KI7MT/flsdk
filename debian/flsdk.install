@@ -1,5 +1,6 @@
 src/flsdk usr/bin/
 src/flsdk-hamlibmk usr/bin/
+src/flsdk-setup usr/bin/
 src/flsdk-test-url usr/bin/
 src/flsdk-version usr/bin/
 src/menu/* usr/share/flsdk/menu/
